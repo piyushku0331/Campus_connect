@@ -1,0 +1,11 @@
+.admin-dashboard-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+gap: 2rem;
+}
+.admin-panel {
+background-color: var(--surface-color);
+padding: 1.5rem;
+border-radius: 8px;
+border-left: 5px solid var(--primary-color);
+}

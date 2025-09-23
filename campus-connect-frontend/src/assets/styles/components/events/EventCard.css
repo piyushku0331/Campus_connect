@@ -1,0 +1,40 @@
+.event-card {
+  background: var(--surface-color);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+}
+
+.event-card-header h3 {
+  padding: 1rem;
+  margin: 0;
+  color: var(--primary-color);
+}
+
+.event-card-body {
+  padding: 0 1rem 1rem;
+}
+
+.event-card-body p {
+  margin: 0.5rem 0;
+}
+
+.event-card-footer {
+  padding: 1rem;
+  text-align: right;
+}
+
+.btn {
+  background-color: var(--primary-color);
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}

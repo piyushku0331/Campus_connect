@@ -1,0 +1,28 @@
+.notice-item {
+  display: flex;
+  align-items: center;
+  background: var(--surface-color);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.notice-icon {
+  font-size: 2rem;
+  margin-right: 1rem;
+  color: var(--primary-color);
+}
+.notice-details {
+  flex-grow: 1;
+}
+.notice-details h5 {
+  margin: 0;
+}
+.notice-category {
+  font-size: 0.8rem;
+  color: #aaa;
+}
+.btn-download {
+  text-decoration: none;
+  font-weight: bold;
+  color: var(--secondary-color);
+}
