@@ -9,7 +9,12 @@ const logger = require('./config/winston');
 const { globalErrorHandler, handleUnhandledRejections, handleUncaughtExceptions } = require('./middleware/errorMiddleware');
 
 dotenv.config();
-connectDB();
+
+// Handle uncaught exceptions (must be first)
+process.on('uncaughtException', handleUncaughtExceptions);
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err) => handleUnhandledRejections(err, null));
 
 const app = express();
 const server = http.createServer(app);
@@ -40,12 +45,6 @@ app.use('/api/posts', require('./routes/postRoutes'));
 // Global error handler (must be last middleware)
 app.use(globalErrorHandler);
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err) => handleUnhandledRejections(err, server));
-
-// Handle uncaught exceptions
-process.on('uncaughtException', handleUncaughtExceptions);
-
 // Socket.IO
 io.on('connection', (socket) => {
   socket.on('sendMessage', (data) => {
@@ -55,6 +54,18 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-});
+// Connect to database and start server
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    server.listen(PORT, () => {
+      logger.info(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    logger.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();

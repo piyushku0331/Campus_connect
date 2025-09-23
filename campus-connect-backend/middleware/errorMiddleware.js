@@ -123,7 +123,10 @@ const handleUnhandledRejections = (err, server) => {
 // Handle uncaught exceptions
 const handleUncaughtExceptions = (err) => {
   logger.error('UNCAUGHT EXCEPTION! 💥 Shutting down...');
-  logger.error(err.name, err.message);
+  logger.error('Full error object:', err);
+  logger.error('Error name:', err && err.name);
+  logger.error('Error message:', err && err.message);
+  logger.error('Error stack:', err && err.stack);
 
   process.exit(1);
 };

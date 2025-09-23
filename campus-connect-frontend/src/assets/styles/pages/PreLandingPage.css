@@ -9,6 +9,44 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  0%, 50% { border-color: transparent; }
+  51%, 100% { border-color: var(--primary-color); }
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(5deg);
+    filter: hue-rotate(90deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(-5deg);
+    filter: hue-rotate(180deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(3deg);
+    filter: hue-rotate(270deg);
+  }
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.8), 0 0 40px rgba(0, 212, 255, 0.6);
+  }
+}
+
 
 @keyframes cosmic-shift {
   0%, 100% {
@@ -83,8 +121,14 @@
 .logo-icon {
   width: 5rem;
   height: 5rem;
-  animation: particleFloat 4s ease-in-out infinite;
+  animation: logoFloat 6s ease-in-out infinite;
   filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.6));
+  transition: all 0.3s ease;
+}
+
+.logo-icon:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 40px rgba(0, 212, 255, 0.8));
 }
 
 .site-name {

@@ -1,34 +1,106 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { team } from '../data/team';
 import '../assets/styles/pages/HomePage.css';
 
 const HomePage = () => {
-  const team = [
-    {
-      name: 'Alex Rodriguez',
-      role: 'Lead Developer',
-      image: '👨‍💻',
-      bio: 'Passionate about creating innovative solutions for education.'
-    },
-    {
-      name: 'Sofia Patel',
-      role: 'UI/UX Designer',
-      image: '👩‍🎨',
-      bio: 'Crafting beautiful and intuitive user experiences.'
-    },
-    {
-      name: 'David Kim',
-      role: 'Product Manager',
-      image: '👨‍🏫',
-      bio: 'Ensuring Campus Connect meets student needs perfectly.'
-    },
-    {
-      name: 'Lisa Wong',
-      role: 'Backend Engineer',
-      image: '👩‍🔧',
-      bio: 'Building robust and scalable systems for our platform.'
+  useEffect(() => {
+    const animateStats = () => {
+      const statNumbers = document.querySelectorAll('.stat-number');
+
+      statNumbers.forEach((stat) => {
+        const target = parseInt(stat.getAttribute('data-target'));
+        const increment = target / 100;
+        let current = 0;
+
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            stat.textContent = target.toLocaleString();
+            clearInterval(timer);
+          } else {
+            stat.textContent = Math.floor(current).toLocaleString();
+          }
+        }, 20);
+      });
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animateStats();
+          observer.unobserve(entry.target);
+        }
+      });
+    });
+
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+      observer.observe(statsSection);
     }
-  ];
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+          sectionObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    const sections = document.querySelectorAll('.features-section, .testimonials-section, .team-section, .cta-section');
+    sections.forEach(section => sectionObserver.observe(section));
+
+    let currentScrollY = 0;
+    let targetScrollY = 0;
+    let animationId;
+
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+
+    const updateParallax = () => {
+      const diff = targetScrollY - currentScrollY;
+      const ease = easeOut(Math.min(Math.abs(diff) / 100, 1)); // Smooth over 100px difference
+      currentScrollY += diff * ease * 0.3; // Damping factor
+
+      const parallaxBg = document.querySelector('.hero-parallax-bg');
+      const heroVisual = document.querySelector('.hero-visual');
+      const floatingShapes = document.querySelectorAll('.shape');
+
+      if (parallaxBg) {
+        parallaxBg.style.transform = `translate3d(0, ${currentScrollY * 0.5}px, 0)`;
+      }
+
+      if (heroVisual) {
+        heroVisual.style.transform = `translate3d(0, ${currentScrollY * 0.3}px, 0)`;
+      }
+
+      const time = Date.now() * 0.001;
+      floatingShapes.forEach((shape, index) => {
+        const parallaxSpeed = [0.2, 0.4, 0.6, 0.3][index] || 0.2;
+        const floatSpeed = [1, 1.5, 0.8, 1.2][index] || 1;
+        const floatAmplitude = 15 + index * 5;
+        const parallaxY = currentScrollY * parallaxSpeed;
+        const floatY = Math.sin(time * floatSpeed) * floatAmplitude;
+        shape.style.transform = `translate3d(0, ${parallaxY + floatY}px, 0)`;
+      });
+
+      animationId = requestAnimationFrame(updateParallax);
+    };
+
+    const handleScroll = () => {
+      targetScrollY = window.scrollY;
+      if (!animationId) {
+        animationId = requestAnimationFrame(updateParallax);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const features = [
     {
@@ -72,9 +144,31 @@ const HomePage = () => {
   return (
     <div className="homepage-container">
       <div className="hero-section">
+        <div className="hero-parallax-bg"></div>
         <div className="hero-content">
-          <h1 className="hero-title">Welcome to Campus Connect</h1>
-          <p className="hero-description">Your ultimate college companion for events, notices, and community connections.</p>
+          <h1 className="hero-title">
+            <span className="hero-text">Welcome to </span>
+            <span className="hero-highlight">Campus Connect</span>
+          </h1>
+          <p className="hero-description">
+            Your ultimate college companion for <span className="highlight-text">events</span>,
+            <span className="highlight-text"> notices</span>, and
+            <span className="highlight-text"> community connections</span>.
+          </p>
+          <div className="hero-features">
+            <div className="feature-badge">
+              <span className="badge-icon">🚀</span>
+              <span>Free Forever</span>
+            </div>
+            <div className="feature-badge">
+              <span className="badge-icon">🔒</span>
+              <span>Secure & Private</span>
+            </div>
+            <div className="feature-badge">
+              <span className="badge-icon">📱</span>
+              <span>Mobile Friendly</span>
+            </div>
+          </div>
           <div className="hero-buttons">
             <Link to="/login" className="btn btn-primary">Get Started</Link>
             <Link to="/about" className="btn btn-secondary">Learn More</Link>
@@ -85,6 +179,21 @@ const HomePage = () => {
             <div className="shape shape1"></div>
             <div className="shape shape2"></div>
             <div className="shape shape3"></div>
+            <div className="shape shape4"></div>
+          </div>
+          <div className="hero-stats-preview">
+            <div className="preview-stat">
+              <span className="preview-number">15K+</span>
+              <span className="preview-label">Students</span>
+            </div>
+            <div className="preview-stat">
+              <span className="preview-number">500+</span>
+              <span className="preview-label">Events</span>
+            </div>
+            <div className="preview-stat">
+              <span className="preview-number">1.2K+</span>
+              <span className="preview-label">Resources</span>
+            </div>
           </div>
         </div>
       </div>
@@ -99,6 +208,32 @@ const HomePage = () => {
               <p className="feature-description">{feature.description}</p>
             </Link>
           ))}
+        </div>
+      </div>
+
+      <div className="stats-section">
+        <h2 className="section-title">Campus Connect by Numbers</h2>
+        <div className="stats-grid">
+          <div className="stat-item">
+            <div className="stat-number" data-target="15000">0</div>
+            <div className="stat-label">Active Students</div>
+            <div className="stat-description">Students using our platform daily</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-number" data-target="500">0</div>
+            <div className="stat-label">Events Hosted</div>
+            <div className="stat-description">Successful events organized this year</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-number" data-target="1200">0</div>
+            <div className="stat-label">Study Materials</div>
+            <div className="stat-description">Resources shared by students</div>
+          </div>
+          <div className="stat-item">
+            <div className="stat-number" data-target="98">0</div>
+            <div className="stat-label">User Satisfaction</div>
+            <div className="stat-description">Students rate us 5 stars</div>
+          </div>
         </div>
       </div>
 

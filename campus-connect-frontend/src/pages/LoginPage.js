@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { authAPI } from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
 import '../assets/styles/pages/LoginPage.css';
@@ -10,6 +11,7 @@ const LoginPage = () => {
     password: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { showError, showSuccess } = useNotification();
@@ -67,6 +69,11 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
+      <div className="parallax-shapes-login">
+        <div className="parallax-shape-login"></div>
+        <div className="parallax-shape-login"></div>
+        <div className="parallax-shape-login"></div>
+      </div>
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-header">
@@ -94,15 +101,25 @@ const LoginPage = () => {
 
             <div className="form-group">
               <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                placeholder="Enter your password"
-              />
+              <div className="input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
             </div>
 
             <button type="submit" className="auth-btn" disabled={loading}>

@@ -55,6 +55,7 @@ const Header = () => {
               <Link to="/events">Events</Link>
               <Link to="/placements">Placements</Link>
               <Link to="/community">Community</Link>
+              <Link to="/connections">Connections</Link>
               <Link to="/study-hub">Study Hub</Link>
               <Link to="/notice-board">Notice Board</Link>
               <Link to="/about">About</Link>
@@ -73,7 +74,7 @@ const Header = () => {
         <div className="navbar-right">
           {isAuthenticated ? (
             <button
-              className="btn-login"
+              className="btn-logout"
               onClick={() => {
                 localStorage.removeItem('token');
                 setIsAuthenticated(false);
@@ -98,6 +99,7 @@ const Header = () => {
             <Link to="/events" onClick={closeMobileMenu}>Events</Link>
             <Link to="/placements" onClick={closeMobileMenu}>Placements</Link>
             <Link to="/community" onClick={closeMobileMenu}>Community</Link>
+            <Link to="/connections" onClick={closeMobileMenu}>Connections</Link>
             <Link to="/study-hub" onClick={closeMobileMenu}>Study Hub</Link>
             <Link to="/notice-board" onClick={closeMobileMenu}>Notice Board</Link>
             <Link to="/about" onClick={closeMobileMenu}>About</Link>

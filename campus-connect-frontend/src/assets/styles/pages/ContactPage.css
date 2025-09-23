@@ -189,6 +189,31 @@
   line-height: 1.6;
 }
 
+.maps-section {
+  margin-top: 3rem;
+  animation: fadeInUp 1s ease-out;
+}
+
+.maps-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  text-align: left;
+}
+
+.map-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  animation: scaleIn 0.8s ease-out;
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 300px;
+  border: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .contact-content {
@@ -222,5 +247,17 @@
   .faq-item {
     width: 100%;
     max-width: 500px;
+  }
+
+  .maps-section {
+    margin-top: 2rem;
+  }
+
+  .maps-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .map-container iframe {
+    height: 250px;
   }
 }

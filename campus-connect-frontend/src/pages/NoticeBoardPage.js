@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NoticeItem from '../components/notices/NoticeItem';
 import '../assets/styles/pages/NoticeBoardPage.css';
 
 const NoticeBoardPage = () => {
+  const [activeFilter, setActiveFilter] = useState('All');
+
   // Mock data - replace with API calls
   const notices = [
     { _id: 1, title: 'Mid-Term Exam Schedule', category: 'Exams', filePath: 'uploads/file1.pdf' },
@@ -10,19 +12,41 @@ const NoticeBoardPage = () => {
     { _id: 3, title: 'Semester V Results', category: 'Results', filePath: 'uploads/file3.png' },
   ];
 
+  const filteredNotices = activeFilter === 'All' ? notices : notices.filter(n => n.category === activeFilter);
+
   return (
     <div className="notice-board-page">
       <div className="page-header">
         <h1>Notice Board</h1>
       </div>
       <div className="notice-filters">
-        <button>All</button>
-        <button>Exams</button>
-        <button>Results</button>
-        <button>Scholarships</button>
+        <button
+          className={activeFilter === 'All' ? 'active' : ''}
+          onClick={() => setActiveFilter('All')}
+        >
+          All
+        </button>
+        <button
+          className={activeFilter === 'Exams' ? 'active' : ''}
+          onClick={() => setActiveFilter('Exams')}
+        >
+          Exams
+        </button>
+        <button
+          className={activeFilter === 'Results' ? 'active' : ''}
+          onClick={() => setActiveFilter('Results')}
+        >
+          Results
+        </button>
+        <button
+          className={activeFilter === 'Scholarships' ? 'active' : ''}
+          onClick={() => setActiveFilter('Scholarships')}
+        >
+          Scholarships
+        </button>
       </div>
       <div className="notice-list">
-        {notices.map(n => <NoticeItem key={n._id} notice={n} />)}
+        {filteredNotices.map(n => <NoticeItem key={n._id} notice={n} />)}
       </div>
     </div>
   );

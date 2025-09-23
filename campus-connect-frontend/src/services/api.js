@@ -76,10 +76,10 @@ export const placementsAPI = {
 export const noticesAPI = {
   getNotices: () => fetch(`${API_BASE_URL}/notices`).then(handleResponse),
   getNotice: (id) => fetch(`${API_BASE_URL}/notices/${id}`).then(handleResponse),
-  createNotice: (noticeData) => fetch(`${API_BASE_URL}/notices`, {
+  createNotice: (formData) => fetch(`${API_BASE_URL}/notices`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-    body: JSON.stringify(noticeData)
+    headers: getAuthHeaders(),
+    body: formData
   }).then(handleResponse)
 };
 

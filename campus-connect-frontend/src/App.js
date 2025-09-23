@@ -23,8 +23,10 @@ import EventsPage from './pages/EventsPage';
 // Lazy load less critical pages
 const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 const AnalyticsDashboardPage = lazy(() => import('./pages/AnalyticsDashboardPage'));
+const AlumniStoryPage = lazy(() => import('./pages/AlumniStoryPage'));
 const ChatPage = lazy(() => import('./pages/ChatPage'));
 const CommunityPage = lazy(() => import('./pages/CommunityPage'));
+const ConnectionsPage = lazy(() => import('./pages/ConnectionsPage'));
 const HelplinePage = lazy(() => import('./pages/HelplinePage'));
 const LostAndFoundPage = lazy(() => import('./pages/LostAndFoundPage'));
 const NoticeBoardPage = lazy(() => import('./pages/NoticeBoardPage'));
@@ -66,6 +68,7 @@ function AppContent() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/placements" element={<PlacementsPage />} />
             <Route path="/community" element={<CommunityPage />} />
+            <Route path="/connections" element={<ConnectionsPage />} />
             <Route path="/study-hub" element={<StudyMaterialPage />} />
             <Route path="/notice-board" element={<NoticeBoardPage />} />
             <Route path="/lost-and-found" element={<LostAndFoundPage />} />
@@ -80,6 +83,7 @@ function AppContent() {
             <Route path="/admin/analytics" element={<AnalyticsDashboardPage />} />
 
             {/* Additional Pages */}
+            <Route path="/alumni/:id" element={<AlumniStoryPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>

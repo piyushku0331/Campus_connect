@@ -1,33 +1,8 @@
 import React from 'react';
+import { team } from '../data/team';
 import '../assets/styles/pages/AboutPage.css';
 
 const AboutPage = () => {
-  const team = [
-    {
-      name: 'Alex Rodriguez',
-      role: 'Lead Developer',
-      image: '👨‍💻',
-      bio: 'Passionate about creating innovative solutions for education.'
-    },
-    {
-      name: 'Sofia Patel',
-      role: 'UI/UX Designer',
-      image: '👩‍🎨',
-      bio: 'Crafting beautiful and intuitive user experiences.'
-    },
-    {
-      name: 'David Kim',
-      role: 'Product Manager',
-      image: '👨‍🏫',
-      bio: 'Ensuring Campus Connect meets student needs perfectly.'
-    },
-    {
-      name: 'Lisa Wong',
-      role: 'Backend Engineer',
-      image: '👩‍🔧',
-      bio: 'Building robust and scalable systems for our platform.'
-    }
-  ];
 
   const features = [
     {

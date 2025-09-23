@@ -26,7 +26,8 @@ A comprehensive, modern campus management platform that connects students, facul
 - **Scalability**: Microservices-ready architecture
 
 ### 🎨 User Experience
-- **Modern UI**: Glassmorphism design with smooth animations
+- **Modern UI**: Glassmorphism design with smooth parallax effects and animations
+- **Interactive Animations**: Scroll-triggered animations and floating elements
 - **Responsive Design**: Mobile-first approach with cross-device compatibility
 - **Accessibility**: WCAG compliant with screen reader support
 - **Dark Theme**: Eye-friendly dark mode interface

@@ -33,13 +33,13 @@ const ContactPage = () => {
     {
       icon: '📞',
       title: 'Phone',
-      details: '+1 (555) 123-4567',
+      details: '+91 7988327875',
       description: 'Mon-Fri 9AM-6PM'
     },
     {
       icon: '📍',
       title: 'Address',
-      details: '123 University Ave, College Town, ST 12345',
+      details: 'Chitkara University',
       description: 'Visit our campus office'
     },
     {
@@ -129,6 +129,22 @@ const ContactPage = () => {
                 <p className="info-description">{info.description}</p>
               </div>
             ))}
+          </div>
+
+          <div className="maps-section">
+            <h2>Find Us</h2>
+            <div className="map-container">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3430.123456789012!2d76.12345678901234!3d30.123456789012345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d123456789abc%3A0x123456789abcdef!2sChitkara%20University!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
+                width="100%"
+                height="300"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Chitkara University Location"
+              ></iframe>
+            </div>
           </div>
         </div>
       </div>
