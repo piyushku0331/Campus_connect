@@ -1,95 +1,50 @@
 import React, { useState, useEffect } from 'react';
+import { connectionsAPI } from '../services/api';
 import '../assets/styles/pages/ConnectionsPage.css';
 
+// Main component for handling all the networking stuff
+// Basically lets students find each other and connect
 const ConnectionsPage = () => {
+  // Keeping track of which tab we're on and all the user data
   const [activeTab, setActiveTab] = useState('discover');
   const [searchTerm, setSearchTerm] = useState('');
-  const [users, setUsers] = useState([]);
-  const [connections, setConnections] = useState([]);
-  const [pendingRequests, setPendingRequests] = useState([]);
-  const [sentRequests, setSentRequests] = useState([]);
+  const [users, setUsers] = useState([]); // People you can connect with
+  const [connections, setConnections] = useState([]); // Your actual connections
+  const [pendingRequests, setPendingRequests] = useState([]); // People who want to connect with you
+  const [sentRequests, setSentRequests] = useState([]); // Requests you've sent out
 
-  // Mock data for demonstration
+  // TODO: Maybe add some loading states for better UX
+
+  // Load all the connection data when the page first loads
   useEffect(() => {
-    const mockUsers = [
-      {
-        id: 1,
-        name: 'Sarah Chen',
-        role: 'Computer Science Student',
-        year: '3rd Year',
-        department: 'Computer Science',
-        skills: ['React', 'Node.js', 'Python', 'Machine Learning'],
-        mutualConnections: 5,
-        profilePicture: null,
-        status: 'none' // none, connected, pending, sent
-      },
-      {
-        id: 2,
-        name: 'Mike Rodriguez',
-        role: 'Electrical Engineering Student',
-        year: '2nd Year',
-        department: 'Electrical Engineering',
-        skills: ['Circuit Design', 'Embedded Systems', 'IoT'],
-        mutualConnections: 3,
-        profilePicture: null,
-        status: 'connected'
-      },
-      {
-        id: 3,
-        name: 'Emily Davis',
-        role: 'Data Science Student',
-        year: '4th Year',
-        department: 'Mathematics',
-        skills: ['Python', 'R', 'Statistics', 'Data Visualization'],
-        mutualConnections: 8,
-        profilePicture: null,
-        status: 'pending'
-      },
-      {
-        id: 4,
-        name: 'David Kumar',
-        role: 'AI Research Assistant',
-        year: 'PhD Student',
-        department: 'Computer Science',
-        skills: ['Deep Learning', 'TensorFlow', 'Computer Vision'],
-        mutualConnections: 12,
-        profilePicture: null,
-        status: 'sent'
-      },
-      {
-        id: 5,
-        name: 'Lisa Wang',
-        role: 'UX Designer',
-        year: '3rd Year',
-        department: 'Design',
-        skills: ['Figma', 'Adobe XD', 'User Research', 'Prototyping'],
-        mutualConnections: 6,
-        profilePicture: null,
-        status: 'none'
-      },
-      {
-        id: 6,
-        name: 'Alex Thompson',
-        role: 'Business Administration Student',
-        year: '2nd Year',
-        department: 'Business',
-        skills: ['Marketing', 'Finance', 'Entrepreneurship'],
-        mutualConnections: 4,
-        profilePicture: null,
-        status: 'none'
+    const loadData = async () => {
+      try {
+        const currentUserId = localStorage.getItem('userId');
+
+        // Grab all the data at once - connections, requests, etc.
+        const [connectionsRes, pendingRes, sentRes, discoverRes] = await Promise.all([
+          connectionsAPI.getConnections(),
+          connectionsAPI.getPendingRequests(),
+          connectionsAPI.getSentRequests(),
+          connectionsAPI.getDiscoverUsers()
+        ]);
+
+        // Don't show yourself in the discover list
+        const filteredDiscoverUsers = discoverRes.filter(user => user.id !== currentUserId);
+
+        setConnections(connectionsRes);
+        setPendingRequests(pendingRes);
+        setSentRequests(sentRes);
+        setUsers(filteredDiscoverUsers);
+      } catch (error) {
+        console.error('Oops, error loading connections:', error);
       }
-    ];
+    };
 
-    const mockConnections = mockUsers.filter(user => user.status === 'connected');
-    const mockPending = mockUsers.filter(user => user.status === 'pending');
-    const mockSent = mockUsers.filter(user => user.status === 'sent');
-
-    setUsers(mockUsers);
-    setConnections(mockConnections);
-    setPendingRequests(mockPending);
-    setSentRequests(mockSent);
+    loadData();
   }, []);
 
+  // Filter the users list based on what someone types in the search box
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -97,45 +52,78 @@ const ConnectionsPage = () => {
     user.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleConnect = (userId) => {
-    setUsers(prevUsers =>
-      prevUsers.map(user =>
-        user.id === userId ? { ...user, status: 'sent' } : user
-      )
-    );
-    // In a real app, this would make an API call
+  // When someone clicks connect on a user
+  const handleConnect = async (userId) => {
+    try {
+      // Update the UI right away so it feels snappy
+      const targetUser = users.find(user => user.id === userId);
+      if (targetUser) {
+        setUsers(prev => prev.filter(user => user.id !== userId));
+        setSentRequests(prev => [...prev, { ...targetUser, status: 'sent', connectionId: 'mock-sent-' + userId }]);
+      }
+
+      await connectionsAPI.sendConnectionRequest(userId);
+    } catch (error) {
+      console.error('Failed to send connection request:', error);
+      // If it fails, reload everything to get back in sync
+      const [sentRes, discoverRes] = await Promise.all([
+        connectionsAPI.getSentRequests(),
+        connectionsAPI.getDiscoverUsers()
+      ]);
+      setSentRequests(sentRes);
+      setUsers(discoverRes);
+    }
   };
 
-  const handleAccept = (userId) => {
-    setUsers(prevUsers =>
-      prevUsers.map(user =>
-        user.id === userId ? { ...user, status: 'connected' } : user
-      )
-    );
-    setPendingRequests(prev => prev.filter(user => user.id !== userId));
-    // In a real app, this would make an API call
+  // Accepting a connection request
+  const handleAccept = async (connectionId) => {
+    try {
+      // Update UI immediately
+      setPendingRequests(prev => prev.filter(user => user.connectionId !== connectionId));
+
+      const acceptedUser = pendingRequests.find(user => user.connectionId === connectionId);
+      if (acceptedUser) {
+        setConnections(prev => [...prev, { ...acceptedUser, status: 'connected' }]);
+      }
+
+      await connectionsAPI.acceptConnection(connectionId);
+    } catch (error) {
+      console.error('Error accepting connection:', error);
+      // Reload if something went wrong
+      const [connectionsRes, pendingRes] = await Promise.all([
+        connectionsAPI.getConnections(),
+        connectionsAPI.getPendingRequests()
+      ]);
+      setConnections(connectionsRes);
+      setPendingRequests(pendingRes);
+    }
   };
 
-  const handleDecline = (userId) => {
-    setUsers(prevUsers =>
-      prevUsers.map(user =>
-        user.id === userId ? { ...user, status: 'none' } : user
-      )
-    );
-    setPendingRequests(prev => prev.filter(user => user.id !== userId));
-    // In a real app, this would make an API call
+  // Declining a connection request
+  const handleDecline = async (connectionId) => {
+    try {
+      setPendingRequests(prev => prev.filter(user => user.connectionId !== connectionId));
+      await connectionsAPI.declineConnection(connectionId);
+    } catch (error) {
+      console.error('Error declining connection:', error);
+      const pendingRes = await connectionsAPI.getPendingRequests();
+      setPendingRequests(pendingRes);
+    }
   };
 
-  const handleWithdraw = (userId) => {
-    setUsers(prevUsers =>
-      prevUsers.map(user =>
-        user.id === userId ? { ...user, status: 'none' } : user
-      )
-    );
-    setSentRequests(prev => prev.filter(user => user.id !== userId));
-    // In a real app, this would make an API call
+  // Withdrawing a request you sent
+  const handleWithdraw = async (connectionId) => {
+    try {
+      setSentRequests(prev => prev.filter(user => user.connectionId !== connectionId));
+      await connectionsAPI.withdrawRequest(connectionId);
+    } catch (error) {
+      console.error('Error withdrawing request:', error);
+      const sentRes = await connectionsAPI.getSentRequests();
+      setSentRequests(sentRes);
+    }
   };
 
+  // Get initials from a name for the avatar
   const getUserInitials = (name) => {
     const words = name.trim().split(' ').filter(word => word.length > 0);
     if (words.length === 0) return '?';
@@ -144,6 +132,7 @@ const ConnectionsPage = () => {
     return (firstInitial + lastInitial).slice(0, 2);
   };
 
+  // Pick a nice gradient color for the avatar based on name
   const getAvatarColor = (name) => {
     const colors = [
       'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -159,6 +148,9 @@ const ConnectionsPage = () => {
     return colors[index];
   };
 
+  // Could probably extract this into a separate component later
+
+  // Render a card for each user
   const renderUserCard = (user) => (
     <div key={user.id} className="user-card">
       <div className="user-card-header">
@@ -184,13 +176,13 @@ const ConnectionsPage = () => {
             <div className="pending-actions">
               <button
                 className="btn-accept"
-                onClick={() => handleAccept(user.id)}
+                onClick={() => handleAccept(user.connectionId)}
               >
                 Accept
               </button>
               <button
                 className="btn-decline"
-                onClick={() => handleDecline(user.id)}
+                onClick={() => handleDecline(user.connectionId)}
               >
                 Decline
               </button>
@@ -199,7 +191,7 @@ const ConnectionsPage = () => {
           {user.status === 'sent' && (
             <button
               className="btn-withdraw"
-              onClick={() => handleWithdraw(user.id)}
+              onClick={() => handleWithdraw(user.connectionId)}
             >
               Pending
             </button>
@@ -319,3 +311,5 @@ const ConnectionsPage = () => {
 };
 
 export default ConnectionsPage;
+
+// Note: This component is getting a bit long, might want to split it up eventually

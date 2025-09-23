@@ -36,6 +36,10 @@ export const authAPI = {
     body: JSON.stringify(otpData)
   }).then(handleResponse),
 
+  getCurrentUser: () => fetch(`${API_BASE_URL}/auth/me`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse),
+
   logout: () => fetch(`${API_BASE_URL}/auth/logout`, {
     method: 'POST'
   }).then(handleResponse)
@@ -129,16 +133,59 @@ export const postsAPI = {
 // Profiles API
 export const profilesAPI = {
   getProfile: (id) => fetch(`${API_BASE_URL}/profiles/${id}`).then(handleResponse),
-  updateProfile: (id, profileData) => fetch(`${API_BASE_URL}/profiles/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-    body: JSON.stringify(profileData)
-  }).then(handleResponse)
+  updateProfile: (id, profileData) => {
+    const isFormData = profileData instanceof FormData;
+    return fetch(`${API_BASE_URL}/profiles`, {
+      method: 'PUT',
+      headers: isFormData ? getAuthHeaders() : { 'Content-Type': 'application/json', ...getAuthHeaders() },
+      body: isFormData ? profileData : JSON.stringify(profileData)
+    }).then(handleResponse);
+  }
 };
 
 // Analytics API
 export const analyticsAPI = {
   getAnalytics: () => fetch(`${API_BASE_URL}/analytics`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse)
+};
+
+// Connections API
+export const connectionsAPI = {
+  getConnections: () => fetch(`${API_BASE_URL}/connections`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse),
+
+  getPendingRequests: () => fetch(`${API_BASE_URL}/connections/pending`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse),
+
+  getSentRequests: () => fetch(`${API_BASE_URL}/connections/sent`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse),
+
+  getDiscoverUsers: () => fetch(`${API_BASE_URL}/connections/discover`, {
+    headers: getAuthHeaders()
+  }).then(handleResponse),
+
+  sendConnectionRequest: (receiverId) => fetch(`${API_BASE_URL}/connections/request`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ receiverId })
+  }).then(handleResponse),
+
+  acceptConnection: (connectionId) => fetch(`${API_BASE_URL}/connections/${connectionId}/accept`, {
+    method: 'PUT',
+    headers: getAuthHeaders()
+  }).then(handleResponse),
+
+  declineConnection: (connectionId) => fetch(`${API_BASE_URL}/connections/${connectionId}/decline`, {
+    method: 'PUT',
+    headers: getAuthHeaders()
+  }).then(handleResponse),
+
+  withdrawRequest: (connectionId) => fetch(`${API_BASE_URL}/connections/${connectionId}/withdraw`, {
+    method: 'DELETE',
     headers: getAuthHeaders()
   }).then(handleResponse)
 };

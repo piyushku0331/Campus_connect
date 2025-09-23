@@ -28,6 +28,7 @@
   text-align: center;
   margin-bottom: 3rem;
   animation: slideInDown 1s ease-out;
+  transform: translateZ(0); /* Enable hardware acceleration */
 }
 
 .page-header h1 {
@@ -49,6 +50,7 @@
   align-items: center;
   margin-bottom: 3rem;
   animation: fadeIn 1s ease-out 0.3s both;
+  transform: translateZ(0); /* Enable hardware acceleration */
 }
 
 .search-wrapper {
@@ -166,6 +168,7 @@
   max-width: 1200px;
   margin: 0 auto;
   animation: fadeIn 1s ease-out 0.6s both;
+  transform: translateZ(0); /* Enable hardware acceleration */
 }
 
 /* Animations */

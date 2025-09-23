@@ -79,17 +79,24 @@
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(15, 15, 15, 0.6));
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 30px;
-  padding: 0.6rem 1.2rem;
+  padding: 0.5rem 1rem;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   display: flex;
-  gap: 0.8rem;
+  gap: 0.6rem;
   position: relative;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 20px rgba(0, 212, 255, 0.1);
   flex-shrink: 1;
   min-width: 0;
   animation: navGlow 4s ease-in-out infinite alternate;
+}
+
+.navbar-center::-webkit-scrollbar {
+  display: none;
 }
 
 .navbar-center::before {
@@ -111,12 +118,12 @@
   text-decoration: none;
   color: var(--text-secondary);
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  padding: 0.6rem 1rem;
-  border-radius: 25px;
-  letter-spacing: 0.5px;
+  padding: 0.5rem 0.8rem;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -307,18 +314,30 @@
 }
 
 
-/* On screens smaller than 1200px, hide some nav items to make room for Contact */
+/* On screens smaller than 1400px, reduce padding and font size */
+@media (max-width: 1400px) {
+  .navbar-center a {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.7rem;
+  }
+}
+
+/* On screens smaller than 1200px, hide some nav items to make room */
 @media (max-width: 1200px) {
-  .navbar-center a:nth-child(4),
-  .navbar-center a:nth-child(5),
-  .navbar-center a:nth-child(6) {
+  .navbar-center a:nth-child(7),
+  .navbar-center a:nth-child(8),
+  .navbar-center a:nth-child(9),
+  .navbar-center a:nth-child(10),
+  .navbar-center a:nth-child(11) {
     display: none;
   }
 }
 
-/* On screens smaller than 992px, hide more nav items but keep Contact */
+/* On screens smaller than 992px, hide more nav items but keep essential ones */
 @media (max-width: 992px) {
-  .navbar-center a:nth-child(2) {
+  .navbar-center a:nth-child(4),
+  .navbar-center a:nth-child(5),
+  .navbar-center a:nth-child(6) {
     display: none;
   }
 }

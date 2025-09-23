@@ -58,6 +58,7 @@ const LoginPage = () => {
     try {
       const response = await authAPI.login(formData);
       localStorage.setItem('token', response.token);
+      localStorage.setItem('userId', response.user.id);
       showSuccess('Login successful!');
       navigate('/home');
     } catch (err) {

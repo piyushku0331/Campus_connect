@@ -348,6 +348,7 @@
   font-size: 0.9rem;
   width: 100%;
   animation: pulse 2s infinite;
+  transform: translateZ(0); /* Enable hardware acceleration */
 }
 
 .auth-btn::before {
@@ -434,6 +435,7 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   animation: float 6s ease-in-out infinite;
+  transform: translateZ(0); /* Enable hardware acceleration */
 }
 
 .shape1 {

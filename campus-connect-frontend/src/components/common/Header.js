@@ -9,12 +9,15 @@ const Logo = () => (
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Check if user is authenticated (you can replace this with your auth logic)
     const token = localStorage.getItem('token');
+    const id = localStorage.getItem('userId');
     setIsAuthenticated(!!token);
+    setUserId(id);
   }, []);
 
   const toggleMobileMenu = () => {
@@ -52,12 +55,16 @@ const Header = () => {
           {isAuthenticated ? (
             // Show all features for authenticated users
             <>
+              <Link to="/profile">Profile</Link>
               <Link to="/events">Events</Link>
               <Link to="/placements">Placements</Link>
               <Link to="/community">Community</Link>
               <Link to="/connections">Connections</Link>
               <Link to="/study-hub">Study Hub</Link>
               <Link to="/notice-board">Notice Board</Link>
+              <Link to="/lost-and-found">Lost & Found</Link>
+              <Link to="/helpline">Helpline</Link>
+              <Link to="/chat">Messages</Link>
               <Link to="/about">About</Link>
               <Link to="/contact">Contact</Link>
             </>
@@ -96,12 +103,16 @@ const Header = () => {
       <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
         {isAuthenticated ? (
           <>
+            <Link to="/profile" onClick={closeMobileMenu}>Profile</Link>
             <Link to="/events" onClick={closeMobileMenu}>Events</Link>
             <Link to="/placements" onClick={closeMobileMenu}>Placements</Link>
             <Link to="/community" onClick={closeMobileMenu}>Community</Link>
             <Link to="/connections" onClick={closeMobileMenu}>Connections</Link>
             <Link to="/study-hub" onClick={closeMobileMenu}>Study Hub</Link>
             <Link to="/notice-board" onClick={closeMobileMenu}>Notice Board</Link>
+            <Link to="/lost-and-found" onClick={closeMobileMenu}>Lost & Found</Link>
+            <Link to="/helpline" onClick={closeMobileMenu}>Helpline</Link>
+            <Link to="/chat" onClick={closeMobileMenu}>Messages</Link>
             <Link to="/about" onClick={closeMobileMenu}>About</Link>
             <Link to="/contact" onClick={closeMobileMenu}>Contact</Link>
             <button

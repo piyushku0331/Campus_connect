@@ -1,9 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
-// Import Main CSS
-import './assets/styles/main.css';
-
 // Import Core Components
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
@@ -76,6 +73,7 @@ function AppContent() {
 
             {/* Other Application Routes */}
             <Route path="/chat" element={<ChatPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
 
             {/* Admin Routes */}

@@ -41,6 +41,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes'));
 app.use('/api/profiles', require('./routes/profileRoutes'));
 app.use('/api/posts', require('./routes/postRoutes'));
+app.use('/api/connections', require('./routes/connectionRoutes'));
 
 // Global error handler (must be last middleware)
 app.use(globalErrorHandler);

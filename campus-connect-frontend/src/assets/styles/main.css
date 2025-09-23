@@ -120,6 +120,7 @@ h1, h2, h3, h4, h5, h6 {
   background-attachment: fixed;
   background-size: 400% 400%;
   animation: cosmic-shift 30s ease-in-out infinite;
+  transform: translateZ(0); /* Enable hardware acceleration */
 }
 
 .parallax-bg::before {
@@ -140,19 +141,15 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes cosmic-shift {
   0%, 100% {
     background-position: 0% 50%;
-    filter: hue-rotate(0deg);
   }
   25% {
     background-position: 100% 50%;
-    filter: hue-rotate(90deg);
   }
   50% {
     background-position: 50% 100%;
-    filter: hue-rotate(180deg);
   }
   75% {
     background-position: 50% 0%;
-    filter: hue-rotate(270deg);
   }
 }
 
@@ -498,6 +495,7 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
   z-index: -1;
   overflow: hidden;
+  transform: translateZ(0); /* Enable hardware acceleration */
 }
 
 .particle-bg::before {

@@ -1,0 +1,249 @@
+/* Lost Item Card Styles */
+.lost-item-card {
+  background: linear-gradient(135deg, var(--surface-color) 0%, rgba(15, 15, 15, 0.8) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--glass-border);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.lost-item-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg,
+    rgba(0, 212, 255, 0.05) 0%,
+    rgba(156, 39, 176, 0.03) 50%,
+    rgba(255, 235, 59, 0.02) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+}
+
+.lost-item-card:hover::before {
+  opacity: 1;
+}
+
+.lost-item-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(0, 212, 255, 0.2);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.lost-item-card.found {
+  border-left: 4px solid var(--success-color);
+}
+
+.lost-item-card.lost {
+  border-left: 4px solid var(--warning-color);
+}
+
+/* Card Header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  color: #000;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.category-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+/* Card Content */
+.card-content {
+  margin-bottom: 1rem;
+}
+
+.item-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.item-description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detail-icon {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.detail-text {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* Card Footer */
+.card-footer {
+  border-top: 1px solid var(--glass-border);
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+.contact-value {
+  color: var(--text-color);
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.btn-contact {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: #000;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.btn-contact::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-contact:hover::before {
+  left: 100%;
+}
+
+.btn-contact:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .lost-item-card {
+    padding: 1.2rem;
+  }
+
+  .item-title {
+    font-size: 1.2rem;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .btn-contact {
+    width: 100%;
+    padding: 0.7rem 1rem;
+  }
+
+  .contact-info {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .lost-item-card {
+    padding: 1rem;
+  }
+
+  .card-header {
+    margin-bottom: 0.8rem;
+  }
+
+  .item-title {
+    font-size: 1.1rem;
+  }
+
+  .item-description {
+    font-size: 0.85rem;
+  }
+
+  .detail-text {
+    font-size: 0.8rem;
+  }
+
+  .contact-value {
+    font-size: 0.8rem;
+  }
+}
+
+/* Status-specific styling */
+.lost-item-card.found .status-badge {
+  background: var(--success-color);
+}
+
+.lost-item-card.lost .status-badge {
+  background: var(--warning-color);
+}
+
+/* Hover animations */
+@keyframes cardHover {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.01); }
+  100% { transform: translateY(-8px) scale(1.02); }
+}
+
+.lost-item-card:hover {
+  animation: cardHover 0.4s ease-out forwards;
+}

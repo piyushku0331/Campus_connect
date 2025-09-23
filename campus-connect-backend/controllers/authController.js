@@ -67,7 +67,14 @@ exports.login = async (req, res) => {
     const payload = { user: { id: user.id } };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.json({ token });
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
+    });
   } catch (err) {
     logger.error(err.message);
     res.status(500).send('Server error');
@@ -98,6 +105,22 @@ exports.forgotPassword = async (req, res) => {
     await sendPasswordResetEmail(email, resetToken, { name: user.name });
 
     res.json({ msg: 'Password reset email sent. Please check your email.' });
+  } catch (err) {
+    logger.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
+
+// @desc    Get current user
+// @route   GET /api/auth/me
+// @access  Private
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    res.json(user);
   } catch (err) {
     logger.error(err.message);
     res.status(500).send('Server error');
