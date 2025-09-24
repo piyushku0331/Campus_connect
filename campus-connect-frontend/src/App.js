@@ -1,43 +1,53 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
-// Import Core Components
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import NotificationContainer from './components/common/NotificationContainer';
-
-// Import Context
 import { NotificationProvider } from './contexts/NotificationContext';
+import { usePerformance } from './hooks/usePerformance';
 
-// Import critical pages immediately
 import PreLandingPage from './pages/PreLandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import OtpVerificationPage from './pages/OtpVerificationPage';
-import HomePage from './pages/HomePage';
-import EventsPage from './pages/EventsPage';
 
-// Lazy load less critical pages
+const HomePage = lazy(() => import('./pages/HomePage'));
+const EventsPage = lazy(() => import('./pages/EventsPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const CommunityPage = lazy(() => import('./pages/CommunityPage'));
+const ConnectionsPage = lazy(() => import('./pages/ConnectionsPage'));
+const ChatPage = lazy(() => import('./pages/ChatPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const StudyMaterialPage = lazy(() => import('./pages/StudyMaterialPage'));
+const NoticeBoardPage = lazy(() => import('./pages/NoticeBoardPage'));
+const PlacementsPage = lazy(() => import('./pages/PlacementsPage'));
+const LostAndFoundPage = lazy(() => import('./pages/LostAndFoundPage'));
+const HelplinePage = lazy(() => import('./pages/HelplinePage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 const AnalyticsDashboardPage = lazy(() => import('./pages/AnalyticsDashboardPage'));
 const AlumniStoryPage = lazy(() => import('./pages/AlumniStoryPage'));
-const ChatPage = lazy(() => import('./pages/ChatPage'));
-const CommunityPage = lazy(() => import('./pages/CommunityPage'));
-const ConnectionsPage = lazy(() => import('./pages/ConnectionsPage'));
-const HelplinePage = lazy(() => import('./pages/HelplinePage'));
-const LostAndFoundPage = lazy(() => import('./pages/LostAndFoundPage'));
-const NoticeBoardPage = lazy(() => import('./pages/NoticeBoardPage'));
-const PlacementsPage = lazy(() => import('./pages/PlacementsPage'));
-const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const StudyMaterialPage = lazy(() => import('./pages/StudyMaterialPage'));
-const AboutPage = lazy(() => import('./pages/AboutPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
-const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
-const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const LazyErrorBoundary = lazy(() => import('./components/common/ErrorBoundary'));
+
+const PageLoader = () => (
+  <div className="page-loader">
+    <div className="loading-spinner"></div>
+    <p>Loading page...</p>
+    <div className="loading-dots">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+);
 
 function AppContent() {
   const location = useLocation();
   const showHeader = location.pathname !== '/';
+  usePerformance();
 
   return (
     <div className="App">
@@ -45,23 +55,17 @@ function AppContent() {
       <NotificationContainer />
       {showHeader && <Header />}
       <main>
-        <Suspense fallback={<div className="loading-spinner" style={{ margin: '50px auto' }}></div>}>
-          <Routes>
-            {/* Default landing page */}
+        <Suspense fallback={<PageLoader />}>
+          <LazyErrorBoundary>
+            <Routes>
             <Route path="/" element={<PreLandingPage />} />
-
-            {/* Home page */}
             <Route path="/home" element={<HomePage />} />
-
-            {/* Pre-landing page (redirect or alias) */}
             <Route path="/prelanding" element={<PreLandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/verify-otp" element={<OtpVerificationPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-            {/* Feature Routes from Header */}
             <Route path="/events" element={<EventsPage />} />
             <Route path="/placements" element={<PlacementsPage />} />
             <Route path="/community" element={<CommunityPage />} />
@@ -70,22 +74,17 @@ function AppContent() {
             <Route path="/notice-board" element={<NoticeBoardPage />} />
             <Route path="/lost-and-found" element={<LostAndFoundPage />} />
             <Route path="/helpline" element={<HelplinePage />} />
-
-            {/* Other Application Routes */}
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
-
-            {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/analytics" element={<AnalyticsDashboardPage />} />
-
-            {/* Additional Pages */}
             <Route path="/alumni/:id" element={<AlumniStoryPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
           </Routes>
-        </Suspense>
+        </LazyErrorBoundary>
+      </Suspense>
       </main>
       {showHeader && <Footer />}
     </div>

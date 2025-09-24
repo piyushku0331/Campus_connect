@@ -3,8 +3,8 @@ const handlebars = require('handlebars');
 const fs = require('fs');
 const path = require('path');
 const logger = require('../config/winston');
+const emailQueue = require('./emailQueue');
 
-// Create transporter
 const createTransporter = () => {
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
@@ -14,17 +14,14 @@ const createTransporter = () => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
-    // Additional options for better deliverability
     pool: true,
     maxConnections: 5,
     maxMessages: 100
   });
 };
 
-// Cache for compiled templates
 const templateCache = new Map();
 
-// Load and compile template
 const loadTemplate = (templateName) => {
   if (templateCache.has(templateName)) {
     return templateCache.get(templateName);
@@ -42,41 +39,33 @@ const loadTemplate = (templateName) => {
   }
 };
 
-// Load base template
 const loadBaseTemplate = () => {
   return loadTemplate('base');
 };
 
-// Send email with template
 const sendTemplatedEmail = async (to, subject, templateName, templateData = {}) => {
   try {
     const transporter = createTransporter();
 
-    // Load templates
     const baseTemplate = loadBaseTemplate();
     const bodyTemplate = loadTemplate(templateName);
 
-    // Prepare template data
     const data = {
       ...templateData,
       email: to,
       year: new Date().getFullYear(),
       subject: subject,
-      // Default URLs (should be configured in environment)
       unsubscribe_url: templateData.unsubscribe_url || '#',
       preferences_url: templateData.preferences_url || '#'
     };
 
-    // Generate body content
     const bodyContent = bodyTemplate(data);
 
-    // Generate full HTML
     const html = baseTemplate({
       ...data,
       body: bodyContent
     });
 
-    // Generate text version (strip HTML tags)
     const text = html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 
     const mailOptions = {
@@ -85,26 +74,31 @@ const sendTemplatedEmail = async (to, subject, templateName, templateData = {}) 
       subject: subject,
       html: html,
       text: text,
-      // Additional headers for better deliverability
       headers: {
         'X-Mailer': 'Campus Connect Mailer',
         'List-Unsubscribe': `<${data.unsubscribe_url}>`,
-        'X-Priority': '3', // Normal priority
+        'X-Priority': '3',
         'X-MSMail-Priority': 'Normal'
       }
     };
 
-    const info = await transporter.sendMail(mailOptions);
+    await emailQueue.add({
+      to,
+      subject,
+      templateName,
+      templateData: data,
+      transporter,
+      mailOptions
+    });
 
-    logger.info(`Email sent successfully to ${to}`, {
-      messageId: info.messageId,
+    logger.info(`Email queued successfully to ${to}`, {
       template: templateName,
       subject: subject
     });
 
     return {
       success: true,
-      messageId: info.messageId,
+      queued: true,
       template: templateName
     };
 
@@ -114,21 +108,19 @@ const sendTemplatedEmail = async (to, subject, templateName, templateData = {}) 
   }
 };
 
-// Legacy function for backward compatibility
 exports.sendVerificationEmail = async (email, otp) => {
   return sendTemplatedEmail(
     email,
     'Campus Connect - Email Verification',
     'verification',
     {
-      name: 'User', // You might want to get the actual name from user data
+      name: 'User',
       otp: otp,
       verification_url: `${process.env.FRONTEND_URL}/verify?otp=${otp}`
     }
   );
 };
 
-// New templated email functions
 exports.sendWelcomeEmail = async (email, userData) => {
   return sendTemplatedEmail(
     email,
@@ -219,12 +211,10 @@ exports.sendAnnouncement = async (email, announcementData, userData) => {
   );
 };
 
-// Generic email sender for custom templates
 exports.sendCustomEmail = async (to, subject, templateName, data = {}) => {
   return sendTemplatedEmail(to, subject, templateName, data);
 };
 
-// Test email function
 exports.sendTestEmail = async (email) => {
   return sendTemplatedEmail(
     email,
