@@ -49,12 +49,10 @@ const LostItemCard = ({ item }) => {
             <span className="detail-text">{item.location}</span>
           </div>
 
-          {item.date && (
-            <div className="detail-item">
-              <span className="detail-icon">📅</span>
-              <span className="detail-text">{formatDate(item.date)}</span>
-            </div>
-          )}
+          <div className="detail-item">
+            <span className="detail-icon">📅</span>
+            <span className="detail-text">{formatDate(item.createdAt)}</span>
+          </div>
 
           {item.category && (
             <div className="detail-item">
@@ -62,13 +60,20 @@ const LostItemCard = ({ item }) => {
               <span className="detail-text">{item.category}</span>
             </div>
           )}
+
+          {item.imagePath && (
+            <div className="detail-item">
+              <span className="detail-icon">📷</span>
+              <span className="detail-text">Has image</span>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="card-footer">
         <div className="contact-info">
-          <span className="contact-label">Contact:</span>
-          <span className="contact-value">{item.contactInfo}</span>
+          <span className="contact-label">Reported by:</span>
+          <span className="contact-value">{item.reporter?.name || 'Anonymous'}</span>
         </div>
         <button className="btn-contact">
           {item.status === 'Found' ? 'Claim Item' : 'I Found It'}

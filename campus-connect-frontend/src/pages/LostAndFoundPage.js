@@ -1,65 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LostItemCard from '../components/lostandfound/LostItemCard';
+import { lostItemsAPI } from '../services/api';
 import '../assets/styles/pages/LostAndFoundPage.css';
 
 const LostAndFoundPage = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showReportForm, setShowReportForm] = useState(false);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    itemName: '',
+    description: '',
+    location: '',
+    status: 'Lost',
+    category: 'Other'
+  });
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  // Enhanced mock data - replace with API calls
-  const items = [
-    {
-      _id: 1,
-      itemName: 'Student ID Card',
-      description: 'Red student ID card found near the library entrance. Contact details visible.',
-      status: 'Found',
-      location: 'Library Entrance',
-      date: '2024-01-15',
-      category: 'Documents',
-      contactInfo: 'library@campus.edu'
-    },
-    {
-      _id: 2,
-      itemName: 'Dell Laptop Charger',
-      description: 'Black Dell laptop charger with USB-C connector. Found in classroom 201.',
-      status: 'Found',
-      location: 'Classroom 201',
-      date: '2024-01-14',
-      category: 'Electronics',
-      contactInfo: 'security@campus.edu'
-    },
-    {
-      _id: 3,
-      itemName: 'Blue Water Bottle',
-      description: 'Hydro Flask water bottle, blue color. Lost during sports practice.',
-      status: 'Lost',
-      location: 'Sports Ground',
-      date: '2024-01-13',
-      category: 'Personal Items',
-      contactInfo: 'john.doe@student.campus.edu'
-    },
-    {
-      _id: 4,
-      itemName: 'Mathematics Textbook',
-      description: 'Calculus textbook by James Stewart. Missing from study room.',
-      status: 'Lost',
-      location: 'Study Room A',
-      date: '2024-01-12',
-      category: 'Books',
-      contactInfo: 'sarah.smith@student.campus.edu'
-    },
-    {
-      _id: 5,
-      itemName: 'Wireless Earbuds',
-      description: 'Sony WF-1000XM4 earbuds found in cafeteria. Still in original case.',
-      status: 'Found',
-      location: 'Cafeteria',
-      date: '2024-01-11',
-      category: 'Electronics',
-      contactInfo: 'cafeteria@campus.edu'
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      const data = await lostItemsAPI.getLostItems();
+      setItems(data);
+    } catch (err) {
+      setError('Failed to load items');
+      console.error('Error fetching items:', err);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError('');
+
+    try {
+      const submitData = new FormData();
+      submitData.append('itemName', formData.itemName);
+      submitData.append('description', formData.description);
+      submitData.append('location', formData.location);
+      submitData.append('category', formData.category);
+      submitData.append('status', formData.status);
+      if (selectedFile) {
+        submitData.append('itemImage', selectedFile);
+      }
+
+      await lostItemsAPI.createLostItem(submitData);
+      setShowReportForm(false);
+      setFormData({
+        itemName: '',
+        description: '',
+        location: '',
+        status: 'Lost',
+        category: 'Other'
+      });
+      setSelectedFile(null);
+      fetchItems(); // Refresh the list
+    } catch (err) {
+      setError('Failed to report item. Please try again.');
+      console.error('Error submitting item:', err);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const isLoggedIn = !!localStorage.getItem('token');
 
   const filteredItems = items.filter(item => {
     const matchesTab = activeTab === 'all' ||
@@ -84,65 +108,108 @@ const LostAndFoundPage = () => {
             <h1>Lost & Found</h1>
             <p>Help reunite lost items with their owners</p>
           </div>
-          <button
-            className="btn-report"
-            onClick={() => setShowReportForm(!showReportForm)}
-          >
-            {showReportForm ? 'Cancel' : 'Report an Item'}
-          </button>
+          {isLoggedIn && (
+            <button
+              className="btn-report"
+              onClick={() => setShowReportForm(!showReportForm)}
+            >
+              {showReportForm ? 'Cancel' : 'Report an Item'}
+            </button>
+          )}
         </div>
       </div>
 
       {showReportForm && (
         <div className="report-form-container">
           <div className="report-form">
-            <h3>Report {activeTab === 'lost' ? 'Lost' : 'Found'} Item</h3>
-            <form className="form-grid">
-              <div className="form-group">
-                <label>Item Name *</label>
-                <input type="text" placeholder="e.g., Laptop, ID Card, Water Bottle" required />
+            <h3>Report {formData.status} Item</h3>
+            {error && <div className="error-message">{error}</div>}
+            {!isLoggedIn && (
+              <div className="auth-message">
+                Please <a href="/login">login</a> to report an item.
               </div>
-              <div className="form-group">
-                <label>Category</label>
-                <select>
-                  <option value="">Select category</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="documents">Documents</option>
-                  <option value="books">Books</option>
-                  <option value="clothing">Clothing</option>
-                  <option value="personal">Personal Items</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div className="form-group full-width">
-                <label>Description *</label>
-                <textarea
-                  placeholder="Provide detailed description, brand, color, distinguishing features..."
-                  rows="3"
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Location {activeTab === 'lost' ? 'Lost' : 'Found'} *</label>
-                <input type="text" placeholder="e.g., Library, Classroom 201" required />
-              </div>
-              <div className="form-group">
-                <label>Date {activeTab === 'lost' ? 'Lost' : 'Found'}</label>
-                <input type="date" />
-              </div>
-              <div className="form-group full-width">
-                <label>Contact Information *</label>
-                <input type="email" placeholder="Your email or phone number" required />
-              </div>
-              <div className="form-actions">
-                <button type="button" className="btn-secondary" onClick={() => setShowReportForm(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className="btn-primary">
-                  Submit Report
-                </button>
-              </div>
-            </form>
+            )}
+            {isLoggedIn && (
+              <form className="form-grid" onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label>Item Name *</label>
+                  <input
+                    type="text"
+                    name="itemName"
+                    value={formData.itemName}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Laptop, ID Card, Water Bottle"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Category *</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="Electronics">Electronics</option>
+                    <option value="Documents">Documents</option>
+                    <option value="Books">Books</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Personal Items">Personal Items</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Status *</label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="Lost">Lost</option>
+                    <option value="Found">Found</option>
+                  </select>
+                </div>
+                <div className="form-group full-width">
+                  <label>Description *</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="Provide detailed description, brand, color, distinguishing features..."
+                    rows="3"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Location {formData.status} *</label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    placeholder="e.g., Library, Classroom 201"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Item Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                </div>
+                <div className="form-actions">
+                  <button type="button" className="btn-secondary" onClick={() => setShowReportForm(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-primary" disabled={submitting}>
+                    {submitting ? 'Submitting...' : 'Submit Report'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
@@ -181,7 +248,20 @@ const LostAndFoundPage = () => {
       </div>
 
       <div className="items-section">
-        {filteredItems.length > 0 ? (
+        {loading ? (
+          <div className="loading-state">
+            <div className="loading-spinner">Loading items...</div>
+          </div>
+        ) : error ? (
+          <div className="error-state">
+            <div className="error-icon">⚠️</div>
+            <h3>Error loading items</h3>
+            <p>{error}</p>
+            <button className="btn-primary" onClick={fetchItems}>
+              Try Again
+            </button>
+          </div>
+        ) : filteredItems.length > 0 ? (
           <div className="items-grid">
             {filteredItems.map(item => (
               <LostItemCard key={item._id} item={item} />

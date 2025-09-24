@@ -10,15 +10,6 @@ const CommunityPage = () => {
 
   // This effect simulates fetching initial posts from an API when the component mounts.
   useEffect(() => {
-    // In a real application, you would make an API call like this:
-    // fetch('/api/posts')
-    //   .then(res => res.json())
-    //   .then(data => {
-    //     setPosts(data);
-    //     setLoading(false);
-    //   })
-    //   .catch(err => console.error("Failed to fetch posts:", err));
-
     // For now, we'll use the mock data.
     const mockPosts = [
       {

@@ -1,4 +1,5 @@
 const Event = require('../models/Event');
+const User = require('../models/User');
 
 // @desc    Create a new event
 // @route   POST /api/events
@@ -6,6 +7,15 @@ const Event = require('../models/Event');
 exports.createEvent = async (req, res) => {
   try {
     const { title, description, date, campus, category } = req.body;
+
+    // Check if user is admin to auto-approve
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    const isApproved = user.role === 'Admin';
+
     const newEvent = new Event({
       title,
       description,
@@ -13,6 +23,7 @@ exports.createEvent = async (req, res) => {
       campus,
       category,
       organizer: req.user.id,
+      isApproved,
     });
     const event = await newEvent.save();
     res.status(201).json(event);

@@ -85,6 +85,38 @@
   --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-full: 50px;
+  /* Enable UA theming awareness */
+  color-scheme: dark light;
+}
+
+/* Light theme overrides for optional toggle */
+:root[data-theme="light"] {
+  --background-color: #0b1220;
+  --surface-color: #0f172a;
+  --surface-hover: #111827;
+  --text-color: #e5e7eb;
+  --text-secondary: #b3b8c5;
+  --text-muted: #8a8fa1;
+
+  --primary-color: #60a5fa;
+  --primary-dark: #3b82f6;
+  --primary-light: #93c5fd;
+  --primary-glow: rgba(96, 165, 250, 0.6);
+
+  --secondary-color: #34d399;
+  --secondary-dark: #10b981;
+  --secondary-light: #6ee7b7;
+  --secondary-glow: rgba(52, 211, 153, 0.6);
+
+  --accent-color: #fbbf24;
+  --accent-dark: #f59e0b;
+  --accent-light: #fcd34d;
+  --accent-glow: rgba(251, 191, 36, 0.6);
+
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.12);
+
+  --gradient-cosmic: linear-gradient(135deg, #0b1220 0%, #0f172a 20%, #111827 40%, #0b1120 60%, #0b1220 80%, #0f172a 100%);
 }
 
 body {
@@ -100,6 +132,7 @@ body {
   overflow-x: hidden;
   line-height: 1.6;
   scroll-behavior: smooth;
+  transition: background-color 240ms ease, color 240ms ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -219,7 +252,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 240ms ease, box-shadow 240ms ease, background 240ms ease, color 240ms ease, border-color 240ms ease;
   font-weight: 600;
   text-decoration: none;
   display: inline-block;
@@ -281,7 +314,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-lg);
   padding: 2rem;
   box-shadow: var(--shadow-lg);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), background 300ms ease, border-color 300ms ease;
   border: 1px solid var(--glass-border);
   position: relative;
   overflow: hidden;
@@ -659,7 +692,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Enhanced Input Styles and Placeholders */
 input, textarea, select {
-  background: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(0, 212, 255, 0.08));
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   border: 2px solid var(--glass-border);
@@ -690,14 +723,26 @@ input:focus, textarea:focus, select:focus {
     0 0 0 3px rgba(0, 212, 255, 0.1),
     0 0 20px rgba(0, 212, 255, 0.2),
     0 8px 25px rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.1));
   transform: translateY(-2px);
   animation: inputGlow 2s ease-in-out infinite alternate;
 }
 
+/* Select dropdown options styling */
+select option {
+  background-color: var(--surface-color);
+  color: var(--text-color);
+  padding: 8px 12px;
+}
+
+select option:hover,
+select option:focus {
+  background-color: var(--surface-hover);
+}
+
 @keyframes inputGlow {
-  0% { box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1), 0 0 20px rgba(0, 212, 255, 0.2), 0 8px 25px rgba(0, 0, 0, 0.15); }
-  100% { box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15), 0 0 25px rgba(0, 212, 255, 0.3), 0 12px 35px rgba(0, 0, 0, 0.2); }
+  0% { box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1), 0 0 20px rgba(0, 212, 255, 0.2), 0 8px 25px rgba(0, 0, 0, 0.15); background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.1)); }
+  100% { box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15), 0 0 25px rgba(0, 212, 255, 0.3), 0 12px 35px rgba(0, 0, 0, 0.2); background: linear-gradient(135deg, rgba(0, 212, 255, 0.25), rgba(0, 212, 255, 0.15)); }
 }
 
 input::placeholder, textarea::placeholder, select::placeholder {
@@ -708,21 +753,6 @@ input::placeholder, textarea::placeholder, select::placeholder {
   position: relative;
 }
 
-input::placeholder::before, textarea::placeholder::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  transition: width 0.3s ease;
-}
-
-input:focus::placeholder::before, textarea:focus::placeholder::before {
-  width: 100%;
-}
 
 input:focus::placeholder, textarea:focus::placeholder {
   color: var(--primary-color);

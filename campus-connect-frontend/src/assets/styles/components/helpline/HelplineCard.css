@@ -2,10 +2,19 @@
   background: var(--surface-color);
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease, border-color 220ms ease;
+  will-change: transform;
+}
+
+.helpline-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: var(--shadow-md);
+  background: var(--surface-hover);
+  border-color: rgba(0, 212, 255, 0.25);
 }
 
 .helpline-card-header {
@@ -50,12 +59,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: opacity 0.3s;
+  transition: opacity 160ms ease, transform 200ms ease, box-shadow 200ms ease;
 }
 
-.action-button:hover {
-  opacity: 0.8;
-}
+.action-button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
 
 .call-btn {
   background-color: var(--secondary-color);

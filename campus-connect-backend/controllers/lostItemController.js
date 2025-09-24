@@ -4,11 +4,12 @@ const logger = require('../config/winston');
 // @desc    Report a lost or found item
 exports.reportItem = async (req, res) => {
   try {
-    const { itemName, description, location, status } = req.body;
+    const { itemName, description, location, status, category } = req.body;
     const newLostItem = new LostItem({
       itemName,
       description,
       location,
+      category,
       status,
       imagePath: req.file ? req.file.path : null, // Check if a file was uploaded
       reporter: req.user.id,

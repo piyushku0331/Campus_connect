@@ -102,10 +102,10 @@ export const materialsAPI = {
 export const lostItemsAPI = {
   getLostItems: () => fetch(`${API_BASE_URL}/lost-items`).then(handleResponse),
   getLostItem: (id) => fetch(`${API_BASE_URL}/lost-items/${id}`).then(handleResponse),
-  createLostItem: (itemData) => fetch(`${API_BASE_URL}/lost-items`, {
+  createLostItem: (formData) => fetch(`${API_BASE_URL}/lost-items`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-    body: JSON.stringify(itemData)
+    headers: getAuthHeaders(),
+    body: formData
   }).then(handleResponse)
 };
 
