@@ -1,5 +1,3 @@
-const Connection = require('../models/Connection');
-const User = require('../models/User');
 
 
 exports.sendConnectionRequest = async (req, res) => {
@@ -57,9 +55,7 @@ exports.declineConnection = async (req, res) => {
 
 exports.getConnections = async (req, res) => {
   try {
-    const userId = req.user.id;
 
-    
     const mockUsers = [
       {
         id: '2',
@@ -159,9 +155,7 @@ exports.getSentRequests = async (req, res) => {
 
 exports.withdrawRequest = async (req, res) => {
   try {
-    const { connectionId } = req.params;
 
-    
     
     res.json({ message: 'Request withdrawn' });
   } catch (error) {

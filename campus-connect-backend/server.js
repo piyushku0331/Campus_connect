@@ -49,7 +49,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   maxAge: '30d',
   etag: true,
   lastModified: true,
-  setHeaders: (res, path) => {
+  setHeaders: (res, _path) => {
     res.set('Cache-Control', 'public, max-age=2592000');
   }
 }));

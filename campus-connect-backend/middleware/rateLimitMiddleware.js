@@ -13,7 +13,7 @@ const apiLimiter = rateLimit({
   standardHeaders: true, 
   legacyHeaders: false, 
   
-  handler: (req, res, next) => {
+  handler: (req, res) => {
     logger.warn(`Rate limit exceeded for IP: ${req.ip}, Path: ${req.path}`);
     res.status(429).json({
       success: false,
@@ -39,7 +39,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   
-  handler: (req, res, next) => {
+  handler: (req, res) => {
     logger.warn(`Auth rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
       success: false,
@@ -61,7 +61,7 @@ const uploadLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   
-  handler: (req, res, next) => {
+  handler: (req, res) => {
     logger.warn(`Upload rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
       success: false,
@@ -83,7 +83,7 @@ const searchLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   
-  handler: (req, res, next) => {
+  handler: (req, res) => {
     logger.warn(`Search rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
       success: false,
@@ -106,7 +106,7 @@ const createCustomLimiter = (options) => {
     standardHeaders: true,
     legacyHeaders: false,
     
-    handler: (req, res, next) => {
+    handler: (req, res) => {
       logger.warn(`${options.name || 'Custom'} rate limit exceeded for IP: ${req.ip}, Path: ${req.path}`);
       res.status(options.statusCode || 429).json({
         success: false,
