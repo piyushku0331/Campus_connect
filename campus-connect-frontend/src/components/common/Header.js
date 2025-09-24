@@ -2,7 +2,6 @@ import React, { useState, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
 import '../../assets/styles/components/common/Header.css';
 
-// Logo component using logo.ico
 const Logo = () => (
   <img src="/logo.ico" alt="Campus Connect Logo" style={{ width: '28px', height: '28px' }} />
 );
@@ -13,7 +12,6 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user is authenticated (you can replace this with your auth logic)
     const token = localStorage.getItem('token');
     const id = localStorage.getItem('userId');
     setIsAuthenticated(!!token);
@@ -31,7 +29,6 @@ const Header = () => {
   return (
     <header className="main-header">
       <nav className="navbar">
-        {/* Left Section: Brand */}
         <div className="navbar-brand">
           <Link to="/" onClick={closeMobileMenu}>
             <Logo />
@@ -39,7 +36,6 @@ const Header = () => {
           </Link>
         </div>
 
-        {/* Mobile Menu Toggle */}
         <button
           className="mobile-menu-toggle"
           onClick={toggleMobileMenu}
@@ -50,10 +46,8 @@ const Header = () => {
           <span className="hamburger-line"></span>
         </button>
 
-        {/* Center Section: Main Navigation (Desktop) */}
         <div className="navbar-center">
           {isAuthenticated ? (
-            // Show all features for authenticated users
             <>
               <Link to="/profile">Profile</Link>
               <Link to="/events">Events</Link>
@@ -69,7 +63,6 @@ const Header = () => {
               <Link to="/contact">Contact</Link>
             </>
           ) : (
-            // Show only About and Contact for non-authenticated users
             <>
               <Link to="/about">About</Link>
               <Link to="/contact">Contact</Link>
@@ -77,7 +70,6 @@ const Header = () => {
           )}
         </div>
 
-        {/* Right Section: Actions (Desktop) */}
         <div className="navbar-right">
           {isAuthenticated ? (
             <button
@@ -99,7 +91,6 @@ const Header = () => {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
       <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
         {isAuthenticated ? (
           <>

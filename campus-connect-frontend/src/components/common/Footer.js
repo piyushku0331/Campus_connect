@@ -1,8 +1,5 @@
 import React from 'react';
 import '../../assets/styles/components/common/Footer.css';
-// You can use an icon library like react-icons
-// npm install react-icons
-// import { FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa';
 
 const Footer = () => {
   return (
@@ -28,7 +25,6 @@ const Footer = () => {
         <div className="footer-section social">
           <h2>Follow Us</h2>
           <div className="social-links">
-            {/* Replace with actual icons */}
             <a href="x.com">Twitter</a>
             <a href="linkedin.com">LinkedIn</a>
             <a href="github.com">GitHub</a>

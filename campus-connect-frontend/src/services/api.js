@@ -1,13 +1,10 @@
-// API service for Campus Connect
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-// Helper function to get auth headers
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return token ? { 'x-auth-token': token } : {};
 };
 
-// Helper function to handle API responses
 const handleResponse = async (response) => {
   if (!response.ok) {
     const error = await response.text();
@@ -16,7 +13,6 @@ const handleResponse = async (response) => {
   return response.json();
 };
 
-// Auth API
 export const authAPI = {
   login: (credentials) => fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
@@ -45,7 +41,6 @@ export const authAPI = {
   }).then(handleResponse)
 };
 
-// Events API
 export const eventsAPI = {
   getEvents: () => fetch(`${API_BASE_URL}/events`).then(handleResponse),
   getEvent: (id) => fetch(`${API_BASE_URL}/events/${id}`).then(handleResponse),
@@ -65,7 +60,6 @@ export const eventsAPI = {
   }).then(handleResponse)
 };
 
-// Placements API
 export const placementsAPI = {
   getPlacements: () => fetch(`${API_BASE_URL}/placements`).then(handleResponse),
   getPlacement: (id) => fetch(`${API_BASE_URL}/placements/${id}`).then(handleResponse),
@@ -76,7 +70,6 @@ export const placementsAPI = {
   }).then(handleResponse)
 };
 
-// Notices API
 export const noticesAPI = {
   getNotices: () => fetch(`${API_BASE_URL}/notices`).then(handleResponse),
   getNotice: (id) => fetch(`${API_BASE_URL}/notices/${id}`).then(handleResponse),
@@ -87,7 +80,6 @@ export const noticesAPI = {
   }).then(handleResponse)
 };
 
-// Study Materials API
 export const materialsAPI = {
   getMaterials: () => fetch(`${API_BASE_URL}/materials`).then(handleResponse),
   getMaterial: (id) => fetch(`${API_BASE_URL}/materials/${id}`).then(handleResponse),
@@ -98,7 +90,6 @@ export const materialsAPI = {
   }).then(handleResponse)
 };
 
-// Lost Items API
 export const lostItemsAPI = {
   getLostItems: () => fetch(`${API_BASE_URL}/lost-items`).then(handleResponse),
   getLostItem: (id) => fetch(`${API_BASE_URL}/lost-items/${id}`).then(handleResponse),
@@ -109,7 +100,6 @@ export const lostItemsAPI = {
   }).then(handleResponse)
 };
 
-// Helpline API
 export const helplineAPI = {
   getHelplineContacts: () => fetch(`${API_BASE_URL}/helpline`).then(handleResponse),
   createHelplineContact: (contactData) => fetch(`${API_BASE_URL}/helpline`, {
@@ -119,7 +109,6 @@ export const helplineAPI = {
   }).then(handleResponse)
 };
 
-// Posts API (Community)
 export const postsAPI = {
   getPosts: () => fetch(`${API_BASE_URL}/posts`).then(handleResponse),
   getPost: (id) => fetch(`${API_BASE_URL}/posts/${id}`).then(handleResponse),
@@ -130,7 +119,6 @@ export const postsAPI = {
   }).then(handleResponse)
 };
 
-// Profiles API
 export const profilesAPI = {
   getProfile: (id) => fetch(`${API_BASE_URL}/profiles/${id}`).then(handleResponse),
   updateProfile: (id, profileData) => {
@@ -143,14 +131,12 @@ export const profilesAPI = {
   }
 };
 
-// Analytics API
 export const analyticsAPI = {
   getAnalytics: () => fetch(`${API_BASE_URL}/analytics`, {
     headers: getAuthHeaders()
   }).then(handleResponse)
 };
 
-// Connections API
 export const connectionsAPI = {
   getConnections: () => fetch(`${API_BASE_URL}/connections`, {
     headers: getAuthHeaders()
@@ -190,7 +176,6 @@ export const connectionsAPI = {
   }).then(handleResponse)
 };
 
-// Password Reset API
 export const passwordResetAPI = {
   forgotPassword: (email) => fetch(`${API_BASE_URL}/auth/forgot-password`, {
     method: 'POST',

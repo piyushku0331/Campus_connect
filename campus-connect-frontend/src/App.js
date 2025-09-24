@@ -1,23 +1,18 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
-// Import Core Components
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
 import NotificationContainer from './components/common/NotificationContainer';
 
-// Import Context
 import { NotificationProvider } from './contexts/NotificationContext';
 
-// Import critical pages immediately
 import PreLandingPage from './pages/PreLandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import OtpVerificationPage from './pages/OtpVerificationPage';
 import HomePage from './pages/HomePage';
 import EventsPage from './pages/EventsPage';
-
-// Lazy load less critical pages
 const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 const AnalyticsDashboardPage = lazy(() => import('./pages/AnalyticsDashboardPage'));
 const AlumniStoryPage = lazy(() => import('./pages/AlumniStoryPage'));
@@ -47,21 +42,14 @@ function AppContent() {
       <main>
         <Suspense fallback={<div className="loading-spinner" style={{ margin: '50px auto' }}></div>}>
           <Routes>
-            {/* Default landing page */}
             <Route path="/" element={<PreLandingPage />} />
-
-            {/* Home page */}
             <Route path="/home" element={<HomePage />} />
-
-            {/* Pre-landing page (redirect or alias) */}
             <Route path="/prelanding" element={<PreLandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/verify-otp" element={<OtpVerificationPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-
-            {/* Feature Routes from Header */}
             <Route path="/events" element={<EventsPage />} />
             <Route path="/placements" element={<PlacementsPage />} />
             <Route path="/community" element={<CommunityPage />} />
@@ -70,17 +58,11 @@ function AppContent() {
             <Route path="/notice-board" element={<NoticeBoardPage />} />
             <Route path="/lost-and-found" element={<LostAndFoundPage />} />
             <Route path="/helpline" element={<HelplinePage />} />
-
-            {/* Other Application Routes */}
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
-
-            {/* Admin Routes */}
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/analytics" element={<AnalyticsDashboardPage />} />
-
-            {/* Additional Pages */}
             <Route path="/alumni/:id" element={<AlumniStoryPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />

@@ -59,8 +59,8 @@ const HomePage = () => {
 
     const updateParallax = () => {
       const diff = targetScrollY - currentScrollY;
-      const ease = easeOut(Math.min(Math.abs(diff) / 100, 1)); // Smooth over 100px difference
-      currentScrollY += diff * ease * 0.3; // Damping factor
+      const ease = easeOut(Math.min(Math.abs(diff) / 100, 1));
+      currentScrollY += diff * ease * 0.3;
 
       const parallaxBg = document.querySelector('.hero-parallax-bg');
       const heroVisual = document.querySelector('.hero-visual');
