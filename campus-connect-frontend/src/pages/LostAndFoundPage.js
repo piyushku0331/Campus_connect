@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import LostItemCard from '../components/lostandfound/LostItemCard';
 import { lostItemsAPI } from '../services/api';
 import '../assets/styles/pages/LostAndFoundPage.css';
@@ -24,7 +24,7 @@ const LostAndFoundPage = () => {
     fetchItems();
   }, []);
 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     try {
       const data = await lostItemsAPI.getLostItems();
       setItems(data);
@@ -34,19 +34,19 @@ const LostAndFoundPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = useCallback((e) => {
     setSelectedFile(e.target.files[0]);
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -83,22 +83,24 @@ const LostAndFoundPage = () => {
     }
   };
 
-  const isLoggedIn = !!localStorage.getItem('token');
+  const isLoggedIn = useMemo(() => !!localStorage.getItem('token'), []);
 
-  const filteredItems = items.filter(item => {
-    const matchesTab = activeTab === 'all' ||
-                      (activeTab === 'lost' && item.status === 'Lost') ||
-                      (activeTab === 'found' && item.status === 'Found');
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      const matchesTab = activeTab === 'all' ||
+                         (activeTab === 'lost' && item.status === 'Lost') ||
+                         (activeTab === 'found' && item.status === 'Found');
 
-    const matchesSearch = item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.location.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            item.location.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesTab && matchesSearch;
-  });
+      return matchesTab && matchesSearch;
+    });
+  }, [items, activeTab, searchTerm]);
 
-  const lostCount = items.filter(item => item.status === 'Lost').length;
-  const foundCount = items.filter(item => item.status === 'Found').length;
+  const lostCount = useMemo(() => items.filter(item => item.status === 'Lost').length, [items]);
+  const foundCount = useMemo(() => items.filter(item => item.status === 'Found').length, [items]);
 
   return (
     <div className="lost-found-page">
@@ -287,4 +289,4 @@ const LostAndFoundPage = () => {
   );
 };
 
-export default LostAndFoundPage;
+export default memo(LostAndFoundPage);
