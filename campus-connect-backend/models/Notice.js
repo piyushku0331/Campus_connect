@@ -7,7 +7,7 @@ const NoticeSchema = new mongoose.Schema({
     enum: ['Exams', 'Results', 'Scholarships', 'General'],
     required: true
   },
-  filePath: { type: String, required: true } // Path to the uploaded PDF/image
+  filePath: { type: String, required: true } 
 }, { timestamps: true });
 
 module.exports = mongoose.model('Notice', NoticeSchema);

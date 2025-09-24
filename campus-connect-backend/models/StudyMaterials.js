@@ -5,7 +5,7 @@ const StudyMaterialSchema = new mongoose.Schema({
   subject: { type: String, required: true },
   semester: { type: String, required: true },
   university: { type: String, required: true },
-  filePath: { type: String, required: true }, // Path to the uploaded file
+  filePath: { type: String, required: true }, 
   uploader: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 

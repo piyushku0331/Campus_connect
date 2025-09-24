@@ -3,7 +3,7 @@ import MaterialCard from '../components/materials/MaterialCard';
 import '../assets/styles/pages/StudyMaterialPage.css';
 
 const StudyMaterialPage = () => {
-  // Mock data - replace with API calls
+  
   const materials = [
     { _id: 1, title: 'Data Structures Notes', subject: 'Computer Science', semester: '4', filePath: '#' },
     { _id: 2, title: 'Calculus Past Papers', subject: 'Mathematics', semester: '2', filePath: '#' },

@@ -2,7 +2,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 
-// Security headers middleware
+
 const securityHeaders = helmet({
   contentSecurityPolicy: {
     directives: {
@@ -22,25 +22,25 @@ const securityHeaders = helmet({
   }
 });
 
-// Data sanitization against NoSQL query injection
+
 const dataSanitization = (req, res, next) => {
-  // Sanitize request body, query, and params
+  
   if (req.body) mongoSanitize.sanitize(req.body);
   if (req.query) mongoSanitize.sanitize(req.query);
   if (req.params) mongoSanitize.sanitize(req.params);
   next();
 };
 
-// Data sanitization against XSS
+
 const xssProtection = (req, res, next) => {
-  // Custom XSS protection that doesn't modify read-only properties
+  
   if (req.body && typeof req.body === 'object') {
     sanitizeObject(req.body);
   }
   if (req.params && typeof req.params === 'object') {
     sanitizeObject(req.params);
   }
-  // Skip req.query as it's read-only in Express 5
+  
   next();
 };
 
@@ -55,7 +55,7 @@ function sanitizeObject(obj) {
   }
 }
 
-// Prevent parameter pollution
+
 const preventParamPollution = hpp({
   whitelist: [
     'duration',
@@ -67,14 +67,14 @@ const preventParamPollution = hpp({
   ]
 });
 
-// CORS configuration
+
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = process.env.ALLOWED_ORIGINS
       ? process.env.ALLOWED_ORIGINS.split(',')
       : ['http://localhost:3000'];
 
-    // Allow requests with no origin (like mobile apps or curl requests)
+    
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.indexOf(origin) !== -1) {
@@ -96,7 +96,7 @@ const corsOptions = {
   ]
 };
 
-// Request logging middleware
+
 const requestLogger = (req, res, next) => {
   const start = Date.now();
 
@@ -115,7 +115,7 @@ const requestLogger = (req, res, next) => {
   next();
 };
 
-// Health check endpoint
+
 const healthCheck = (req, res) => {
   res.status(200).json({
     success: true,

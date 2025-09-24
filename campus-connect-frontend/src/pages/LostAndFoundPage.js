@@ -74,7 +74,7 @@ const LostAndFoundPage = () => {
         category: 'Other'
       });
       setSelectedFile(null);
-      fetchItems(); // Refresh the list
+      fetchItems(); 
     } catch (err) {
       setError('Failed to report item. Please try again.');
       console.error('Error submitting item:', err);

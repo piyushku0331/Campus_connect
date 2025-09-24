@@ -5,7 +5,7 @@ import '../assets/styles/pages/AlumniStoryPage.css';
 const AlumniStoryPage = () => {
   const { id } = useParams();
 
-  // Mock data - replace with API calls
+  
   const alumniStories = {
     1: {
       id: 1,

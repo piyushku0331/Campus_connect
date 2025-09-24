@@ -5,7 +5,7 @@ import '../assets/styles/pages/PlacementsPage.css';
 const PlacementsPage = () => {
   const [activeFilter, setActiveFilter] = useState('All');
 
-  // Mock data - replace with API calls
+  
   const placements = [
     { _id: 1, studentName: 'Jane Doe', company: 'TechCorp', role: 'Software Engineer', year: 2025, hasStory: true },
     { _id: 2, studentName: 'John Smith', company: 'Innovate LLC', role: 'Data Analyst', year: 2025, hasStory: true },

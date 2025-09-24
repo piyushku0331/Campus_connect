@@ -31,7 +31,7 @@ const EventsPage = () => {
         <h1>Upcoming Events & Hackathons</h1>
       </div>
       <div className="filter-controls">
-        {/* Add filter inputs here later */}
+        {}
         <input type="text" placeholder="Filter by campus..." />
         <input type="text" placeholder="Filter by category..." />
         <input type="date" />

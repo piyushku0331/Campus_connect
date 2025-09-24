@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema({
   interests: [String],
   profilePicture: { type: String, default: 'default-dp.png' },
   isPublic: { type: Boolean, default: true },
-  // Password reset fields
+  
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date },
   createdAt: { type: Date, default: Date.now }

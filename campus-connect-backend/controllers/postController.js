@@ -1,7 +1,7 @@
 const Post = require('../models/Post');
 const logger = require('../config/winston');
 
-// @desc    Create a new post
+
 exports.createPost = async (req, res) => {
   try {
     const newPost = new Post({ content: req.body.content, author: req.user.id });
@@ -14,7 +14,7 @@ exports.createPost = async (req, res) => {
   }
 };
 
-// @desc    Get all posts
+
 exports.getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find()
@@ -28,15 +28,15 @@ exports.getAllPosts = async (req, res) => {
   }
 };
 
-// @desc    Like a post
+
 exports.likePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (post.likes.includes(req.user.id)) {
-      // Unlike post
+      
       post.likes.pull(req.user.id);
     } else {
-      // Like post
+      
       post.likes.push(req.user.id);
     }
     await post.save();

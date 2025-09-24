@@ -8,7 +8,7 @@ const ConnectionSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-// Prevent duplicate pending requests
+
 ConnectionSchema.index({ sender: 1, receiver: 1 }, { unique: true, partialFilterExpression: { status: 'pending' } });
 
 module.exports = mongoose.model('Connection', ConnectionSchema);

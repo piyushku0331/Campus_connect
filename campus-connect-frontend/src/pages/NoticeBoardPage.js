@@ -5,7 +5,7 @@ import '../assets/styles/pages/NoticeBoardPage.css';
 const NoticeBoardPage = () => {
   const [activeFilter, setActiveFilter] = useState('All');
 
-  // Mock data - replace with API calls
+  
   const notices = [
     { _id: 1, title: 'Mid-Term Exam Schedule', category: 'Exams', filePath: 'uploads/file1.pdf' },
     { _id: 2, title: 'Merit Scholarship Announcement', category: 'Scholarships', filePath: 'uploads/file2.pdf' },

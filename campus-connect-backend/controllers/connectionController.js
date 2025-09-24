@@ -1,7 +1,7 @@
 const Connection = require('../models/Connection');
 const User = require('../models/User');
 
-// Send connection request
+
 exports.sendConnectionRequest = async (req, res) => {
   try {
     const { receiverId } = req.body;
@@ -11,8 +11,8 @@ exports.sendConnectionRequest = async (req, res) => {
       return res.status(400).json({ message: 'Cannot send request to yourself' });
     }
 
-    // For mock implementation, just return success
-    // In production, this would save to database
+    
+    
     res.status(201).json({
       message: 'Connection request sent',
       connection: { _id: 'mock-connection-id', sender: senderId, receiver: receiverId }
@@ -22,13 +22,13 @@ exports.sendConnectionRequest = async (req, res) => {
   }
 };
 
-// Accept connection request
+
 exports.acceptConnection = async (req, res) => {
   try {
     const { connectionId } = req.params;
 
-    // For mock implementation, just return success
-    // In production, this would update the database
+    
+    
     res.json({
       message: 'Connection accepted',
       connection: { _id: connectionId, status: 'accepted' }
@@ -38,13 +38,13 @@ exports.acceptConnection = async (req, res) => {
   }
 };
 
-// Decline connection request
+
 exports.declineConnection = async (req, res) => {
   try {
     const { connectionId } = req.params;
 
-    // For mock implementation, just return success
-    // In production, this would update the database
+    
+    
     res.json({
       message: 'Connection declined',
       connection: { _id: connectionId, status: 'declined' }
@@ -54,12 +54,12 @@ exports.declineConnection = async (req, res) => {
   }
 };
 
-// Get user's connections
+
 exports.getConnections = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Mock data for demonstration - in production, this would query the database
+    
     const mockUsers = [
       {
         id: '2',
@@ -85,17 +85,17 @@ exports.getConnections = async (req, res) => {
       }
     ];
 
-    // In a real implementation, you would query the database for accepted connections
+    
     res.json(mockUsers);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get pending requests received
+
 exports.getPendingRequests = async (req, res) => {
   try {
-    // Mock data for demonstration - in production, this would query the database
+    
     const mockPendingRequests = [
       {
         id: '3',
@@ -123,17 +123,17 @@ exports.getPendingRequests = async (req, res) => {
       }
     ];
 
-    // In a real implementation, you would query the database for pending requests
+    
     res.json(mockPendingRequests);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get sent requests
+
 exports.getSentRequests = async (req, res) => {
   try {
-    // Mock data for demonstration - in production, this would query the database
+    
     const mockSentRequests = [
       {
         id: '4',
@@ -149,32 +149,32 @@ exports.getSentRequests = async (req, res) => {
       }
     ];
 
-    // In a real implementation, you would query the database for sent pending requests
+    
     res.json(mockSentRequests);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Withdraw sent request
+
 exports.withdrawRequest = async (req, res) => {
   try {
     const { connectionId } = req.params;
 
-    // For mock implementation, just return success
-    // In production, this would delete from database
+    
+    
     res.json({ message: 'Request withdrawn' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
-// Get all users for discovery (excluding self and existing connections)
+
 exports.getDiscoverUsers = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Mock data for demonstration - in production, this would query the database
+    
     const mockUsers = [
       {
         id: '1',
@@ -288,11 +288,11 @@ exports.getDiscoverUsers = async (req, res) => {
       }
     ];
 
-    // Filter out current user (assuming userId might match one of the mock IDs)
+    
     const filteredUsers = mockUsers.filter(user => user.id !== userId);
 
-    // In a real implementation, you would also filter out existing connections
-    // For now, return all mock users except current user
+    
+    
     res.json(filteredUsers);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

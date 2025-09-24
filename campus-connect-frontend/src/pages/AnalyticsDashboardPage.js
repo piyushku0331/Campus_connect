@@ -1,5 +1,5 @@
 import React from 'react';
-// Mock data, to be replaced by API calls to /api/analytics/...
+
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import '../assets/styles/pages/AnalyticsDashboardPage.css';
 

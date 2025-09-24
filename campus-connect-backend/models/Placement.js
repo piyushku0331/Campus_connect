@@ -6,7 +6,7 @@ const PlacementSchema = new mongoose.Schema({
   role: { type: String, required: true },
   year: { type: Number, required: true },
   isSuccessStory: { type: Boolean, default: false },
-  story: { type: String } // For alumni success stories
+  story: { type: String } 
 }, { timestamps: true });
 
 module.exports = mongoose.model('Placement', PlacementSchema);

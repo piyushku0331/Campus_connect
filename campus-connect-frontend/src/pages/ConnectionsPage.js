@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { connectionsAPI } from '../services/api';
 import '../assets/styles/pages/ConnectionsPage.css';
 
-// Main component for handling all the networking stuff
-// Basically lets students find each other and connect
+
+
 const ConnectionsPage = () => {
-  // Keeping track of which tab we're on and all the user data
+  
   const [activeTab, setActiveTab] = useState('discover');
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState([]); // People you can connect with
@@ -13,15 +13,15 @@ const ConnectionsPage = () => {
   const [pendingRequests, setPendingRequests] = useState([]); // People who want to connect with you
   const [sentRequests, setSentRequests] = useState([]); // Requests you've sent out
 
-  // TODO: Maybe add some loading states for better UX
+  
 
-  // Load all the connection data when the page first loads
+  
   useEffect(() => {
     const loadData = async () => {
       try {
         const currentUserId = localStorage.getItem('userId');
 
-        // Grab all the data at once - connections, requests, etc.
+        
         const [connectionsRes, pendingRes, sentRes, discoverRes] = await Promise.all([
           connectionsAPI.getConnections(),
           connectionsAPI.getPendingRequests(),
@@ -29,7 +29,7 @@ const ConnectionsPage = () => {
           connectionsAPI.getDiscoverUsers()
         ]);
 
-        // Don't show yourself in the discover list
+        
         const filteredDiscoverUsers = discoverRes.filter(user => user.id !== currentUserId);
 
         setConnections(connectionsRes);
@@ -44,7 +44,7 @@ const ConnectionsPage = () => {
     loadData();
   }, []);
 
-  // Filter the users list based on what someone types in the search box
+  
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -52,10 +52,10 @@ const ConnectionsPage = () => {
     user.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // When someone clicks connect on a user
+  
   const handleConnect = async (userId) => {
     try {
-      // Update the UI right away so it feels snappy
+      
       const targetUser = users.find(user => user.id === userId);
       if (targetUser) {
         setUsers(prev => prev.filter(user => user.id !== userId));
@@ -65,7 +65,7 @@ const ConnectionsPage = () => {
       await connectionsAPI.sendConnectionRequest(userId);
     } catch (error) {
       console.error('Failed to send connection request:', error);
-      // If it fails, reload everything to get back in sync
+      
       const [sentRes, discoverRes] = await Promise.all([
         connectionsAPI.getSentRequests(),
         connectionsAPI.getDiscoverUsers()
@@ -75,10 +75,10 @@ const ConnectionsPage = () => {
     }
   };
 
-  // Accepting a connection request
+  
   const handleAccept = async (connectionId) => {
     try {
-      // Update UI immediately
+      
       setPendingRequests(prev => prev.filter(user => user.connectionId !== connectionId));
 
       const acceptedUser = pendingRequests.find(user => user.connectionId === connectionId);
@@ -89,7 +89,7 @@ const ConnectionsPage = () => {
       await connectionsAPI.acceptConnection(connectionId);
     } catch (error) {
       console.error('Error accepting connection:', error);
-      // Reload if something went wrong
+      
       const [connectionsRes, pendingRes] = await Promise.all([
         connectionsAPI.getConnections(),
         connectionsAPI.getPendingRequests()
@@ -99,7 +99,7 @@ const ConnectionsPage = () => {
     }
   };
 
-  // Declining a connection request
+  
   const handleDecline = async (connectionId) => {
     try {
       setPendingRequests(prev => prev.filter(user => user.connectionId !== connectionId));
@@ -111,7 +111,7 @@ const ConnectionsPage = () => {
     }
   };
 
-  // Withdrawing a request you sent
+  
   const handleWithdraw = async (connectionId) => {
     try {
       setSentRequests(prev => prev.filter(user => user.connectionId !== connectionId));
@@ -123,7 +123,7 @@ const ConnectionsPage = () => {
     }
   };
 
-  // Get initials from a name for the avatar
+  
   const getUserInitials = (name) => {
     const words = name.trim().split(' ').filter(word => word.length > 0);
     if (words.length === 0) return '?';
@@ -312,4 +312,3 @@ const ConnectionsPage = () => {
 
 export default ConnectionsPage;
 
-// Note: This component is getting a bit long, might want to split it up eventually

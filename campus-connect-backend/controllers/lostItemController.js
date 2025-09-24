@@ -1,7 +1,7 @@
 const LostItem = require('../models/LostItem');
 const logger = require('../config/winston');
 
-// @desc    Report a lost or found item
+
 exports.reportItem = async (req, res) => {
   try {
     const { itemName, description, location, status, category } = req.body;
@@ -11,7 +11,7 @@ exports.reportItem = async (req, res) => {
       location,
       category,
       status,
-      imagePath: req.file ? req.file.path : null, // Check if a file was uploaded
+      imagePath: req.file ? req.file.path : null, 
       reporter: req.user.id,
     });
     const item = await newLostItem.save();
@@ -22,7 +22,7 @@ exports.reportItem = async (req, res) => {
   }
 };
 
-// @desc    Get all lost and found items
+
 exports.getAllItems = async (req, res) => {
   try {
     const items = await LostItem.find()

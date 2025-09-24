@@ -2,7 +2,6 @@ const User = require('../models/User');
 
 const adminMiddleware = async (req, res, next) => {
   try {
-    // We assume authMiddleware has already run and attached the user id to req.user.id
     const user = await User.findById(req.user.id);
 
     if (user && user.role === 'Admin') {

@@ -14,8 +14,8 @@ const CreatePost = ({ onPostCreated }) => {
     // In a real application, you would make an API call here.
     // For now, we'll simulate it and pass the new post data to the parent.
     const newPost = {
-      _id: Date.now().toString(), // temporary unique ID
-      author: { name: 'Current User', profilePicture: 'https://via.placeholder.com/50' }, // Replace with actual logged-in user data
+      _id: Date.now().toString(), 
+      author: { name: 'Current User', profilePicture: 'https://via.placeholder.com/50' }, 
       content: content,
       likes: [],
       comments: [],

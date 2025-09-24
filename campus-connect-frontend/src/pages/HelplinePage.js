@@ -3,7 +3,7 @@ import HelplineCard from '../components/helpline/HelplineCard';
 import '../assets/styles/pages/HelplinePage.css';
 
 const HelplinePage = () => {
-  // Mock data - replace with API call
+  
   const contacts = [
     { _id: 1, serviceName: 'Campus Clinic', phoneNumber: '123-456-7890', email: 'clinic@campus.com', category: 'Medical' },
     { _id: 2, serviceName: 'Main Gate Security', phoneNumber: '987-654-3210', category: 'Security' },

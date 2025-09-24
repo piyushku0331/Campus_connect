@@ -5,7 +5,7 @@ import '../../assets/styles/components/community/PostCard.css';
 const PostCard = ({ post }) => {
   const { author, content, likes, comments, createdAt } = post;
 
-  // In a real app, you'd check if the current user's ID is in the `likes` array.
+  
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(likes.length);
   const [showComments, setShowComments] = useState(false);
@@ -62,7 +62,7 @@ const PostCard = ({ post }) => {
   };
 
   const handleLike = () => {
-    // This is where you would make an API call to like/unlike the post.
+    
     if (isLiked) {
       setLikeCount(prev => prev - 1);
     } else {
@@ -80,7 +80,7 @@ const PostCard = ({ post }) => {
     if (newComment.trim()) {
       const comment = {
         _id: `c${Date.now()}`,
-        author: { name: 'Current User' }, // In a real app, this would be the logged-in user
+        author: { name: 'Current User' }, 
         content: newComment.trim(),
         createdAt: new Date().toISOString()
       };
@@ -116,7 +116,7 @@ const PostCard = ({ post }) => {
         </button>
       </div>
 
-      {/* Comments Section */}
+      {}
       {showComments && (
         <div className="comments-section">
           <div className="comments-list">
@@ -140,7 +140,7 @@ const PostCard = ({ post }) => {
             ))}
           </div>
 
-          {/* Comment Input Form */}
+          {}
           <form onSubmit={handleCommentSubmit} className="comment-form">
             <div className="comment-input-container">
               <input

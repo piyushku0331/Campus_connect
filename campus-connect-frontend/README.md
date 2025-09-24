@@ -9,6 +9,7 @@ A modern, responsive React frontend for the Campus Connect platform featuring gl
 - **Responsive Design**: Mobile-first approach with cross-device compatibility
 - **Real-time Updates**: Socket.io integration for live notifications
 - **Component Architecture**: Modular, reusable React components
+- **Code Optimization**: All comments removed from JavaScript and JSX files for cleaner codebase
 
 ## Tech Stack
 

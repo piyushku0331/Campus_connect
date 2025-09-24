@@ -11,6 +11,7 @@ A comprehensive backend API for the Campus Connect platform, built with Node.js,
 - **Logging**: Winston-based logging system
 - **Error Handling**: Comprehensive error handling with custom error classes
 - **API Documentation**: RESTful API with consistent response formats
+- **Code Optimization**: All comments removed from JavaScript files for cleaner codebase
 
 ## Tech Stack
 

@@ -13,7 +13,7 @@ const EventManagement = () => {
 
   const fetchPendingEvents = async () => {
     try {
-      // Note: This endpoint might need to be added to the backend
+      
       const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/events/pending`, {
         headers: {
           'x-auth-token': localStorage.getItem('token')

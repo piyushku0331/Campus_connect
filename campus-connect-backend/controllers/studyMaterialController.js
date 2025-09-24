@@ -1,7 +1,7 @@
 const StudyMaterial = require('../models/StudyMaterials');
 const logger = require('../config/winston');
 
-// @desc    Upload new study material
+
 exports.uploadMaterial = async (req, res) => {
   try {
     const { title, subject, semester, university } = req.body;
@@ -24,12 +24,12 @@ exports.uploadMaterial = async (req, res) => {
   }
 };
 
-// @desc    Get all study materials with filtering
+
 exports.getMaterials = async (req, res) => {
   try {
     const { subject, semester, university } = req.query;
     const query = {};
-    if (subject) query.subject = new RegExp(subject, 'i'); // Case-insensitive search
+    if (subject) query.subject = new RegExp(subject, 'i'); 
     if (semester) query.semester = semester;
     if (university) query.university = new RegExp(university, 'i');
     

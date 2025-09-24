@@ -12,16 +12,16 @@ const {
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 
-// Public route to get all approved events
+
 router.get('/', getAllEvents);
 
-// Private route for creating an event
+
 router.post('/', authMiddleware, createEvent);
 
-// Private route for RSVPing to an event
+
 router.post('/:id/rsvp', authMiddleware, rsvpToEvent);
 
-// Admin routes
+
 router.get('/pending', authMiddleware, adminMiddleware, getPendingEvents);
 router.put('/:id/approve', authMiddleware, adminMiddleware, approveEvent);
 router.delete('/:id/reject', authMiddleware, adminMiddleware, rejectEvent);

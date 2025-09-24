@@ -9,10 +9,10 @@ const {
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 
-// Public route
+
 router.get('/', getAllHelplines);
 
-// Admin routes
+
 router.post('/', authMiddleware, adminMiddleware, addHelpline);
 router.put('/:id', authMiddleware, adminMiddleware, updateHelpline);
 router.delete('/:id', authMiddleware, adminMiddleware, deleteHelpline);

@@ -266,6 +266,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Study materials sharing
 - Lost & found functionality
 - Responsive design with glassmorphism
+- Code optimization: Removed all comments from backend and frontend codebases for cleaner production builds
 
 ---
 

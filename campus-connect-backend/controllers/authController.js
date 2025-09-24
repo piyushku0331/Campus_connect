@@ -81,9 +81,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// @desc    Request password reset
-// @route   POST /api/auth/forgot-password
-// @access  Public
+
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
@@ -92,16 +90,16 @@ exports.forgotPassword = async (req, res) => {
       return res.status(404).json({ msg: 'User not found.' });
     }
 
-    // Generate reset token
+    
     const resetToken = crypto.randomBytes(32).toString('hex');
     const resetTokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
 
-    // Set token and expiry (1 hour)
+    
     user.resetPasswordToken = resetTokenHash;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+    user.resetPasswordExpires = Date.now() + 3600000; 
     await user.save();
 
-    // Send reset email
+    
     await sendPasswordResetEmail(email, resetToken, { name: user.name });
 
     res.json({ msg: 'Password reset email sent. Please check your email.' });
@@ -111,9 +109,9 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
+
+
+
 exports.getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -127,13 +125,13 @@ exports.getCurrentUser = async (req, res) => {
   }
 };
 
-// @desc    Reset password with token
-// @route   POST /api/auth/reset-password
-// @access  Public
+
+
+
 exports.resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
   try {
-    // Hash the token to compare with stored hash
+    
     const resetTokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
     const user = await User.findOne({
@@ -145,11 +143,11 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ msg: 'Invalid or expired reset token.' });
     }
 
-    // Hash new password
+    
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    // Update password and clear reset token
+    
     user.password = hashedPassword;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;

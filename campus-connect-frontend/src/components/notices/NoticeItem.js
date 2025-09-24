@@ -1,15 +1,15 @@
 import React from 'react';
 import '../../assets/styles/components/notices/NoticeItem.css';
-// import { FaFilePdf, FaImage } from 'react-icons/fa';
+
 
 const NoticeItem = ({ notice }) => {
-  // const isPdf = notice.filePath.endsWith('.pdf');
-  // const API_URL = 'http://localhost:5000'; // Your backend URL
+  
+  
 
   return (
     <div className="notice-item">
       <div className="notice-icon">
-        {/* {isPdf ? <FaFilePdf /> : <FaImage />} */}
+        {}
         PDF
       </div>
       <div className="notice-details">

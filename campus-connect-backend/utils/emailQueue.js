@@ -127,7 +127,7 @@ class EmailQueue {
   }
 }
 
-// Create singleton instance
+
 const emailQueue = new EmailQueue();
 
 module.exports = emailQueue;

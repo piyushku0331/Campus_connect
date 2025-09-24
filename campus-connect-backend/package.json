@@ -38,6 +38,7 @@
     "jest": "^29.7.0",
     "mongodb-memory-server": "^10.2.1",
     "nodemon": "^3.0.2",
+    "strip-comments": "^2.0.1",
     "supertest": "^7.1.4"
   }
 }

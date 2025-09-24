@@ -24,9 +24,9 @@ const ChatPage = () => {
   const sendMessage = (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      const messageData = { text: newMessage, sender: 'YourUsername' }; // Replace with actual user data
+      const messageData = { text: newMessage, sender: 'YourUsername' }; 
       socketRef.current.emit('sendMessage', messageData);
-      setMessages((prevMessages) => [...prevMessages, messageData]); // Optimistically update UI
+      setMessages((prevMessages) => [...prevMessages, messageData]); 
       setNewMessage('');
     }
   };

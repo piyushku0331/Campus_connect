@@ -3,9 +3,9 @@ const Event = require('../models/Event');
 const Placement = require('../models/Placement');
 const Post = require('../models/Post');
 
-// @desc    Get platform-wide statistics
-// @route   GET /api/analytics/stats
-// @access  Admin
+
+
+
 exports.getStats = async (req, res) => {
   try {
     const userCount = await User.countDocuments();
@@ -24,9 +24,9 @@ exports.getStats = async (req, res) => {
   }
 };
 
-// @desc    Get most popular events (by RSVPs)
-// @route   GET /api/analytics/popular-events
-// @access  Admin
+
+
+
 exports.getPopularEvents = async (req, res) => {
   try {
     const popularEvents = await Event.aggregate([

@@ -23,12 +23,12 @@ const PreLandingPage = () => {
   }, []);
 
   useEffect(() => {
-    // Change language every 3 seconds
+    
     const languageInterval = setInterval(() => {
       setCurrentLanguageIndex((prev) => (prev + 1) % languages.length);
     }, 3000);
 
-    // Auto-redirect after 15 seconds
+    
     const redirectTimer = setTimeout(() => {
       navigate('/home');
     }, 15000);

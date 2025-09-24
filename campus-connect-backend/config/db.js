@@ -8,17 +8,17 @@ const connectDB = async () => {
     logger.info(`Attempting to connect to MongoDB at: ${mongoUri}`);
 
     const conn = await mongoose.connect(mongoUri, {
-      // Connection timeout settings
-      serverSelectionTimeoutMS: 10000, // Increased timeout for connection
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      bufferCommands: false, // Disable mongoose buffering
-      maxPoolSize: 10, // Maintain up to 10 socket connections
+      
+      serverSelectionTimeoutMS: 10000, 
+      socketTimeoutMS: 45000, 
+      bufferCommands: false, 
+      maxPoolSize: 10, 
     });
 
     logger.info(`✅ MongoDB Connected successfully: ${conn.connection.host}`);
     logger.info(`📊 Database: ${conn.connection.name}`);
 
-    // Handle connection events
+    
     mongoose.connection.on('connected', () => {
       logger.info('🔗 Mongoose connected to MongoDB');
     });
@@ -31,7 +31,7 @@ const connectDB = async () => {
       logger.warn('⚠️  Mongoose disconnected from MongoDB');
     });
 
-    // Graceful shutdown
+    
     process.on('SIGINT', async () => {
       await mongoose.connection.close();
       logger.info('👋 MongoDB connection closed through app termination');

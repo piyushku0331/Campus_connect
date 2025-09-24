@@ -3,7 +3,7 @@ const logger = require('../config/winston');
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer for profile picture upload
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -26,12 +26,12 @@ const upload = multer({
   }
 });
 
-// @desc    Get user profile
+
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
     if (!user) return res.status(404).json({ msg: 'User not found' });
-    // Add logic here to check for private profiles if needed
+    
     res.json(user);
   } catch (err) {
     logger.error(err.message);
@@ -39,7 +39,7 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-// @desc    Update user profile
+
 exports.updateProfile = async (req, res) => {
   try {
     const updateData = {};
@@ -55,13 +55,13 @@ exports.updateProfile = async (req, res) => {
       }
     });
 
-    // Handle profile picture if uploaded
+    
     if (req.file) {
       updateData.profilePicture = req.file.filename;
     }
 
     const user = await User.findByIdAndUpdate(
-      req.user.id, // from authMiddleware
+      req.user.id, 
       updateData,
       { new: true }
     ).select('-password');
@@ -75,5 +75,5 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-// Export multer middleware for use in routes
+
 exports.uploadProfilePicture = upload.single('profilePicture');

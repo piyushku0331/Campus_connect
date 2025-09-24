@@ -4,17 +4,17 @@ const User = require('../models/User');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 
-// @desc    Get all users
-// @route   GET /api/users
-// @access  Private (temporary for development)
+
+
+
 router.get('/', authMiddleware, async (req, res) => {
   const users = await User.find().select('-password');
   res.json(users);
 });
 
-// @desc    Update user role (temporary for development)
-// @route   PUT /api/users/:id/role
-// @access  Public (temporary)
+
+
+
 router.put('/:id/role', async (req, res) => {
   const { role } = req.body;
   try {
@@ -28,9 +28,9 @@ router.put('/:id/role', async (req, res) => {
   }
 });
 
-// @desc    Delete a user
-// @route   DELETE /api/users/:id
-// @access  Admin
+
+
+
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ msg: 'User removed' });

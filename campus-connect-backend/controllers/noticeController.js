@@ -1,9 +1,9 @@
 const Notice = require('../models/Notice');
 const logger = require('../config/winston');
 
-// @desc    Upload a new notice
-// @route   POST /api/notices
-// @access  Admin
+
+
+
 exports.uploadNotice = async (req, res) => {
   try {
     const { title, category } = req.body;
@@ -23,9 +23,9 @@ exports.uploadNotice = async (req, res) => {
   }
 };
 
-// @desc    Get all notices with filtering
-// @route   GET /api/notices
-// @access  Public
+
+
+
 exports.getNotices = async (req, res) => {
   try {
     const { category } = req.query;

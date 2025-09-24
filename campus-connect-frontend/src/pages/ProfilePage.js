@@ -29,14 +29,14 @@ const ProfilePage = () => {
   const [interestInput, setInterestInput] = useState('');
 
   // Get current user ID from localStorage (assuming it's stored)
-  const currentUserId = localStorage.getItem('userId'); // You might need to adjust this
+  const currentUserId = localStorage.getItem('userId'); 
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         let profileId = id;
         if (!profileId) {
-          // If no id in URL, get current user and redirect
+          
           const currentUser = await authAPI.getCurrentUser();
           profileId = currentUser._id;
           navigate(`/profile/${profileId}`, { replace: true });

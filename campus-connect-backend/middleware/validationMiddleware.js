@@ -1,6 +1,6 @@
 const { body, param, query, validationResult } = require('express-validator');
 
-// Handle validation errors
+
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -13,7 +13,7 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// User validation rules
+
 const validateUserRegistration = [
   body('name')
     .trim()
@@ -54,7 +54,7 @@ const validateUserLogin = [
   handleValidationErrors
 ];
 
-// Event validation rules
+
 const validateEventCreation = [
   body('title')
     .trim()
@@ -89,7 +89,7 @@ const validateEventCreation = [
   handleValidationErrors
 ];
 
-// Placement validation rules
+
 const validatePlacementCreation = [
   body('companyName')
     .trim()
@@ -124,7 +124,7 @@ const validatePlacementCreation = [
   handleValidationErrors
 ];
 
-// Notice validation rules
+
 const validateNoticeCreation = [
   body('title')
     .trim()
@@ -149,7 +149,7 @@ const validateNoticeCreation = [
   handleValidationErrors
 ];
 
-// Study material validation rules
+
 const validateMaterialCreation = [
   body('title')
     .trim()
@@ -181,7 +181,7 @@ const validateMaterialCreation = [
   handleValidationErrors
 ];
 
-// Lost item validation rules
+
 const validateLostItemCreation = [
   body('itemName')
     .trim()
@@ -210,7 +210,7 @@ const validateLostItemCreation = [
   handleValidationErrors
 ];
 
-// Helpline validation rules
+
 const validateHelplineCreation = [
   body('name')
     .trim()
@@ -236,7 +236,7 @@ const validateHelplineCreation = [
   handleValidationErrors
 ];
 
-// Post validation rules
+
 const validatePostCreation = [
   body('content')
     .trim()
@@ -251,7 +251,7 @@ const validatePostCreation = [
   handleValidationErrors
 ];
 
-// Generic ID validation
+
 const validateObjectId = [
   param('id')
     .isMongoId()
@@ -260,7 +260,7 @@ const validateObjectId = [
   handleValidationErrors
 ];
 
-// Query parameter validation
+
 const validatePagination = [
   query('page')
     .optional()

@@ -29,7 +29,7 @@ const PostManagement = () => {
     }
 
     try {
-      // Note: This endpoint might need to be added to the backend
+      
       await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/posts/${postId}`, {
         method: 'DELETE',
         headers: {
