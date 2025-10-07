@@ -1,0 +1,61 @@
+<h1>💼 New Job Opportunity: {{job_title}}</h1>
+
+<p>Hi {{name}},</p>
+
+<p>Great news! A new job opportunity has been posted on Campus Connect that matches your profile.</p>
+
+<div class="highlight">
+    <h2 style="margin-top: 0; color: #1f2937;">{{job_title}}</h2>
+    <p style="margin: 10px 0; font-size: 16px;"><strong>🏢 Company:</strong> {{company_name}}</p>
+    {{#if salary}}
+    <p style="margin: 10px 0; font-size: 16px;"><strong>💰 Salary:</strong> {{salary}}</p>
+    {{/if}}
+    <p style="margin: 10px 0; font-size: 16px;"><strong>⏰ Deadline:</strong> {{application_deadline}}</p>
+</div>
+
+<h2>📝 Job Description</h2>
+
+<p>{{job_description}}</p>
+
+{{#if requirements}}
+<h3>📋 Requirements</h3>
+<ul>
+    {{#each requirements}}
+    <li>{{this}}</li>
+    {{/each}}
+</ul>
+{{/if}}
+
+<h2>🚀 Why Apply?</h2>
+
+<div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #0ea5e9;">
+    <p style="margin: 0; color: #0c4a6e;">
+        <strong>Gain Experience:</strong> Work on real projects with industry professionals<br>
+        <strong>Build Your Network:</strong> Connect with mentors and peers in your field<br>
+        <strong>Learn New Skills:</strong> Access to training and development opportunities<br>
+        <strong>Launch Your Career:</strong> Step into your dream role with our support
+    </p>
+</div>
+
+<h2>📞 How to Apply</h2>
+
+<p>Ready to take the next step in your career? Apply now through Campus Connect:</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{apply_url}}" class="btn">Apply Now</a>
+    {{#if company_url}}
+    <br><br>
+    <a href="{{company_url}}" style="color: #a855f7; text-decoration: none;">Learn More About {{company_name}}</a>
+    {{/if}}
+</div>
+
+<p>Don't miss this opportunity! The application deadline is <strong>{{application_deadline}}</strong>.</p>
+
+<p>Questions about the position? Contact the Campus Connect placement team or the company directly.</p>
+
+<p>Best regards,<br>The Campus Connect Career Team</p>
+
+<p style="color: #6b7280; font-size: 14px;">
+    You're receiving this notification because you're subscribed to placement opportunities.<br>
+    <a href="{{unsubscribe_placements_url}}" style="color: #a855f7;">Unsubscribe from placement notifications</a>
+</p>

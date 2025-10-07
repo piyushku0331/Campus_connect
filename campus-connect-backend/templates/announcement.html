@@ -1,0 +1,59 @@
+<h1>📢 Important Announcement</h1>
+
+<p>Hi {{name}},</p>
+
+<p>We have an important update from Campus Connect that we'd like to share with you.</p>
+
+<div class="highlight">
+    <h2 style="margin-top: 0; color: #1f2937;">{{announcement_title}}</h2>
+    <p style="margin-bottom: 0; font-size: 16px;"><strong>📅 Posted:</strong> {{announcement_date}}</p>
+    {{#if announcement_priority}}
+    <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>🚨 Priority:</strong> {{announcement_priority}}</p>
+    {{/if}}
+</div>
+
+<h2>📝 Details</h2>
+
+<div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+    {{{announcement_content}}}
+</div>
+
+{{#if announcement_actions}}
+<h2>🎯 Required Actions</h2>
+<ul>
+    {{#each announcement_actions}}
+    <li>{{this}}</li>
+    {{/each}}
+</ul>
+{{/if}}
+
+{{#if announcement_deadline}}
+<div class="highlight" style="border-left-color: #dc2626;">
+    <h3 style="margin-top: 0; color: #dc2626;">⏰ Deadline</h3>
+    <p style="margin-bottom: 0;"><strong>{{announcement_deadline}}</strong></p>
+</div>
+{{/if}}
+
+<h2>📞 Contact Information</h2>
+
+<p>If you have questions about this announcement, please contact:</p>
+
+<ul>
+    <li><strong>📧 Email:</strong> <a href="mailto:{{contact_email}}">{{contact_email}}</a></li>
+    {{#if contact_phone}}
+    <li><strong>📱 Phone:</strong> {{contact_phone}}</li>
+    {{/if}}
+    {{#if contact_office}}
+    <li><strong>🏢 Office:</strong> {{contact_office}}</li>
+    {{/if}}
+</ul>
+
+<p>Stay connected with Campus Connect for the latest updates and important information.</p>
+
+<p>Best regards,<br>The Campus Connect Administration Team</p>
+
+<div style="text-align: center; margin-top: 30px;">
+    {{#if action_url}}
+    <a href="{{action_url}}" class="btn">{{action_text}}</a>
+    {{/if}}
+</div>
