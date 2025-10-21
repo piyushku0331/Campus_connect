@@ -1,0 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const { requireAuth } = require('../middleware');
+const { connectionController } = require('../controllers');
+router.get('/', requireAuth, connectionController.getConnections);
+router.post('/request', requireAuth, connectionController.sendConnectionRequest);
+router.put('/:id/accept', requireAuth, connectionController.acceptConnectionRequest);
+router.put('/:id/reject', requireAuth, connectionController.rejectConnectionRequest);
+router.delete('/:id', requireAuth, connectionController.removeConnection);
+router.get('/requests', requireAuth, connectionController.getConnectionRequests);
+module.exports = router;

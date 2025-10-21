@@ -1,0 +1,12 @@
+const express = require('express');
+const router = express.Router();
+const { requireAuth } = require('../middleware');
+const { eventController } = require('../controllers');
+router.get('/', requireAuth, eventController.getEvents);
+router.get('/:id', requireAuth, eventController.getEventById);
+router.post('/', requireAuth, eventController.createEvent);
+router.put('/:id', requireAuth, eventController.updateEvent);
+router.delete('/:id', requireAuth, eventController.deleteEvent);
+router.post('/:id/rsvp', requireAuth, eventController.rsvpEvent);
+router.get('/user/my-events', requireAuth, eventController.getUserEvents);
+module.exports = router;

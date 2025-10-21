@@ -1,0 +1,13 @@
+const express = require('express');
+const router = express.Router();
+const { requireAuth } = require('../middleware');
+const { resourceController } = require('../controllers');
+router.get('/', requireAuth, resourceController.getResources);
+router.get('/:id', requireAuth, resourceController.getResourceById);
+router.post('/', requireAuth, resourceController.uploadResource);
+router.put('/:id', requireAuth, resourceController.updateResource);
+router.delete('/:id', requireAuth, resourceController.deleteResource);
+router.get('/search', requireAuth, resourceController.searchResources);
+router.get('/user/my-resources', requireAuth, resourceController.getUserResources);
+router.post('/:id/download', requireAuth, resourceController.incrementDownloadCount);
+module.exports = router;

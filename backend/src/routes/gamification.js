@@ -1,0 +1,14 @@
+const express = require('express');
+const router = express.Router();
+const gamificationController = require('../controllers/gamificationController');
+const { requireAuth } = require('../middleware/authMiddleware');
+router.use(requireAuth);
+router.get('/points', gamificationController.getUserPoints);
+router.get('/points/history', gamificationController.getPointsHistory);
+router.get('/leaderboard', gamificationController.getLeaderboard);
+router.get('/rank', gamificationController.getUserRank);
+router.get('/achievements', gamificationController.getUserAchievements);
+router.get('/achievements/available', gamificationController.getAvailableAchievements);
+router.get('/challenges', gamificationController.getActiveChallenges);
+router.get('/challenges/user', gamificationController.getUserChallenges);
+module.exports = router;
