@@ -29,7 +29,7 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
 
 - **Vercel/Netlify**: For frontend hosting
 - **Railway/Render**: For backend hosting
-- **Supabase**: For database and authentication
+- **MongoDB**: For database (local or Atlas)
 - **Cloudflare**: For CDN and DNS (optional)
 
 ### Domain & DNS
@@ -46,7 +46,7 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
 |-----------|----------|------------|
 | **Frontend** | Vercel | Global CDN, automatic deployments, great DX |
 | **Backend** | Railway | Simple deployment, good performance, affordable |
-| **Database** | Supabase | Managed PostgreSQL, real-time features, auth |
+| **Database** | MongoDB Atlas | Managed NoSQL database, flexible schema, scaling |
 | **CDN** | Cloudflare | Global edge network, security, analytics |
 
 ### Alternative Stacks
@@ -54,17 +54,17 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
 #### **AWS Stack**
 - **Frontend**: AWS Amplify / S3 + CloudFront
 - **Backend**: AWS Elastic Beanstalk / Lambda
-- **Database**: AWS RDS PostgreSQL
+- **Database**: MongoDB Atlas
 
 #### **Google Cloud Stack**
 - **Frontend**: Firebase Hosting
 - **Backend**: Google Cloud Run
-- **Database**: Google Cloud SQL
+- **Database**: MongoDB Atlas
 
 #### **DIY Stack**
 - **Frontend**: Nginx + static hosting
 - **Backend**: PM2 + Node.js
-- **Database**: Self-hosted PostgreSQL
+- **Database**: Self-hosted MongoDB
 
 ## 🎨 Frontend Deployment
 
@@ -114,8 +114,7 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
        }
      ],
      "env": {
-       "VITE_SUPABASE_URL": "@supabase-url",
-       "VITE_SUPABASE_ANON_KEY": "@supabase-anon-key"
+       "VITE_API_URL": "@api-url"
      }
    }
    ```
@@ -151,8 +150,7 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
      status = 200
 
    [context.production.environment]
-     VITE_SUPABASE_URL = "your-supabase-url"
-     VITE_SUPABASE_ANON_KEY = "your-anon-key"
+     VITE_API_URL = "your-api-url"
    ```
 
 ## 🖥️ Backend Deployment
@@ -161,7 +159,7 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
 
 #### **One-Click Deploy**
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/your-username/campus-connect&envs=PORT,DATABASE_URL,JWT_SECRET,SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY,FRONTEND_URL)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/piyushku0331/Campus_connect&envs=PORT,MONGODB_URI,JWT_SECRET,FRONTEND_URL)
 
 #### **Manual Deployment**
 
@@ -233,59 +231,67 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
 
 ## 🗄️ Database Deployment
 
-### Supabase Setup
+### MongoDB Setup
 
-#### **Project Creation**
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Click "New Project"
-3. Choose organization and region
-4. Set project name and password
-
-#### **Database Schema Deployment**
+#### **Local MongoDB**
 ```bash
-# Install Supabase CLI
-npm install -g supabase
+# Install MongoDB locally
+# Windows: Download from mongodb.com
+# macOS: brew install mongodb-community
+# Linux: Follow official documentation
 
-# Login to Supabase
-supabase login
+# Start MongoDB service
+mongod --dbpath /path/to/data/directory
 
-# Link to your project
-supabase link --project-ref your-project-ref
-
-# Run migrations
-supabase db push
-
-# Apply RLS policies
-supabase db reset
+# Or using Docker
+docker run -d -p 27017:27017 --name mongodb mongo:latest
 ```
+
+#### **MongoDB Atlas (Cloud)**
+1. Go to [MongoDB Atlas](https://cloud.mongodb.com/)
+2. Create a new project
+3. Set up a cluster (free tier available)
+4. Create database user and whitelist IP
+5. Get connection string
 
 #### **Environment Variables**
 ```bash
-# Copy from Supabase dashboard → Settings → API
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+# For local MongoDB
+MONGODB_URI=mongodb://localhost:27017/campus_connect
+
+# For MongoDB Atlas
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/campus_connect?retryWrites=true&w=majority
 ```
 
 ### Database Backup Strategy
 
 #### **Automated Backups**
-```sql
--- Enable point-in-time recovery
-ALTER DATABASE your_database SET wal_level = replica;
+```bash
+# MongoDB backup script
+#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/backups"
+DB_NAME="campus_connect"
 
--- Create backup schedule
-CREATE EXTENSION pg_cron;
-SELECT cron.schedule('daily-backup', '0 2 * * *', 'SELECT pg_backup_start()');
+mongodump --db $DB_NAME --out $BACKUP_DIR/backup_$DATE
+
+# Keep only last 7 days
+find $BACKUP_DIR -name "backup_*" -type d -mtime +7 -exec rm -rf {} \;
+
+# Upload to cloud storage (optional)
+# aws s3 cp $BACKUP_DIR/backup_$DATE s3://your-backup-bucket/ --recursive
 ```
 
 #### **Manual Backup**
 ```bash
-# Using pg_dump
-pg_dump -h your-host -U your-user -d your-database > backup.sql
+# Create backup
+mongodump --db campus_connect --out backup_$(date +%Y%m%d)
 
-# Using Supabase CLI
-supabase db dump --db-url your-connection-string > backup.sql
+# Compress backup
+tar -czf backup_$(date +%Y%m%d).tar.gz backup_$(date +%Y%m%d)
+
+# Restore from backup
+mongorestore --db campus_connect backup_20241201/
 ```
 
 ## ⚙️ Environment Configuration
@@ -294,10 +300,6 @@ supabase db dump --db-url your-connection-string > backup.sql
 
 #### **Frontend (.env.production)**
 ```env
-# Supabase Configuration
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-
 # API Configuration
 VITE_API_URL=https://your-backend-domain.com/api
 
@@ -318,16 +320,12 @@ NODE_ENV=production
 HOST=0.0.0.0
 
 # Database Configuration
-DATABASE_URL=postgresql://user:password@host:5432/database
+MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/campus_connect?retryWrites=true&w=majority
 
 # Authentication
 JWT_SECRET=your-super-secure-jwt-secret-here
 JWT_EXPIRES_IN=7d
 BCRYPT_ROUNDS=12
-
-# Supabase Configuration
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 # Email Configuration (Optional)
 SMTP_HOST=smtp.gmail.com
@@ -693,11 +691,11 @@ node -e "require('./src/utils/envValidation.js').validateEnvironment()"
 
 #### **Database Connection Issues**
 ```bash
-# Test database connection
-psql "postgresql://user:password@host:5432/database" -c "SELECT 1"
+# Test MongoDB connection
+mongosh "mongodb+srv://user:password@cluster.mongodb.net/campus_connect" --eval "db.runCommand({ping: 1})"
 
-# Check Supabase connection
-curl -H "apikey: your-anon-key" https://your-project.supabase.co/rest/v1/
+# Check connection with Node.js
+node -e "const mongoose = require('mongoose'); mongoose.connect('your-connection-string').then(() => console.log('Connected')).catch(err => console.error(err))"
 ```
 
 #### **SSL Certificate Issues**
@@ -756,7 +754,8 @@ app.use((req, res, next) => {
 
 ### Documentation Links
 
-- [Supabase Documentation](https://supabase.com/docs)
+- [MongoDB Documentation](https://docs.mongodb.com/)
+- [Mongoose Documentation](https://mongoosejs.com/docs/)
 - [Vercel Documentation](https://vercel.com/docs)
 - [Railway Documentation](https://docs.railway.app)
 - [Node.js Deployment Guide](https://nodejs.org/en/docs/guides/)

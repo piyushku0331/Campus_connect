@@ -5,7 +5,7 @@
 [![React](https://img.shields.io/badge/React-18.1.1-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.1.10-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-16+-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb)](https://mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
@@ -112,6 +112,20 @@
 │  │ • Reminders │  │ • Leaderboard│  │ • Roles    │  │ • Themes  │ │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────┘ │
 └─────────────────────────────────────────────────────────────────┘
+```
+
+### System Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   Backend       │    │   Database      │
+│   (React)       │◄──►│   (Node.js)     │◄──►│   (PostgreSQL)  │
+│                 │    │                 │    │                 │
+│ • Components    │    │ • API Routes    │    │ • Tables        │
+│ • Pages         │    │ • Controllers   │    │ • Relations     │
+│ • Services      │    │ • Middleware    │    │ • Indexes       │
+│ • Context       │    │ • Utils         │    │ • RLS Policies  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ---
@@ -221,38 +235,38 @@ graph TB
 graph TB
     A[Node.js + Express] --> B[JWT Auth]
     A --> C[RESTful APIs]
-    B --> D[Supabase]
+    B --> D[MongoDB]
     C --> D
-    D --> E[PostgreSQL]
-    D --> F[Real-time]
+    D --> E[Mongoose Models]
+    D --> F[Real-time Updates]
 ```
 
 #### **API Architecture:**
 - 🟢 **Node.js/Express** - Scalable server framework
 - 🔐 **JWT Authentication** - Secure token-based auth
 - 📡 **RESTful APIs** - Clean, documented endpoints
-- 🗄️ **Supabase** - Backend-as-a-Service
-- 🐘 **PostgreSQL** - Robust relational database
-- 🔴 **Real-time Subscriptions** - Live updates
+- 🍃 **MongoDB** - NoSQL document database
+- 📊 **Mongoose Models** - Schema-based data modeling
+- 🔴 **Real-time Updates** - Live notifications
 
 ### 🗄️ Database Design
 
-#### **15+ Optimized Tables:**
-- `profiles` - User management
-- `posts` - Social content
-- `notes` - Study materials
-- `alumni` - Success stories
-- `events` - Campus activities
-- `messages` - Chat system
-- `leaderboard` - Gamification
-- `connections` - Networking
-- `resources` - File management
+#### **MongoDB Collections:**
+- `users` - User profiles and authentication
+- `posts` - Social content and interactions
+- `notes` - Study materials and resources
+- `alumni` - Success stories and networking
+- `events` - Campus activities and RSVPs
+- `messages` - Chat system and conversations
+- `leaderboard` - Gamification and achievements
+- `connections` - User networking and relationships
+- `resources` - File uploads and sharing
 
 #### **Security Features:**
-- 🛡️ **Row Level Security** - Database-level access control
-- 🔒 **JWT Tokens** - Secure API authentication
+- 🔐 **JWT Authentication** - Secure token-based access
 - ✅ **Input Validation** - Comprehensive data sanitization
-- 🚫 **SQL Injection Protection** - Parameterized queries
+- 🚫 **Injection Protection** - Mongoose built-in protection
+- 📝 **Schema Validation** - Data structure enforcement
 
 ---
 
@@ -346,7 +360,7 @@ campus-connect/
 
 - **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
 - **npm** or **yarn** package manager
-- **Supabase** account - [Sign up](https://supabase.com/)
+- **PostgreSQL** database (local or cloud)
 - **Git** for version control
 
 ### ⚡ Quick Start
@@ -384,7 +398,7 @@ cp .env.example .env
 npm run dev
 
 # 4. Setup Database
-# Follow SUPABASE_SETUP_GUIDE.md
+# Follow database setup instructions above
 ```
 
 </div>
@@ -393,8 +407,6 @@ npm run dev
 
 #### **Frontend (.env)**
 ```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
 VITE_API_URL=http://localhost:5000/api
 ```
 
@@ -403,19 +415,16 @@ VITE_API_URL=http://localhost:5000/api
 PORT=5000
 NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+MONGODB_URI=mongodb://localhost:27017/campus_connect
 JWT_SECRET=your-jwt-secret
 ```
 
 ### 🗄️ Database Setup
 
-1. **Create Supabase Project**
-2. **Run Schema Files** (in order):
-   - `database/01_tables.sql`
-   - `database/02_rls_policies.sql`
-   - `database/03_functions_triggers.sql`
-   - `database/04_supabase_setup.sql`
+1. **Install MongoDB** locally or use MongoDB Atlas
+2. **Create Database**: `campus_connect`
+3. **Set up connection** using MongoDB connection string
+4. **Collections will be created automatically** when the application runs
 
 ### 🧪 Testing
 
@@ -589,10 +598,10 @@ For comprehensive deployment instructions, see our detailed [Deployment Guide](D
 ### Quick Deploy Options
 
 #### **Frontend (Vercel)**
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/campus-connect)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/piyushku0331/Campus_connect)
 
 #### **Backend (Railway)**
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/your-username/campus-connect&envs=PORT,DATABASE_URL,JWT_SECRET,SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY,FRONTEND_URL)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/piyushku0331/Campus_connect&envs=PORT,DATABASE_URL,JWT_SECRET,FRONTEND_URL)
 
 ---
 
@@ -610,7 +619,7 @@ We welcome contributions from developers, designers, educators, and students! Pl
 
 ### 🐛 Issues & Feature Requests
 
-- **🐛 Bug Reports**: [GitHub Issues](https://github.com/your-username/campus-connect/issues)
+- **🐛 Bug Reports**: [GitHub Issues](https://github.com/piyushku0331/Campus_connect/issues)
 - **✨ Feature Requests**: [GitHub Discussions](https://github.com/your-username/campus-connect/discussions)
 - **🔒 Security Issues**: security@campusconnect.com
 
@@ -672,7 +681,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **📧 Email**: support@campusconnect.com
 - **💬 Discord**: [Join our community](https://discord.gg/campusconnect)
 - **📖 Documentation**: [docs.campusconnect.com](https://docs.campusconnect.com)
-- **🐛 Bug Reports**: [GitHub Issues](https://github.com/your-username/campus-connect/issues)
+- **🐛 Bug Reports**: [GitHub Issues](https://github.com/piyushku0331/Campus_connect/issues)
 
 ### 📚 Resources
 
@@ -695,8 +704,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **⭐ Star this repository if you find it helpful!**
 
-[![GitHub stars](https://img.shields.io/github/stars/your-username/campus-connect?style=social)](https://github.com/your-username/campus-connect/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/campus-connect?style=social)](https://github.com/your-username/campus-connect/network)
+[![GitHub stars](https://img.shields.io/github/stars/piyushku0331/Campus_connect?style=social)](https://github.com/piyushku0331/Campus_connect/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/piyushku0331/Campus_connect?style=social)](https://github.com/piyushku0331/Campus_connect/network)
 
 </div>
 
@@ -704,7 +713,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ### Core Functionality
 - **Multilingual Landing Page**: Animated welcome with 8 languages
-- **Secure Authentication**: Supabase magic link login (restricted to @chitkara.edu.in)
+- **Secure Authentication**: JWT-based login (restricted to @chitkara.edu.in)
 - **Social Feed**: Posts, likes, comments, and interactions
 - **Notes Sharing Hub**: Upload, search, and download study materials
 - **Alumni Network**: Connect with successful graduates and learn from their journeys
@@ -735,29 +744,28 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ### Backend
 - **Node.js** with Express.js
-- **Supabase** for database and authentication
 - **PostgreSQL** database
 - **JWT** authentication
 - **RESTful API** design
 
 ### Database
+- **PostgreSQL** with custom schema
 - **15+ Tables** with proper relationships
-- **Row Level Security** policies
-- **Indexes** for performance
-- **Triggers** for automatic updates
+- **Indexes** for performance optimization
+- **Custom security policies**
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js (v16 or higher)
 - npm or yarn
-- Supabase account
+- MongoDB (local or Atlas)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/campus-connect.git
+   git clone https://github.com/piyushku0331/Campus_connect.git
    cd campus-connect
    ```
 
@@ -766,7 +774,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
    cd frontend
    npm install
    cp .env.example .env
-   # Edit .env with your Supabase credentials
+   # Edit .env with your API URL
    npm run dev
    ```
 
@@ -775,29 +783,30 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
    cd backend
    npm install
    cp .env.example .env
-   # Edit .env with your Supabase credentials
+   # Edit .env with your database credentials
    npm run dev
    ```
 
 4. **Database Setup**
-   - Create a new Supabase project
-   - Run the SQL schema from `database_schema.sql`
+   - Install PostgreSQL locally or use a cloud provider
+   - Create database named `campus_connect`
+   - Run the SQL schema files from the `database/` folder
    - Update environment variables
 
 ### Environment Variables
 
 #### Frontend (.env)
 ```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_API_URL=http://localhost:5000/api
 ```
 
 #### Backend (.env)
 ```env
 PORT=5000
+NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+DATABASE_URL=postgresql://username:password@localhost:5432/campus_connect
+JWT_SECRET=your-jwt-secret
 ```
 
 ## 📁 Project Structure
@@ -831,9 +840,9 @@ campus-connect/
 ## 🔐 Authentication
 
 - **Domain Restriction**: Only @chitkara.edu.in emails are allowed
-- **Magic Link**: Passwordless authentication via email
-- **JWT Tokens**: Secure API authentication
-- **Profile Creation**: Automatic profile creation on signup
+- **JWT Authentication**: Secure token-based authentication
+- **Password Security**: Encrypted password storage
+- **Session Management**: Automatic token refresh and logout
 
 ## 🎨 UI/UX Design
 
@@ -867,10 +876,11 @@ campus-connect/
 - `leaderboard` - Gamification points and rankings
 
 ### Security
-- **Row Level Security**: Database-level access control
-- **JWT Authentication**: Secure API access
-- **Input Validation**: Comprehensive data validation
+- **JWT Authentication**: Secure token-based access control
+- **Password Encryption**: Bcrypt hashing for secure storage
+- **Input Validation**: Comprehensive data sanitization
 - **SQL Injection Protection**: Parameterized queries
+- **Rate Limiting**: API abuse protection
 
 ## 🚀 Deployment
 
@@ -887,9 +897,10 @@ npm start
 ```
 
 ### Database
-- Supabase handles database hosting and scaling
-- Automatic backups and monitoring
-- Real-time subscriptions for live features
+- MongoDB with Mongoose ODM for data modeling
+- Flexible document-based storage
+- Built-in indexing and aggregation
+- Schema validation and middleware support
 
 ## 🤝 Contributing
 
