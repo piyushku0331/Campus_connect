@@ -217,7 +217,7 @@ const welcomeEmailTemplate = (name) => {
       </ul>
     </div>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.FRONTEND_URL || 'http:
+      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" class="button">
         🚀 Start Exploring Campus Connect
       </a>
     </div>
@@ -237,7 +237,7 @@ const welcomeEmailTemplate = (name) => {
   return createBaseTemplate(content, 'Welcome to Campus Connect');
 };
 const passwordResetTemplate = (resetToken, name) => {
-  const resetUrl = `${process.env.FRONTEND_URL || 'http:
+  const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
   const content = `
     <h2>Password Reset Request</h2>
     <p>Hello ${name},</p>
@@ -283,7 +283,7 @@ const adminNewUserNotificationTemplate = (userData) => {
     </div>
     <p>The user has completed the email verification process and is now active on the platform.</p>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.FRONTEND_URL || 'http:
+      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/admin/users" class="button">
         👥 View All Users
       </a>
     </div>
@@ -308,7 +308,7 @@ const eventReminderTemplate = (eventData, userName) => {
       ${eventData.description ? `<p><strong>Description:</strong> ${eventData.description}</p>` : ''}
     </div>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.FRONTEND_URL || 'http:
+      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/events/${eventData.id}" class="button">
         📋 View Event Details
       </a>
     </div>
@@ -330,7 +330,7 @@ const achievementUnlockedTemplate = (achievementData, userName) => {
     </div>
     <p>You've earned <strong>${achievementData.points} points</strong> for this achievement! Keep up the great work contributing to our community.</p>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.FRONTEND_URL || 'http:
+      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile/achievements" class="button">
         🏆 View My Achievements
       </a>
     </div>
@@ -365,7 +365,7 @@ const weeklyDigestTemplate = (userName, stats) => {
       </ul>
     </div>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${process.env.FRONTEND_URL || 'http:
+      <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard" class="button">
         🚀 Continue Your Journey
       </a>
     </div>

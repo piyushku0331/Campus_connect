@@ -6,7 +6,7 @@ const config = {
     expire: process.env.JWT_EXPIRE || '7d'
   },
   mongodb: {
-    uri: process.env.MONGODB_URI || 'mongodb:
+    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017/campus_connect'
   }
 };
 module.exports = { config };
