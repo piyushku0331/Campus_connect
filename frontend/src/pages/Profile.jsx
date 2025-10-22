@@ -67,13 +67,13 @@ const Profile = () => {
   };
   if (loading) {
     return (
-      <div className="min-h-screen pt-16 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
   return (
-    <div className="min-h-screen pt-16 relative">
+    <div className="min-h-screen relative">
       <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
       <div className="relative z-10">
       <section className="py-20 md:py-28">

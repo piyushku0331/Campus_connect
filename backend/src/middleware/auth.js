@@ -7,9 +7,13 @@ const verifyToken = async (req, res, next) => {
       return res.status(401).json({ error: 'No token provided' });
     }
     const { config } = require('../config');
+    console.log('Verifying token:', token.substring(0, 20) + '...'); // Debug log
+    console.log('Using JWT secret:', config.jwt.secret.substring(0, 10) + '...'); // Debug log
     const decoded = jwt.verify(token, config.jwt.secret);
+    console.log('Decoded token:', decoded); // Debug log
     const user = await User.findById(decoded.userId);
     if (!user) {
+      console.log('User not found for ID:', decoded.userId); // Debug log
       return res.status(401).json({ error: 'Invalid token' });
     }
     if (!user.email?.endsWith('@chitkara.edu.in')) {
@@ -17,6 +21,7 @@ const verifyToken = async (req, res, next) => {
     }
     req.user = user;
     req.userId = decoded.userId;
+    console.log('Token verification successful for user:', user.email); // Debug log
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
@@ -26,7 +31,7 @@ const verifyToken = async (req, res, next) => {
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ error: 'Token expired' });
     }
-    res.status(401).json({ error: 'Authentication failed' });
+    res.status(500).json({ error: 'Internal server error during token verification' });
   }
 };
 const requireAdmin = async (req, res, next) => {
@@ -98,8 +103,8 @@ const errorHandler = (error, req, res, next) => {
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'http:
-      'http:
+      'http://localhost:5173',
+      'http://localhost:3000',
       process.env.FRONTEND_URL
     ].filter(Boolean);
     if (!origin) return callback(null, true);

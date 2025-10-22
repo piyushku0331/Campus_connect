@@ -60,6 +60,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  refreshToken: {
+    type: String,
+    default: null
+  },
+  refreshTokenExpires: {
+    type: Date,
+    default: null
+  },
   points: {
     type: Number,
     default: 0

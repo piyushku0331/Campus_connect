@@ -23,8 +23,16 @@ export default defineConfig({
           // UI libraries
           'ui-vendor': ['framer-motion', 'lucide-react', 'react-hot-toast'],
           // HTTP client
-          'http-client': ['axios']
+          'http-client': ['axios'],
+          // Additional optimizations for better tree shaking
+          'polyfills': ['core-js']
         }
+      },
+      // Enable tree shaking
+      treeshake: {
+        moduleSideEffects: false,
+        propertyReadSideEffects: false,
+        tryCatchDeoptimization: false
       }
     },
     chunkSizeWarningLimit: 600,

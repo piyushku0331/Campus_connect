@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HelpCircle, MessageCircle, FileText, Users, Mail, Phone } from 'lucide-react';
 const Support = () => {
@@ -74,18 +75,55 @@ const Support = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 * index }}
-              className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 text-center"
+              className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 text-center relative overflow-hidden group"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                '--glow-x': '50%',
+                '--glow-y': '50%',
+                '--glow-intensity': '0',
+                '--glow-radius': '200px',
+                '--glow-color': '107, 159, 255'
+              }}
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                e.currentTarget.style.setProperty('--glow-x', `${x}%`);
+                e.currentTarget.style.setProperty('--glow-y', `${y}%`);
+                e.currentTarget.style.setProperty('--glow-intensity', '0.3');
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.setProperty('--glow-intensity', '0');
+              }}
             >
-              <div className="text-primary mb-4 flex justify-center">
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
+                  borderRadius: 'inherit'
+                }}
+              />
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{
+                  background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
+                  borderRadius: 'inherit',
+                  animation: 'pulse 2s infinite'
+                }}
+              />
+              <div className="text-primary mb-4 flex justify-center relative z-10">
                 {option.icon}
               </div>
-              <h3 className="text-xl font-semibold text-textPrimary mb-3">
+              <h3 className="text-xl font-semibold text-textPrimary mb-3 relative z-10">
                 {option.title}
               </h3>
-              <p className="text-textMuted mb-4 leading-relaxed">
+              <p className="text-textMuted mb-4 leading-relaxed relative z-10">
                 {option.description}
               </p>
-              <button className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-4 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-300">
+              <button className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-4 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-300 relative z-10">
                 {option.action}
               </button>
             </motion.div>
@@ -108,9 +146,46 @@ const Support = () => {
                 initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 * index }}
-                className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow transition-all duration-500"
+                className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow transition-all duration-500 relative overflow-hidden group"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  '--glow-x': '50%',
+                  '--glow-y': '50%',
+                  '--glow-intensity': '0',
+                  '--glow-radius': '200px',
+                  '--glow-color': '107, 159, 255'
+                }}
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  e.currentTarget.style.setProperty('--glow-x', `${x}%`);
+                  e.currentTarget.style.setProperty('--glow-y', `${y}%`);
+                  e.currentTarget.style.setProperty('--glow-intensity', '0.3');
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.setProperty('--glow-intensity', '0');
+                }}
               >
-                <div className="flex items-center mb-4">
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{
+                    background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
+                    borderRadius: 'inherit'
+                  }}
+                />
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
+                    borderRadius: 'inherit',
+                    animation: 'pulse 2s infinite'
+                  }}
+                />
+                <div className="flex items-center mb-4 relative z-10">
                   <div className="text-primary mr-4">
                     {method.icon}
                   </div>
@@ -123,7 +198,7 @@ const Support = () => {
                     </p>
                   </div>
                 </div>
-                <p className="text-textMuted leading-relaxed">
+                <p className="text-textMuted leading-relaxed relative z-10">
                   {method.description}
                 </p>
               </motion.div>
@@ -151,6 +226,12 @@ const Support = () => {
             <button className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-8 py-3 rounded-full font-medium hover:bg-primary/10 transition-all duration-300">
               Submit Ticket
             </button>
+            <Link
+              to="/login"
+              className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-8 py-3 rounded-full font-medium hover:bg-primary/10 transition-all duration-500 animate-shimmer interactive-element"
+            >
+              Get Started Today
+            </Link>
           </div>
         </motion.div>
       </div>

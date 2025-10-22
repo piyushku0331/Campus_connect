@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../hooks/useAuth';
 import { User, Mail, Lock, Shield, Calendar, GraduationCap, Camera, ArrowRight, Eye, EyeOff, CheckCircle } from 'lucide-react';
+
 const Signup = () => {
+  const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -14,17 +16,20 @@ const Signup = () => {
     year: '',
     photo: null
   });
-  const [photoPreview, setPhotoPreview] = useState('');
   const [otp, setOtp] = useState('');
-  const [showOtp, setShowOtp] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [photoPreview, setPhotoPreview] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState({ level: '', score: 0 });
   const [passwordMatch, setPasswordMatch] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { signUp, verifyOtp } = useAuth();
   const navigate = useNavigate();
+
+  const steps = [
+    { title: 'Account Details', icon: User },
+    { title: 'Verification', icon: Shield }
+  ];
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -71,33 +76,29 @@ const Signup = () => {
       reader.readAsDataURL(file);
     }
   };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    if (!passwordMatch) {
-      setError('Passwords do not match');
-      setLoading(false);
-      return;
-    }
-    if (!formData.email.endsWith('@chitkara.edu.in')) {
-      setError('Only @chitkara.edu.in email addresses are allowed');
-      setLoading(false);
-      return;
-    }
-    const age = parseInt(formData.age);
-    if (isNaN(age) || age < 16 || age > 30) {
-      setError('Age must be between 16 and 30');
-      setLoading(false);
-      return;
-    }
-    if (!formData.branch || !formData.year) {
-      setError('Branch and year are required');
-      setLoading(false);
-      return;
-    }
-    try {
-      if (!showOtp) {
+  const handleNextStep = async () => {
+    if (currentStep === 0) {
+      // Step 1 validation
+      if (!passwordMatch) {
+        toast.error('Passwords do not match');
+        return;
+      }
+      if (!formData.email.endsWith('@chitkara.edu.in')) {
+        toast.error('Only @chitkara.edu.in email addresses are allowed');
+        return;
+      }
+      const age = parseInt(formData.age);
+      if (isNaN(age) || age < 16 || age > 30) {
+        toast.error('Age must be between 16 and 30');
+        return;
+      }
+      if (!formData.branch || !formData.year) {
+        toast.error('Branch and year are required');
+        return;
+      }
+
+      setLoading(true);
+      try {
         const formDataToSend = new FormData();
         formDataToSend.append('email', formData.email);
         formDataToSend.append('password', formData.password);
@@ -110,26 +111,42 @@ const Signup = () => {
         }
         const { error } = await signUp(formData.email, formData.password, formDataToSend);
         if (error) {
-          setError(error.message);
           toast.error(error.message || 'Registration failed');
+          return;
         } else {
           toast.success('Account created! Please check your email for verification code.');
-          setShowOtp(true);
+          setCurrentStep(1);
         }
+      } catch {
+        toast.error('An unexpected error occurred');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      toast.error('Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    try {
+      const { error } = await verifyOtp(formData.email, otp);
+      if (error) {
+        toast.error(error.message || 'Verification failed');
       } else {
-        const { error } = await verifyOtp(formData.email, otp);
-        if (error) {
-          setError(error.message);
-          toast.error(error.message || 'Verification failed');
-        } else {
-          toast.success('Account verified successfully! Welcome to Campus Connect!');
-          navigate('/dashboard');
-        }
+        toast.success('Account verified successfully! Welcome to Campus Connect!');
+        navigate('/dashboard');
       }
     } catch {
-      setError('An unexpected error occurred');
-    } finally {
-      setLoading(false);
+      toast.error('An unexpected error occurred');
+    }
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
   return (
@@ -143,15 +160,53 @@ const Signup = () => {
               Campus Connect
             </Link>
             <h2 className="text-2xl font-semibold text-textPrimary mb-2">
-              {showOtp ? 'Verify Your Account' : 'Join the Community'}
+              Join the Community
             </h2>
             <p className="text-textMuted">
-              {showOtp ? 'Enter the OTP sent to your email' : 'Create your account and start connecting'}
+              Create your account and start connecting
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {!showOtp ? (
-              <>
+
+          {/* Custom Stepper */}
+          <div className="mb-8">
+            <div className="flex items-center justify-center space-x-4">
+              {steps.map((step, index) => (
+                <React.Fragment key={step.title}>
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                        index < currentStep
+                          ? 'bg-green-500 text-white'
+                          : index === currentStep
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-300 text-gray-600'
+                      }`}
+                    >
+                      {index < currentStep ? <CheckCircle className="w-4 h-4" /> : index + 1}
+                    </div>
+                    <span
+                      className={`mt-2 text-xs ${
+                        index <= currentStep ? 'text-blue-500' : 'text-gray-400'
+                      }`}
+                    >
+                      {step.title}
+                    </span>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div
+                      className={`w-12 h-0.5 ${
+                        index < currentStep ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
+                    />
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            {currentStep === 0 && (
+              <div className="space-y-6 animate-fade-in">
                 <div>
                   <label className="block text-textPrimary font-medium mb-2" htmlFor="fullName">
                     Full Name
@@ -189,27 +244,6 @@ const Signup = () => {
                   </div>
                   <p className="text-textMuted text-sm mt-1">Only @chitkara.edu.in email addresses are allowed</p>
                 </div>
-              </>
-            ) : (
-              <div>
-                <label className="block text-textPrimary font-medium mb-2" htmlFor="otp">
-                  Verification Code
-                </label>
-                <div className="relative">
-                  <Shield className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-textMuted" />
-                  <input
-                    type="text"
-                    id="otp"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-borderSubtle rounded-xl text-textPrimary placeholder-textMuted focus:outline-none focus:ring-2 focus:ring-primary/70 focus:border-primary/70 transition-all duration-300"
-                    placeholder="Enter 6-digit OTP"
-                    maxLength="6"
-                    required
-                  />
-                </div>
-              </div>
-            )}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-textPrimary font-medium mb-2" htmlFor="age">
@@ -375,53 +409,109 @@ const Signup = () => {
                     />
                     <label
                       htmlFor="photo"
-                      className="flex items-center justify-center w-full p-4 bg-white/5 border border-borderSubtle border-dashed rounded-xl cursor-pointer hover:border-primary/70 transition-all duration-300"
+                      className="flex items-center justify-center w-full p-4 bg-white/5 border border-borderSubtle border-dashed rounded-xl cursor-pointer hover:border-primary/70 transition-all duration-300 relative overflow-hidden"
                     >
-                      <div className="text-center">
-                        <Camera className="w-8 h-8 text-textMuted mx-auto mb-2" />
-                        <p className="text-textMuted text-sm">Click to upload profile photo</p>
-                      </div>
+                      {photoPreview ? (
+                        <div className="flex flex-col items-center">
+                          <img
+                            src={photoPreview}
+                            alt="Profile Preview"
+                            className="w-16 h-16 object-cover rounded-full border-2 border-primary/50 mb-2"
+                          />
+                          <p className="text-textMuted text-sm">Click to change photo</p>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <Camera className="w-8 h-8 text-textMuted mx-auto mb-2" />
+                          <p className="text-textMuted text-sm">Click to upload profile photo</p>
+                        </div>
+                      )}
                     </label>
-                    {photoPreview && (
-                      <div className="mt-4 flex justify-center">
-                        <img src={photoPreview} alt="Preview" className="w-20 h-20 object-cover rounded-full border-2 border-primary/50" />
-                      </div>
-                    )}
                   </div>
                 </div>
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-                <p className="text-red-400 text-center text-sm">{error}</p>
               </div>
             )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-accent-gradient text-white font-semibold py-3 px-6 rounded-xl hover:shadow-[0_0_20px_#6B9FFF]/30 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  {showOtp ? 'Verify Account' : 'Create Account'}
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
-          </form>
-          {!showOtp && (
-            <div className="text-center mt-6">
-              <p className="text-textMuted">
-                Already have an account?{' '}
-                <Link
-                  to="/login"
-                  className="text-primary hover:text-secondary transition-colors duration-300 font-medium"
-                >
-                  Login
-                </Link>
-              </p>
-            </div>
-          )}
+
+            {currentStep === 1 && (
+              <div className="space-y-6 animate-fade-in">
+                <div>
+                  <label className="block text-textPrimary font-medium mb-2" htmlFor="otp">
+                    Verification Code
+                  </label>
+                  <div className="relative">
+                    <Shield className="absolute left-3.5 top-1/2 transform -translate-y-1/2 w-5 h-5 text-textMuted" />
+                    <input
+                      type="text"
+                      id="otp"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="w-full pl-12 pr-4 py-3 bg-white/5 border border-borderSubtle rounded-xl text-textPrimary placeholder-textMuted focus:outline-none focus:ring-2 focus:ring-primary/70 focus:border-primary/70 transition-all duration-300"
+                      placeholder="Enter 6-digit OTP"
+                      maxLength="6"
+                      required
+                    />
+                  </div>
+                  <p className="text-textMuted text-sm mt-1">
+                    Check your email for the verification code
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between mt-8">
+            {currentStep > 0 && (
+              <button
+                type="button"
+                onClick={handlePrevStep}
+                className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105"
+              >
+                Previous
+              </button>
+            )}
+
+            {currentStep === 0 && (
+              <button
+                type="button"
+                onClick={handleNextStep}
+                disabled={loading}
+                className="ml-auto px-6 py-3 bg-primary hover:bg-primary/80 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    Continue
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            )}
+
+            {currentStep === 1 && (
+              <button
+                type="button"
+                onClick={handleVerifyOtp}
+                className="ml-auto px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all duration-300 hover:scale-105 flex items-center gap-2"
+              >
+                Verify & Complete
+                <CheckCircle className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          <div className="text-center mt-6">
+            <p className="text-textMuted">
+              Already have an account?{' '}
+              <Link
+                to="/login"
+                className="text-primary hover:text-secondary transition-colors duration-300 font-medium"
+              >
+                Login
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
       </div>

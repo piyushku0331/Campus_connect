@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Search, MessageCircle, Book, Users, Settings } from 'lucide-react';
+import MagicBento from '../components/magicBento/magicbento';
 const helpCategories = [
   {
     icon: <MessageCircle className="w-8 h-8" />,
@@ -100,6 +101,24 @@ const HelpCenter = () => {
   return (
     <div className="min-h-screen pt-24 pb-12 floating-particles depth-layer-1 relative">
       <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+
+      {/* Magic Bento Section */}
+      <div className="relative z-20 mb-16">
+        <MagicBento
+          textAutoHide={false}
+          enableStars={true}
+          enableSpotlight={true}
+          enableBorderGlow={true}
+          disableAnimations={false}
+          spotlightRadius={350}
+          particleCount={15}
+          enableTilt={true}
+          glowColor="107, 159, 255"
+          clickEffect={true}
+          enableMagnetism={true}
+        />
+      </div>
+
       <div className="relative z-10">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {}
@@ -154,14 +173,51 @@ const HelpCenter = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 * index }}
-              className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 hover:-translate-y-2 transition-all duration-800 ease-in-out cursor-pointer"
+              className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 hover:-translate-y-2 transition-all duration-800 ease-in-out cursor-pointer relative overflow-hidden group"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                '--glow-x': '50%',
+                '--glow-y': '50%',
+                '--glow-intensity': '0',
+                '--glow-radius': '200px',
+                '--glow-color': '107, 159, 255'
+              }}
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                e.currentTarget.style.setProperty('--glow-x', `${x}%`);
+                e.currentTarget.style.setProperty('--glow-y', `${y}%`);
+                e.currentTarget.style.setProperty('--glow-intensity', '0.3');
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.setProperty('--glow-intensity', '0');
+              }}
             >
-              <div className="text-primary mb-4 animate-float group-hover:animate-bounce">
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
+                  borderRadius: 'inherit'
+                }}
+              />
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{
+                  background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
+                  borderRadius: 'inherit',
+                  animation: 'pulse 2s infinite'
+                }}
+              />
+              <div className="text-primary mb-4 animate-float group-hover:animate-bounce relative z-10">
                 {category.icon}
               </div>
-              <h3 className="text-xl font-semibold text-textPrimary mb-3 group-hover:text-primary transition-colors duration-500 ease-out">{category.title}</h3>
-              <p className="text-textMuted mb-4">{category.description}</p>
-              <ul className="space-y-2">
+              <h3 className="text-xl font-semibold text-textPrimary mb-3 group-hover:text-primary transition-colors duration-500 ease-out relative z-10">{category.title}</h3>
+              <p className="text-textMuted mb-4 relative z-10">{category.description}</p>
+              <ul className="space-y-2 relative z-10">
                 {category.items.map((item, itemIndex) => (
                   <li key={itemIndex} className="text-sm text-textMuted">
                     • {item}
@@ -194,10 +250,47 @@ const HelpCenter = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 * index }}
-                  className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 hover:-translate-y-1 transition-all duration-500 ease-out cursor-pointer"
+                  className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 hover:-translate-y-1 transition-all duration-500 ease-out cursor-pointer relative overflow-hidden group"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+                    backdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                    '--glow-x': '50%',
+                    '--glow-y': '50%',
+                    '--glow-intensity': '0',
+                    '--glow-radius': '200px',
+                    '--glow-color': '107, 159, 255'
+                  }}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    e.currentTarget.style.setProperty('--glow-x', `${x}%`);
+                    e.currentTarget.style.setProperty('--glow-y', `${y}%`);
+                    e.currentTarget.style.setProperty('--glow-intensity', '0.3');
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.setProperty('--glow-intensity', '0');
+                  }}
                 >
-                  <h3 className="text-lg font-semibold text-textPrimary mb-3 group-hover:text-primary transition-colors duration-500 ease-out">{faq.question}</h3>
-                  <p className="text-textMuted">{faq.answer}</p>
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{
+                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
+                      borderRadius: 'inherit'
+                    }}
+                  />
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
+                      borderRadius: 'inherit',
+                      animation: 'pulse 2s infinite'
+                    }}
+                  />
+                  <h3 className="text-lg font-semibold text-textPrimary mb-3 group-hover:text-primary transition-colors duration-500 ease-out relative z-10">{faq.question}</h3>
+                  <p className="text-textMuted relative z-10">{faq.answer}</p>
                 </motion.div>
               ))}
             </div>
@@ -221,6 +314,12 @@ const HelpCenter = () => {
               className="inline-flex items-center px-8 py-3 glass-card border border-primary/30 text-primary hover:border-primary/60 rounded-full font-medium hover:bg-primary/10 transition-all duration-500 ease-out hover:shadow-cinematic-glow hover:scale-105 hover:-translate-y-1"
             >
               Contact Support
+            </Link>
+            <Link
+              to="/login"
+              className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-8 py-3 rounded-full font-medium hover:bg-primary/10 transition-all duration-500 animate-shimmer interactive-element mt-4"
+            >
+              Get Started Today
             </Link>
           </div>
         </motion.div>

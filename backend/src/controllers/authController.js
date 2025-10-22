@@ -17,6 +17,12 @@ const generateToken = (userId) => {
     expiresIn: config.jwt.expire
   });
 };
+const generateRefreshToken = (userId) => {
+  const { config } = require('../config');
+  return jwt.sign({ userId }, config.jwt.secret, {
+    expiresIn: '30d' // Refresh token expires in 30 days
+  });
+};
 const signUp = async (req, res) => {
   const { email, password, fullName, age, branch, year } = req.body;
   const photoFile = req.file;
@@ -116,6 +122,10 @@ const signIn = async (req, res) => {
       return res.status(400).json({ error: 'Please verify your email first' });
     }
     const token = generateToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+    user.refreshToken = refreshToken;
+    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+    await user.save();
     res.status(200).json({
       message: 'Sign in successful',
       data: {
@@ -126,7 +136,8 @@ const signIn = async (req, res) => {
           avatar_url: user.avatar_url
         },
         session: {
-          access_token: token
+          access_token: token,
+          refresh_token: refreshToken
         }
       }
     });
@@ -205,6 +216,10 @@ const verifyOTP = async (req, res) => {
       console.error('Failed to send welcome email:', emailError);
     }
     const jwtToken = generateToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+    user.refreshToken = refreshToken;
+    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+    await user.save();
     res.status(200).json({
       message: 'OTP verified successfully',
       data: {
@@ -215,7 +230,8 @@ const verifyOTP = async (req, res) => {
           avatar_url: user.avatar_url
         },
         session: {
-          access_token: jwtToken
+          access_token: jwtToken,
+          refresh_token: refreshToken
         }
       }
     });
@@ -238,9 +254,37 @@ const getCurrentUser = async (req, res) => {
 };
 const refreshToken = async (req, res) => {
   try {
-    res.status(200).json({ message: 'Token refresh not implemented yet' });
+    const { refresh_token } = req.body;
+    if (!refresh_token) {
+      return res.status(400).json({ error: 'Refresh token is required' });
+    }
+    const decoded = jwt.verify(refresh_token, config.jwt.secret);
+    const user = await User.findById(decoded.userId);
+    if (!user || user.refreshToken !== refresh_token || user.refreshTokenExpires < new Date()) {
+      return res.status(401).json({ error: 'Invalid or expired refresh token' });
+    }
+    const newAccessToken = generateToken(user._id);
+    const newRefreshToken = generateRefreshToken(user._id);
+    user.refreshToken = newRefreshToken;
+    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    await user.save();
+    res.status(200).json({
+      message: 'Token refreshed successfully',
+      data: {
+        session: {
+          access_token: newAccessToken,
+          refresh_token: newRefreshToken
+        }
+      }
+    });
   } catch (err) {
     console.error('Refresh token internal error:', err);
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({ error: 'Invalid refresh token' });
+    }
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Refresh token expired' });
+    }
     res.status(500).json({ error: 'Internal server error' });
   }
 };

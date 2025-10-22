@@ -40,6 +40,7 @@ const AboutUs = () => {
     <div className="min-h-screen pt-20 pb-12 relative">
       <div className="absolute inset-0 bg-about-bg bg-cover bg-center"></div>
       <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
         {}
         <motion.div
@@ -104,15 +105,44 @@ const AboutUs = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 * index }}
-                className="glass-card rounded-2xl p-6 text-center hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500"
+                className="glass-card rounded-2xl p-6 text-center hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                  '--glow-x': '50%',
+                  '--glow-y': '50%',
+                  '--glow-intensity': '0',
+                  '--glow-radius': '200px',
+                  '--glow-color': '132, 0, 255'
+                }}
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  e.currentTarget.style.setProperty('--glow-x', `${x}%`);
+                  e.currentTarget.style.setProperty('--glow-y', `${y}%`);
+                  e.currentTarget.style.setProperty('--glow-intensity', '0.3');
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.setProperty('--glow-intensity', '0');
+                }}
               >
-                <div className="text-primary mb-4 flex justify-center">
+                <div
+                  className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300"
+                  style={{
+                    background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(132, 0, 255, 0.1) 0%, transparent 70%)',
+                    borderRadius: 'inherit'
+                  }}
+                />
+                <div className="text-primary mb-4 flex justify-center relative z-10">
                   {value.icon}
                 </div>
-                <h3 className="text-xl font-semibold text-textPrimary mb-3">
+                <h3 className="text-xl font-semibold text-textPrimary mb-3 relative z-10">
                   {value.title}
                 </h3>
-                <p className="text-textMuted leading-relaxed">
+                <p className="text-textMuted leading-relaxed relative z-10">
                   {value.description}
                 </p>
               </motion.div>
@@ -130,15 +160,12 @@ const AboutUs = () => {
             Meet Our Team
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {teamMembers.map((member, index) => (
-              <motion.div
+            {teamMembers.map((member) => (
+              <div
                 key={member.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 * index }}
-                className="glass-card rounded-2xl p-6 text-center hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500"
+                className="glass-card rounded-2xl p-6 text-center"
               >
-                <div className="text-4xl mb-4 animate-float bg-primary/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto">
+                <div className="text-4xl mb-4 bg-primary/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto">
                   {member.avatar}
                 </div>
                 <h3 className="text-xl font-semibold text-textPrimary mb-2">
@@ -147,7 +174,7 @@ const AboutUs = () => {
                 <p className="text-textMuted">
                   {member.role}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </motion.div>

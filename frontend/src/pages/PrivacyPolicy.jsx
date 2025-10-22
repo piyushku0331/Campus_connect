@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield, Eye, Lock, Users, FileText } from 'lucide-react';
+import MagicBento from '../components/magicBento/magicbento';
 const PrivacyPolicy = () => {
   const sections = [
     {
@@ -33,6 +34,24 @@ const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen pt-24 pb-12 floating-particles depth-layer-1 relative">
       <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+
+      {/* Magic Bento Section */}
+      <div className="relative z-20 mb-16">
+        <MagicBento
+          textAutoHide={false}
+          enableStars={true}
+          enableSpotlight={true}
+          enableBorderGlow={true}
+          disableAnimations={false}
+          spotlightRadius={350}
+          particleCount={15}
+          enableTilt={true}
+          glowColor="107, 159, 255"
+          clickEffect={true}
+          enableMagnetism={true}
+        />
+      </div>
+
       <div className="relative z-10">
       <div className="max-w-4xl mx-auto px-6 md:px-12">
         {}

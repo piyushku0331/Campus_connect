@@ -31,7 +31,10 @@ const Login = () => {
         toast.error(error.message || 'Login failed');
       } else {
         toast.success('Welcome back! Redirecting to dashboard...');
-        navigate('/dashboard');
+        // Add a small delay to ensure state is updated before navigation
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 500);
       }
     } catch {
       const errorMessage = 'An unexpected error occurred';

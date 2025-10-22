@@ -44,8 +44,7 @@ const ContactUs = () => {
     { day: 'Sunday', hours: 'Closed' }
   ];
   return (
-    <div className="min-h-screen pt-20 pb-12 relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+    <div className="min-h-screen bg-gradient-to-b from-backgroundStart to-backgroundEnd py-20 px-4 md:px-8 lg:px-16">
       <div className="relative z-10">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {}
@@ -64,7 +63,6 @@ const ContactUs = () => {
           </p>
         </motion.div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -161,9 +159,46 @@ const ContactUs = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * index }}
-                    className="glass-card rounded-xl p-6 hover:shadow-cinematic-glow transition-all duration-500"
+                    className="glass-card rounded-xl p-6 hover:shadow-cinematic-glow transition-all duration-500 relative overflow-hidden group"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                      '--glow-x': '50%',
+                      '--glow-y': '50%',
+                      '--glow-intensity': '0',
+                      '--glow-radius': '200px',
+                      '--glow-color': '107, 159, 255'
+                    }}
+                    onMouseMove={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = ((e.clientX - rect.left) / rect.width) * 100;
+                      const y = ((e.clientY - rect.top) / rect.height) * 100;
+                      e.currentTarget.style.setProperty('--glow-x', `${x}%`);
+                      e.currentTarget.style.setProperty('--glow-y', `${y}%`);
+                      e.currentTarget.style.setProperty('--glow-intensity', '0.3');
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.setProperty('--glow-intensity', '0');
+                    }}
                   >
-                    <div className="flex items-start">
+                    <div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{
+                        background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
+                        borderRadius: 'inherit'
+                      }}
+                    />
+                    <div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{
+                        background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
+                        borderRadius: 'inherit',
+                        animation: 'pulse 2s infinite'
+                      }}
+                    />
+                    <div className="flex items-start relative z-10">
                       <div className="text-primary mr-4 mt-1">
                         {info.icon}
                       </div>

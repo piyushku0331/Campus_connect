@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import { motion } from 'framer-motion';
 const Footer = () => {
   return (
     <footer className="relative bg-surface/80 backdrop-blur-md border-t border-borderSubtle py-8 sm:py-12 md:py-16 mt-20 overflow-hidden">
@@ -19,89 +20,91 @@ const Footer = () => {
                 Join thousands of students in their journey of growth and discovery.
               </p>
               <div className="flex space-x-4">
-                <a
-                  href="#"
-                  className="w-10 h-10 glass-card rounded-full flex items-center justify-center text-textMuted hover:text-primary hover:border-primary/40 transition-all duration-300 hover:shadow-cinematic-glow hover:scale-110 animate-float"
-                >
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 glass-card rounded-full flex items-center justify-center text-textMuted hover:text-primary hover:border-primary/40 transition-all duration-300 hover:shadow-cinematic-glow hover:scale-110 animate-float"
-                  style={{ animationDelay: '0.5s' }}
-                >
-                  <Twitter className="w-5 h-5" />
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 glass-card rounded-full flex items-center justify-center text-textMuted hover:text-primary hover:border-primary/40 transition-all duration-300 hover:shadow-cinematic-glow hover:scale-110 animate-float"
-                  style={{ animationDelay: '1s' }}
-                >
-                  <Instagram className="w-5 h-5" />
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 glass-card rounded-full flex items-center justify-center text-textMuted hover:text-primary hover:border-primary/40 transition-all duration-300 hover:shadow-cinematic-glow hover:scale-110 animate-float"
-                  style={{ animationDelay: '1.5s' }}
-                >
-                  <Linkedin className="w-5 h-5" />
-                </a>
+                {[
+                  { Icon: Facebook, delay: 0 },
+                  { Icon: Twitter, delay: 0.5 },
+                  { Icon: Instagram, delay: 1 },
+                  { Icon: Linkedin, delay: 1.5 }
+                ].map(({ Icon, delay }, index) => (
+                  <motion.a
+                    key={index}
+                    href="#"
+                    className="w-10 h-10 glass-card rounded-full flex items-center justify-center text-textMuted hover:text-primary hover:border-primary/40 transition-all duration-300 hover:shadow-cinematic-glow"
+                    whileHover={{
+                      scale: 1.1,
+                      rotate: 5,
+                      boxShadow: "0 0 20px rgba(107, 159, 255, 0.5)"
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                      y: [0, -5, 0],
+                    }}
+                    transition={{
+                      y: {
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: delay
+                      }
+                    }}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </motion.a>
+                ))}
               </div>
             </div>
             <div className="md:ml-8 mt-6 md:mt-0 flex flex-col md:flex-row gap-8 md:gap-12">
               <div>
                 <h4 className="text-lg font-semibold text-textPrimary mb-6 gradient-text-subtle">Quick Links</h4>
                 <ul className="space-y-3">
-                  <li>
-                    <Link to="/" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Home
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/dashboard" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Dashboard
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/events" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Events
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/networking" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Networking
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/resources" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Resources
-                    </Link>
-                  </li>
+                  {[
+                    { to: '/', label: 'Home' },
+                    { to: '/dashboard', label: 'Dashboard' },
+                    { to: '/events', label: 'Events' },
+                    { to: '/networking', label: 'Networking' },
+                    { to: '/resources', label: 'Resources' }
+                  ].map((link, index) => (
+                    <motion.li
+                      key={link.to}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <Link
+                        to={link.to}
+                        className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary"
+                      >
+                        {link.label}
+                      </Link>
+                    </motion.li>
+                  ))}
                 </ul>
               </div>
               <div>
                 <h4 className="text-lg font-semibold text-textPrimary mb-6 gradient-text-subtle">Support</h4>
                 <ul className="space-y-3">
-                  <li>
-                    <Link to="/help" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Help Center
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/contact" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Contact Us
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/privacy" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Privacy Policy
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/terms" className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary">
-                      Terms of Service
-                    </Link>
-                  </li>
+                  {[
+                    { to: '/help', label: 'Help Center' },
+                    { to: '/contact', label: 'Contact Us' },
+                    { to: '/privacy', label: 'Privacy Policy' },
+                    { to: '/terms', label: 'Terms of Service' }
+                  ].map((link, index) => (
+                    <motion.li
+                      key={link.to}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <Link
+                        to={link.to}
+                        className="text-textMuted hover:text-primary transition-all duration-300 hover:translate-x-1 hover:shadow-glow-primary"
+                      >
+                        {link.label}
+                      </Link>
+                    </motion.li>
+                  ))}
                 </ul>
               </div>
             </div>

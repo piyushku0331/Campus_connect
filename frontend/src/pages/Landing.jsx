@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BgImport from '../components/background/bgimport';
 const Landing = () => {
   const [showContent, setShowContent] = useState(false);
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const Landing = () => {
   }, [showContent]);
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0A0A0F] via-[#101020] to-[#0A0A0F] relative overflow-hidden animated-gradient-bg">
+      <BgImport />
       {}
       <div className="absolute inset-0 bg-ambient-overlay animate-breathe"></div>
       <div className="absolute inset-0">

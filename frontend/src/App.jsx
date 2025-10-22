@@ -1,5 +1,9 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import BgImport from './components/background/bgimport';
+import Navbar from './components/common/Navbar';
+
+// Lazy load components for better performance
 
 const Landing = lazy(() => import('./pages/Landing'));
 const Home = lazy(() => import('./pages/Home'));
@@ -18,7 +22,6 @@ const AboutUs = lazy(() => import('./pages/AboutUs'));
 const HelpCenter = lazy(() => import('./pages/HelpCenter'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./pages/TermsOfService'));
-const Header = lazy(() => import('./components/common/Header'));
 const Footer = lazy(() => import('./components/common/Footer'));
 const ProtectedRoute = lazy(() => import('./components/auth/ProtectedRoute'));
 
@@ -41,128 +44,118 @@ const LoadingSpinner = () => (
   </div>
 );
 
+// Memoize LoadingSpinner to prevent unnecessary re-renders
+const MemoizedLoadingSpinner = React.memo(LoadingSpinner);
 function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="min-h-screen">
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
+      <div className="min-h-screen relative">
+        <BgImport />
+        <Navbar />
+        <div className="relative z-10 pt-20">
+          <Suspense fallback={<LoadingSpinner />}>
+            <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <Home />
                 <Footer />
               </Suspense>
             } />
             <Route path="/login" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <Login />
                 <Footer />
               </Suspense>
             } />
             <Route path="/signup" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <Signup />
                 <Footer />
               </Suspense>
             } />
             <Route path="/dashboard" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <ProtectedRoute><Dashboard /></ProtectedRoute>
                 <Footer />
               </Suspense>
             } />
             <Route path="/profile" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <ProtectedRoute><Profile /></ProtectedRoute>
                 <Footer />
               </Suspense>
             } />
             <Route path="/events" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <ProtectedRoute><Events /></ProtectedRoute>
                 <Footer />
               </Suspense>
             } />
             <Route path="/networking" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <ProtectedRoute><Networking /></ProtectedRoute>
                 <Footer />
               </Suspense>
             } />
             <Route path="/resources" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <ProtectedRoute><Resources /></ProtectedRoute>
                 <Footer />
               </Suspense>
             } />
             <Route path="/notifications" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <ProtectedRoute><Notifications /></ProtectedRoute>
                 <Footer />
               </Suspense>
             } />
             <Route path="/settings" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <ProtectedRoute><Settings /></ProtectedRoute>
                 <Footer />
               </Suspense>
             } />
             <Route path="/support" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <Support />
                 <Footer />
               </Suspense>
             } />
             <Route path="/contact" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <ContactUs />
                 <Footer />
               </Suspense>
             } />
             <Route path="/about" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <AboutUs />
                 <Footer />
               </Suspense>
             } />
             <Route path="/help" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <HelpCenter />
                 <Footer />
               </Suspense>
             } />
             <Route path="/privacy" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <PrivacyPolicy />
                 <Footer />
               </Suspense>
             } />
             <Route path="/terms" element={
-              <Suspense fallback={<LoadingSpinner />}>
-                <Header />
+              <Suspense fallback={<MemoizedLoadingSpinner />}>
                 <TermsOfService />
                 <Footer />
               </Suspense>
             } />
           </Routes>
-        </Suspense>
+          </Suspense>
+        </div>
       </div>
     </Router>
   );

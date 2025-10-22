@@ -27,15 +27,26 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshResponse = await api.post('/refresh-token');
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          localStorage.removeItem('authToken');
+          window.location.href = '/login';
+          return Promise.reject(error);
+        }
+        const refreshResponse = await api.post('/auth/refresh-token', { refresh_token: refreshToken });
         const newToken = refreshResponse.data.data.session?.access_token;
+        const newRefreshToken = refreshResponse.data.data.session?.refresh_token;
         if (newToken) {
           localStorage.setItem('authToken', newToken);
+          if (newRefreshToken) {
+            localStorage.setItem('refreshToken', newRefreshToken);
+          }
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
         localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -64,7 +75,7 @@ export const authAPI = {
   sendOTP: (email, type) => api.post('/auth/send-otp', { email, type }),
   verifyOTP: (email, token, type) => api.post('/auth/verify-otp', { email, token, type }),
   getCurrentUser: () => api.get('/auth/current-user'),
-  refreshToken: () => api.post('/auth/refresh-token'),
+  refreshToken: (refreshToken) => api.post('/auth/refresh-token', { refresh_token: refreshToken }),
 };
 export const gamificationAPI = {
   getUserPoints: () => api.get('/gamification/points'),
