@@ -78,7 +78,7 @@ const Signup = () => {
   };
   const handleNextStep = async () => {
     if (currentStep === 0) {
-      // Step 1 validation
+
       if (!passwordMatch) {
         toast.error('Passwords do not match');
         return;

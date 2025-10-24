@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     lowercase: true,
+    index: true, // Add index for faster email lookups
     validate: {
       validator: function(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -16,12 +17,14 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
-    minlength: 6
+    minlength: 6,
+    select: false // Don't include password in queries by default
   },
   name: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    index: true // Add index for name searches
   },
   age: {
     type: Number,
@@ -32,12 +35,14 @@ const userSchema = new mongoose.Schema({
   department: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    index: true // Add index for department filtering
   },
   semester: {
     type: String,
     required: true,
-    trim: true
+    trim: true,
+    index: true // Add index for semester filtering
   },
   avatar_url: {
     type: String,
@@ -50,27 +55,33 @@ const userSchema = new mongoose.Schema({
   },
   isVerified: {
     type: Boolean,
-    default: false
+    default: false,
+    index: true // Add index for verified user queries
   },
   otp: {
     type: String,
-    default: null
+    default: null,
+    select: false // Don't include OTP in queries
   },
   otpExpires: {
     type: Date,
-    default: null
+    default: null,
+    index: true // Add index for OTP expiration queries
   },
   refreshToken: {
     type: String,
-    default: null
+    default: null,
+    select: false // Don't include refresh token in queries
   },
   refreshTokenExpires: {
     type: Date,
-    default: null
+    default: null,
+    index: true // Add index for token expiration queries
   },
   points: {
     type: Number,
-    default: 0
+    default: 0,
+    index: true // Add index for leaderboard queries
   },
   achievements: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -78,12 +89,18 @@ const userSchema = new mongoose.Schema({
   }],
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    index: true // Add index for chronological queries
   },
   updatedAt: {
     type: Date,
     default: Date.now
   }
+}, {
+
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();

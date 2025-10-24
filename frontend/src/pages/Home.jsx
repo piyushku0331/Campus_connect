@@ -121,7 +121,7 @@ const Home = React.memo(() => {
         card.style.animation = `fadeInUp 0.8s ease-out ${index * 0.2}s both`;
       });
     }
-    // Removed team member animations as requested
+
   }, []);
   return (
     <div className="min-h-screen flex flex-col floating-particles floating-particles-enhanced dynamic-bg-elements depth-layer-1 relative overflow-hidden">

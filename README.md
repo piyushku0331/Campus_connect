@@ -301,8 +301,7 @@ campus-connect/
 │   │   │   ├── Profile.jsx
 │   │   │   └── Events.jsx
 │   │   ├── 📁 services/                # API Services
-│   │   │   ├── api.js
-│   │   │   └── supabaseClient.js
+│   │   │   └── api.js
 │   │   ├── 📁 utils/                   # Utility Functions
 │   │   │   ├── constants.js
 │   │   │   └── helpers.js
@@ -338,8 +337,7 @@ campus-connect/
 ├── 📁 database/                         # Database Schema & Migrations
 │   ├── 📄 01_tables.sql                # Core Tables
 │   ├── 📄 02_rls_policies.sql          # Security Policies
-│   ├── 📄 03_functions_triggers.sql    # Database Functions
-│   └── 📄 04_supabase_setup.sql        # Supabase Configuration
+│   └── 📄 03_functions_triggers.sql    # Database Functions
 │
 ├── 📁 docs/                             # Documentation
 │   ├── 📄 API_DOCUMENTATION.md

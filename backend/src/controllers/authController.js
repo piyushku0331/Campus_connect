@@ -20,7 +20,7 @@ const generateToken = (userId) => {
 const generateRefreshToken = (userId) => {
   const { config } = require('../config');
   return jwt.sign({ userId }, config.jwt.secret, {
-    expiresIn: '30d' // Refresh token expires in 30 days
+    expiresIn: '30d'
   });
 };
 const signUp = async (req, res) => {
@@ -110,7 +110,7 @@ const signIn = async (req, res) => {
     return res.status(400).json({ error: 'Invalid email format' });
   }
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password +refreshToken +refreshTokenExpires');
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
@@ -124,7 +124,7 @@ const signIn = async (req, res) => {
     const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
     user.refreshToken = refreshToken;
-    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await user.save();
     res.status(200).json({
       message: 'Sign in successful',
@@ -218,7 +218,7 @@ const verifyOTP = async (req, res) => {
     const jwtToken = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
     user.refreshToken = refreshToken;
-    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await user.save();
     res.status(200).json({
       message: 'OTP verified successfully',

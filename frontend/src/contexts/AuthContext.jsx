@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           console.error('Error getting current user on app load:', error);
-          // If token is invalid, try to refresh if we have a refresh token
+
           if (refreshToken && error.response?.status === 401) {
             console.log('Attempting to refresh token on app load'); // Debug log
             try {
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
                 if (newRefreshToken) {
                   localStorage.setItem('refreshToken', newRefreshToken);
                 }
-                // Retry getting current user with new token
+
                 const retryResponse = await authAPI.getCurrentUser();
                 const userData = retryResponse.data.user || retryResponse.data;
                 if (userData && typeof userData === 'object') {
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.signIn(email, password);
       console.log('SignIn response:', response.data); // Debug log
 
-      // Handle different possible response structures
+
       let token = null;
       let refreshToken = null;
       let userData = null;
@@ -119,10 +119,10 @@ export const AuthProvider = ({ children }) => {
       console.log('Extracted userData:', userData); // Debug log
 
       if (token && userData) {
-        // Clear any existing tokens first
+
         localStorage.removeItem('authToken');
         localStorage.removeItem('refreshToken');
-        // Set new tokens
+
         localStorage.setItem('authToken', token);
         if (refreshToken) {
           localStorage.setItem('refreshToken', refreshToken);
@@ -147,7 +147,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
-      // Always clear local state regardless of API call success
+
       localStorage.removeItem('authToken');
       localStorage.removeItem('refreshToken');
       setUser(null);

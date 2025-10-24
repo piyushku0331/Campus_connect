@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { requireAuth } = require('../middleware');
+const { verifyToken } = require('../middleware/authMiddleware');
 const { connectionController } = require('../controllers');
-router.get('/', requireAuth, connectionController.getConnections);
-router.post('/request', requireAuth, connectionController.sendConnectionRequest);
-router.put('/:id/accept', requireAuth, connectionController.acceptConnectionRequest);
-router.put('/:id/reject', requireAuth, connectionController.rejectConnectionRequest);
-router.delete('/:id', requireAuth, connectionController.removeConnection);
-router.get('/requests', requireAuth, connectionController.getConnectionRequests);
+router.get('/', verifyToken, connectionController.getConnections);
+router.post('/request', verifyToken, connectionController.sendConnectionRequest);
+router.put('/:id/accept', verifyToken, connectionController.acceptConnectionRequest);
+router.put('/:id/reject', verifyToken, connectionController.rejectConnectionRequest);
+router.delete('/:id', verifyToken, connectionController.removeConnection);
+router.get('/requests', verifyToken, connectionController.getConnectionRequests);
 module.exports = router;

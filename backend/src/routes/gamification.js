@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const gamificationController = require('../controllers/gamificationController');
-const { requireAuth } = require('../middleware/authMiddleware');
-router.use(requireAuth);
+const { verifyToken } = require('../middleware/authMiddleware');
+router.use(verifyToken);
 router.get('/points', gamificationController.getUserPoints);
 router.get('/points/history', gamificationController.getPointsHistory);
 router.get('/leaderboard', gamificationController.getLeaderboard);

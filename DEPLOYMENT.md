@@ -122,8 +122,6 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
 3. **Environment Variables**
    ```bash
    # Set environment variables in Vercel dashboard
-   VITE_SUPABASE_URL=https://your-project.supabase.co
-   VITE_SUPABASE_ANON_KEY=your-anon-key
    VITE_API_URL=https://your-backend-domain.com/api
    ```
 
@@ -198,8 +196,6 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
    NODE_ENV=production
    DATABASE_URL=postgresql://...
    JWT_SECRET=your-jwt-secret
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
    FRONTEND_URL=https://your-frontend-domain.com
    ```
 
@@ -224,8 +220,6 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
    NODE_ENV=production
    DATABASE_URL=your-database-url
    JWT_SECRET=your-jwt-secret
-   SUPABASE_URL=your-supabase-url
-   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
    FRONTEND_URL=your-frontend-url
    ```
 
@@ -351,10 +345,8 @@ LOG_LEVEL=info
 ```javascript
 // backend/src/utils/envValidation.js
 const requiredEnvVars = [
-  'DATABASE_URL',
+  'MONGODB_URI',
   'JWT_SECRET',
-  'SUPABASE_URL',
-  'SUPABASE_SERVICE_ROLE_KEY',
   'FRONTEND_URL'
 ];
 
