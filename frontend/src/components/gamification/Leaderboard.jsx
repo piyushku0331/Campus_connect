@@ -1,25 +1,108 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Trophy, Medal, Award } from 'lucide-react';
-import api from '../../services/api';
+// import api from '../../services/api'; // Commented out for mock data
 const Leaderboard = () => {
-  const [leaderboard, setLeaderboard] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [leaderboard, setLeaderboard] = useState([
+    {
+      id: 1,
+      rank: 1,
+      full_name: "Piyush",
+      avatar_url: null,
+      level: 15,
+      points: 2450,
+      department: "Computer Science",
+      semester: "BE23"
+    },
+    {
+      id: 2,
+      rank: 2,
+      full_name: "Priya Sharma",
+      avatar_url: null,
+      level: 14,
+      points: 2230,
+      department: "Computer Science",
+      semester: "BE23"
+    },
+    {
+      id: 3,
+      rank: 3,
+      full_name: "Rahul Verma",
+      avatar_url: null,
+      level: 13,
+      points: 2100,
+      department: "Information Technology",
+      semester: "BE22"
+    },
+    {
+      id: 4,
+      rank: 4,
+      full_name: "Ananya Patel",
+      avatar_url: null,
+      level: 12,
+      points: 1980,
+      department: "Electronics",
+      semester: "BE23"
+    },
+    {
+      id: 5,
+      rank: 5,
+      full_name: "Vikram Singh",
+      avatar_url: null,
+      level: 11,
+      points: 1850,
+      department: "Mechanical Engineering",
+      semester: "BE22"
+    },
+    {
+      id: 6,
+      rank: 6,
+      full_name: "Sneha Gupta",
+      avatar_url: null,
+      level: 10,
+      points: 1720,
+      department: "Civil Engineering",
+      semester: "BE21"
+    },
+    {
+      id: 7,
+      rank: 7,
+      full_name: "Arjun Kumar",
+      avatar_url: null,
+      level: 9,
+      points: 1650,
+      department: "Business Administration",
+      semester: "BE23"
+    },
+    {
+      id: 8,
+      rank: 8,
+      full_name: "Kavya Reddy",
+      avatar_url: null,
+      level: 8,
+      points: 1520,
+      department: "Data Science",
+      semester: "BE22"
+    }
+  ]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   useEffect(() => {
     fetchLeaderboard();
-  }, []);
-  const fetchLeaderboard = async () => {
+  }, [fetchLeaderboard]);
+  const fetchLeaderboard = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get('/gamification/leaderboard');
-      setLeaderboard(response.data);
+      // Using mock data instead of API call
+      // const response = await api.get('/gamification/leaderboard');
+      // setLeaderboard(response.data);
+      setLeaderboard(leaderboard); // Already have mock data
     } catch (err) {
       setError('Failed to load leaderboard');
       console.error('Error fetching leaderboard:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [leaderboard]);
   const getRankIcon = (rank) => {
     switch (rank) {
       case 1:

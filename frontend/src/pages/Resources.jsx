@@ -1,10 +1,77 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Image, Video, Download, Upload, Star, Users, Search, Filter, X } from 'lucide-react';
-import { resourcesAPI } from '../services/api';
+// import { resourcesAPI } from '../services/api'; // Commented out for mock functionality
 const Resources = () => {
-  const [resources, setResources] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [resources, setResources] = useState([
+    {
+      id: 1,
+      title: "Data Structures & Algorithms Study Guide",
+      description: "Comprehensive guide covering arrays, linked lists, trees, graphs, and sorting algorithms",
+      file_type: "PDF",
+      file_url: "https://example.com/dsa-guide.pdf",
+      tags: ["study-materials", "computer-science", "algorithms"],
+      uploader: { full_name: "Dr. Sarah Johnson" },
+      download_count: 245,
+      created_at: "2024-01-15T10:00:00Z"
+    },
+    {
+      id: 2,
+      title: "Machine Learning Fundamentals",
+      description: "Introduction to ML concepts including supervised/unsupervised learning, neural networks",
+      file_type: "PDF",
+      file_url: "https://example.com/ml-fundamentals.pdf",
+      tags: ["machine-learning", "ai", "tutorials"],
+      uploader: { full_name: "Prof. Michael Chen" },
+      download_count: 189,
+      created_at: "2024-01-20T14:30:00Z"
+    },
+    {
+      id: 3,
+      title: "Database Design Principles",
+      description: "Complete guide to relational database design, normalization, and SQL queries",
+      file_type: "PDF",
+      file_url: "https://example.com/database-design.pdf",
+      tags: ["database", "sql", "reference"],
+      uploader: { full_name: "Dr. Emily Rodriguez" },
+      download_count: 156,
+      created_at: "2024-01-25T09:15:00Z"
+    },
+    {
+      id: 4,
+      title: "Web Development Bootcamp Notes",
+      description: "HTML, CSS, JavaScript, React, and Node.js comprehensive notes",
+      file_type: "PDF",
+      file_url: "https://example.com/web-dev-notes.pdf",
+      tags: ["web-development", "javascript", "notes"],
+      uploader: { full_name: "Alex Kumar" },
+      download_count: 312,
+      created_at: "2024-02-01T16:45:00Z"
+    },
+    {
+      id: 5,
+      title: "Calculus Problem Solutions",
+      description: "Step-by-step solutions to common calculus problems and exercises",
+      file_type: "PDF",
+      file_url: "https://example.com/calculus-solutions.pdf",
+      tags: ["mathematics", "calculus", "solutions"],
+      uploader: { full_name: "Dr. Robert Wilson" },
+      download_count: 98,
+      created_at: "2024-02-05T11:20:00Z"
+    },
+    {
+      id: 6,
+      title: "Physics Lab Experiments Guide",
+      description: "Detailed procedures and explanations for physics laboratory experiments",
+      file_type: "PDF",
+      file_url: "https://example.com/physics-lab-guide.pdf",
+      tags: ["physics", "laboratory", "experiments"],
+      uploader: { full_name: "Dr. Lisa Park" },
+      download_count: 134,
+      created_at: "2024-02-10T13:10:00Z"
+    }
+  ]);
+  const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
@@ -25,7 +92,8 @@ const Resources = () => {
       period: 'forever',
       features: ['Access to basic resources', '5 downloads per month', 'Community support'],
       popular: false,
-      gradient: 'from-[#6B9FFF] to-[#7F40FF]'
+      gradient: 'from-[#6B9FFF] to-[#7F40FF]',
+      description: 'Perfect for getting started with Campus Connect resources.'
     },
     {
       id: 2,
@@ -34,7 +102,8 @@ const Resources = () => {
       period: 'month',
       features: ['Unlimited downloads', 'Priority support', 'Exclusive premium resources', 'Upload custom resources'],
       popular: true,
-      gradient: 'from-[#FF7F50] to-[#FF4500]'
+      gradient: 'from-[#FF7F50] to-[#FF4500]',
+      description: 'Ideal for serious learners who need comprehensive access.'
     },
     {
       id: 3,
@@ -43,7 +112,8 @@ const Resources = () => {
       period: 'month',
       features: ['Everything in Pro', 'Team collaboration tools', 'Advanced analytics', 'Custom integrations'],
       popular: false,
-      gradient: 'from-[#00CED1] to-[#6B9FFF]'
+      gradient: 'from-[#00CED1] to-[#6B9FFF]',
+      description: 'For organizations and study groups requiring advanced features.'
     }
   ];
   useEffect(() => {
@@ -55,21 +125,49 @@ const Resources = () => {
   useEffect(() => {
     fetchResources();
   }, [debouncedSearchQuery, selectedTag, fetchResources]);
+
   const fetchResources = useCallback(async () => {
     try {
-      const response = await resourcesAPI.getResources(1, 20, debouncedSearchQuery, selectedTag);
-      setResources(response.data.resources || []);
+      // For now, filter the mock data based on search and tag
+      let filteredResources = [...resources];
+
+      if (debouncedSearchQuery) {
+        filteredResources = filteredResources.filter(resource =>
+          resource.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+          resource.description.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+        );
+      }
+
+      if (selectedTag && selectedTag !== '') {
+        filteredResources = filteredResources.filter(resource =>
+          resource.tags.includes(selectedTag)
+        );
+      }
+
+      setResources(filteredResources);
     } catch (error) {
       console.error('Error fetching resources:', error);
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearchQuery, selectedTag]);
+  }, [debouncedSearchQuery, selectedTag, resources]);
   const handleUpload = async (e) => {
     e.preventDefault();
     setUploading(true);
     try {
-      await resourcesAPI.uploadResource(uploadForm);
+      // Mock upload functionality
+      const newResource = {
+        id: resources.length + 1,
+        title: uploadForm.title,
+        description: uploadForm.description,
+        file_type: uploadForm.file_type,
+        file_url: uploadForm.file_url,
+        tags: uploadForm.tags,
+        uploader: { full_name: "Piyush" }, // Current user
+        download_count: 0,
+        created_at: new Date().toISOString()
+      };
+      setResources(prev => [...prev, newResource]);
       setShowUploadForm(false);
       setUploadForm({
         title: '',
@@ -78,7 +176,7 @@ const Resources = () => {
         file_type: 'PDF',
         tags: []
       });
-      fetchResources();
+      // fetchResources(); // Not needed with mock data
     } catch (error) {
       console.error('Error uploading resource:', error);
     } finally {
@@ -87,8 +185,15 @@ const Resources = () => {
   };
   const handleDownload = async (resourceId) => {
     try {
-      await resourcesAPI.incrementDownloadCount(resourceId);
+      // Mock download functionality
+      setResources(prev => prev.map(resource =>
+        resource.id === resourceId
+          ? { ...resource, download_count: resource.download_count + 1 }
+          : resource
+      ));
       console.log('Download initiated for resource:', resourceId);
+      // Show success message
+      alert('Download started! (Mock functionality)');
     } catch (error) {
       console.error('Error downloading resource:', error);
     }
@@ -196,8 +301,9 @@ const Resources = () => {
                   </div>
                 )}
                 <h3 className="text-2xl font-semibold text-textPrimary mb-2">{plan.name}</h3>
+                <p className="text-textMuted text-sm mb-4">{plan.description}</p>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold bg-clip-text text-transparent bg-accent-gradient">
+                  <span className="text-4xl font-bold text-white">
                     {plan.price}
                   </span>
                   <span className="text-textMuted">/{plan.period}</span>

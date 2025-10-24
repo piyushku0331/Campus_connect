@@ -18,9 +18,9 @@ const upload = multer({
 });
 router.post('/signup', upload.single('photo'), authController.signUp);
 router.post('/signin', authController.signIn);
-router.post('/signout', verifyToken, authController.signOut); 
-router.post('/send-otp', authController.sendOTP);
-router.post('/verify-otp', authController.verifyOTP);
-router.get('/current-user', verifyToken, authController.getCurrentUser); 
-router.post('/refresh-token', authController.refreshToken);
+router.post('/signout', authController.signOut);
+// router.post('/send-otp', authController.sendOTP);
+// router.post('/verify-otp', authController.verifyOTP);
+router.get('/current-user', authController.getCurrentUser);
+// router.post('/refresh-token', authController.refreshToken);
 module.exports = router;

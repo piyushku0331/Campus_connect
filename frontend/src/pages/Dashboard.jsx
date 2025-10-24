@@ -254,12 +254,6 @@ const Dashboard = () => {
                   <div className="text-3xl mb-4 text-primary relative z-10">🏠</div>
                   <h3 className="text-lg font-semibold text-textPrimary mb-2 relative z-10">Home</h3>
                   <p className="text-textMuted text-sm relative z-10">Return to main page</p>
-                  <Link
-                    to="/login"
-                    className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-6 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-500 animate-shimmer interactive-element mt-2 text-xs"
-                  >
-                    Get Started Today
-                  </Link>
                 </div>
               </Link>
               <Link to="/events" className="block">
@@ -305,12 +299,6 @@ const Dashboard = () => {
                   <div className="text-3xl mb-4 text-primary relative z-10">📅</div>
                   <h3 className="text-lg font-semibold text-textPrimary mb-2 relative z-10">Events</h3>
                   <p className="text-textMuted text-sm relative z-10">Browse campus events</p>
-                  <Link
-                    to="/login"
-                    className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-6 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-500 animate-shimmer interactive-element mt-2 text-xs"
-                  >
-                    Get Started Today
-                  </Link>
                 </div>
               </Link>
               <Link to="/networking" className="block">
@@ -356,12 +344,6 @@ const Dashboard = () => {
                   <div className="text-3xl mb-4 text-primary relative z-10">🤝</div>
                   <h3 className="text-lg font-semibold text-textPrimary mb-2 relative z-10">Networking</h3>
                   <p className="text-textMuted text-sm relative z-10">Connect with peers</p>
-                  <Link
-                    to="/login"
-                    className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-6 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-500 animate-shimmer interactive-element mt-2 text-xs"
-                  >
-                    Get Started Today
-                  </Link>
                 </div>
               </Link>
               <Link to="/resources" className="block">
@@ -407,12 +389,6 @@ const Dashboard = () => {
                   <div className="text-3xl mb-4 text-primary relative z-10">📚</div>
                   <h3 className="text-lg font-semibold text-textPrimary mb-2 relative z-10">Resources</h3>
                   <p className="text-textMuted text-sm relative z-10">Access study materials</p>
-                  <Link
-                    to="/login"
-                    className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-6 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-500 animate-shimmer interactive-element mt-2 text-xs"
-                  >
-                    Get Started Today
-                  </Link>
                 </div>
               </Link>
             </div>

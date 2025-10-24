@@ -3,6 +3,15 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import BgImport from './components/background/bgimport';
 import Navbar from './components/common/Navbar';
 
+const ConditionalNavbar = () => {
+  const location = useLocation();
+  // Hide navbar only on landing page
+  if (location.pathname === '/') {
+    return null;
+  }
+  return <Navbar />;
+};
+
 const Landing = lazy(() => import('./pages/Landing'));
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
@@ -16,6 +25,9 @@ const Notifications = lazy(() => import('./pages/Notifications'));
 const Settings = lazy(() => import('./pages/Settings'));
 const Footer = lazy(() => import('./components/common/Footer'));
 const ProtectedRoute = lazy(() => import('./components/auth/ProtectedRoute'));
+const Support = lazy(() => import('./pages/Support'));
+const AboutUs = lazy(() => import('./pages/AboutUs'));
+const ContactUs = lazy(() => import('./pages/ContactUs'));
 
 const ScrollToTop = memo(function ScrollToTop() {
   const { pathname } = useLocation();
@@ -43,7 +55,7 @@ function App() {
       <ScrollToTop />
       <div className="min-h-screen relative">
         <BgImport />
-        <Navbar />
+        <ConditionalNavbar />
         <div className="relative z-10 pt-20">
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
@@ -51,6 +63,7 @@ function App() {
             <Route path="/home" element={
               <Suspense fallback={<LoadingSpinner />}>
                 <Home />
+                <Footer />
               </Suspense>
             } />
             <Route path="/login" element={
@@ -104,6 +117,24 @@ function App() {
             <Route path="/settings" element={
               <Suspense fallback={<LoadingSpinner />}>
                 <ProtectedRoute><Settings /></ProtectedRoute>
+                <Footer />
+              </Suspense>
+            } />
+            <Route path="/support" element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <Support />
+                <Footer />
+              </Suspense>
+            } />
+            <Route path="/about" element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <AboutUs />
+                <Footer />
+              </Suspense>
+            } />
+            <Route path="/contact" element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <ContactUs />
                 <Footer />
               </Suspense>
             } />

@@ -6,6 +6,8 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+/*
+// Commented out JWT token handling for hardcoded auth
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
@@ -18,6 +20,9 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+*/
+/*
+// Commented out JWT token refresh handling for hardcoded auth
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -54,11 +59,16 @@ api.interceptors.response.use(
     if (error.response?.status >= 500) {
       console.error('Server error:', error.response.data);
     } else if (error.response?.status === 400) {
-      console.error('Client error:', error.response.data);
+      console.error('Request URL:', error.config.url);
+      console.error('Request method:', error.config.method);
+      console.error('Request data:', error.config.data);
+      console.error('Response status:', error.response.status);
+      console.error('Client error details:', JSON.stringify(error.response.data, null, 2));
     }
     return Promise.reject(error);
   }
 );
+*/
 export const authAPI = {
   signUp: (email, password, formData) => {
     if (formData instanceof FormData) {

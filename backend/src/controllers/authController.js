@@ -106,54 +106,48 @@ const signIn = async (req, res) => {
   if (typeof email !== 'string' || typeof password !== 'string') {
     return res.status(400).json({ error: 'Email and password must be strings' });
   }
-  if (!validateEmail(email)) {
-    return res.status(400).json({ error: 'Invalid email format' });
-  }
-  try {
-    const user = await User.findOne({ email }).select('+password +refreshToken +refreshTokenExpires');
-    if (!user) {
-      return res.status(400).json({ error: 'Invalid email or password' });
-    }
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      return res.status(400).json({ error: 'Invalid email or password' });
-    }
-    if (!user.isVerified) {
-      return res.status(400).json({ error: 'Please verify your email first' });
-    }
-    const token = generateToken(user._id);
-    const refreshToken = generateRefreshToken(user._id);
-    user.refreshToken = refreshToken;
-    user.refreshTokenExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    await user.save();
+  // Hardcoded credentials for testing
+  const HARDCODED_EMAIL = 'piyush1093.be23@chitkara.edu.in';
+  const HARDCODED_PASSWORD = 'Piyush@123';
+
+  if (email.trim().toLowerCase() === HARDCODED_EMAIL && password === HARDCODED_PASSWORD) {
+    // Create a mock user object
+    const mockUser = {
+      _id: '507f1f77bcf86cd799439011', // Mock ObjectId
+      email: HARDCODED_EMAIL,
+      name: 'Piyush',
+      avatar_url: null
+    };
+
     res.status(200).json({
       message: 'Sign in successful',
       data: {
         user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
-          avatar_url: user.avatar_url
+          id: mockUser._id,
+          email: mockUser.email,
+          name: mockUser.name,
+          avatar_url: mockUser.avatar_url
         },
         session: {
-          access_token: token,
-          refresh_token: refreshToken
+          access_token: 'mock_jwt_token',
+          refresh_token: 'mock_refresh_token'
         }
       }
     });
-  } catch (err) {
-    console.error('Sign in internal error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+  } else {
+    return res.status(400).json({ error: 'Invalid email or password' });
   }
 };
 const signOut = async (req, res) => {
   try {
+    // No JWT token cleanup needed for hardcoded auth
     res.status(200).json({ message: 'Sign out successful' });
   } catch (err) {
     console.error('Sign out internal error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+/*
 const sendOTP = async (req, res) => {
   const { email, type = 'recovery' } = req.body;
   if (!email) {
@@ -162,21 +156,23 @@ const sendOTP = async (req, res) => {
   if (typeof email !== 'string') {
     return res.status(400).json({ error: 'Email must be a string' });
   }
-  if (!validateEmail(email)) {
+  const trimmedEmail = email.trim().toLowerCase();
+  if (!validateEmail(trimmedEmail)) {
     return res.status(400).json({ error: 'Invalid email format' });
   }
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: trimmedEmail });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
     const otp = crypto.randomInt(100000, 999999).toString();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); 
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
     user.otp = otp;
     user.otpExpires = otpExpires;
     await user.save();
+    console.log('Generated OTP for', trimmedEmail, ':', otp); // Debug log
     try {
-      await sendOTPEmail(email, otp);
+      await sendOTPEmail(trimmedEmail, otp);
       res.status(200).json({ message: 'OTP sent successfully' });
     } catch (emailError) {
       console.error('Failed to send OTP email:', emailError);
@@ -187,6 +183,8 @@ const sendOTP = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+*/
+/*
 const verifyOTP = async (req, res) => {
   const { email, token, type = 'recovery' } = req.body;
   if (!email || !token) {
@@ -195,15 +193,25 @@ const verifyOTP = async (req, res) => {
   if (typeof email !== 'string' || typeof token !== 'string') {
     return res.status(400).json({ error: 'Email and token must be strings' });
   }
-  if (!validateEmail(email)) {
+  // Trim whitespace from inputs
+  const trimmedEmail = email.trim().toLowerCase();
+  const trimmedToken = token.trim();
+  if (!validateEmail(trimmedEmail)) {
     return res.status(400).json({ error: 'Invalid email format' });
   }
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: trimmedEmail });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    if (user.otp !== token || user.otpExpires < new Date()) {
+    console.log('Debug OTP verification:');
+    console.log('Stored OTP:', user.otp);
+    console.log('Entered token (trimmed):', trimmedToken);
+    console.log('OTP Expires:', user.otpExpires);
+    console.log('Current time:', new Date());
+    console.log('Is expired:', user.otpExpires < new Date());
+    console.log('OTP match:', user.otp === trimmedToken);
+    if (user.otp !== trimmedToken || user.otpExpires < new Date()) {
       return res.status(400).json({ error: 'Invalid or expired OTP' });
     }
     user.isVerified = true;
@@ -240,18 +248,26 @@ const verifyOTP = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+*/
 const getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select('-password -otp -otpExpires');
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    res.status(200).json({ user });
+    // Return mock user for hardcoded auth
+    const mockUser = {
+      id: '507f1f77bcf86cd799439011',
+      email: 'piyush1093.be23@chitkara.edu.in',
+      name: 'Piyush',
+      avatar_url: null,
+      age: 20,
+      department: 'Computer Science',
+      semester: 'BE23'
+    };
+    res.status(200).json({ user: mockUser });
   } catch (err) {
     console.error('Get current user internal error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+/*
 const refreshToken = async (req, res) => {
   try {
     const { refresh_token } = req.body;
@@ -288,12 +304,13 @@ const refreshToken = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+*/
 module.exports = {
   signUp,
   signIn,
   signOut,
-  sendOTP,
-  verifyOTP,
+  // sendOTP,
+  // verifyOTP,
   getCurrentUser,
-  refreshToken,
+  // refreshToken,
 };
