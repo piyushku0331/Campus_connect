@@ -1,82 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Users, Plus, Clock, X, CheckCircle } from 'lucide-react';
-// import { eventsAPI } from '../services/api'; // Commented out for mock functionality
+import { eventsAPI } from '../services/api';
 const Events = () => {
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "AI & Machine Learning Workshop",
-      description: "Learn the fundamentals of artificial intelligence and machine learning with hands-on projects. Perfect for beginners and intermediate learners.",
-      location: "Computer Science Building, Room 201",
-      start_date: "2024-02-15T14:00:00Z",
-      end_date: "2024-02-15T17:00:00Z",
-      max_attendees: 50,
-      attendees: [1, 2, 3, 4, 5, 6, 7, 8],
-      tags: ["workshop", "ai", "technology"],
-      organizer: { name: "Dr. Sarah Johnson" }
-    },
-    {
-      id: 2,
-      title: "Career Development Seminar",
-      description: "Connect with industry professionals and learn about career opportunities in tech. Resume reviews and networking included.",
-      location: "Auditorium A",
-      start_date: "2024-02-18T10:00:00Z",
-      end_date: "2024-02-18T12:00:00Z",
-      max_attendees: 100,
-      attendees: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      tags: ["career", "networking", "professional"],
-      organizer: { name: "Career Services Office" }
-    },
-    {
-      id: 3,
-      title: "Hackathon 2024",
-      description: "48-hour coding competition where teams build innovative solutions to real-world problems. Prizes worth ₹50,000 to be won!",
-      location: "Innovation Hub",
-      start_date: "2024-02-20T18:00:00Z",
-      end_date: "2024-02-22T18:00:00Z",
-      max_attendees: 200,
-      attendees: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      tags: ["hackathon", "coding", "competition"],
-      organizer: { name: "Computer Science Society" }
-    },
-    {
-      id: 4,
-      title: "Entrepreneurship Bootcamp",
-      description: "Learn how to turn your ideas into successful startups. Guest speakers from successful entrepreneurs and investors.",
-      location: "Business School, Lecture Hall 1",
-      start_date: "2024-02-22T09:00:00Z",
-      end_date: "2024-02-22T17:00:00Z",
-      max_attendees: 75,
-      attendees: [1, 2, 3, 4, 5, 6, 7],
-      tags: ["entrepreneurship", "business", "startup"],
-      organizer: { name: "Business Innovation Club" }
-    },
-    {
-      id: 5,
-      title: "Mental Health Awareness Session",
-      description: "Open discussion about mental health challenges faced by students. Professional counselors available for one-on-one sessions.",
-      location: "Student Center, Room 305",
-      start_date: "2024-02-25T15:00:00Z",
-      end_date: "2024-02-25T16:30:00Z",
-      max_attendees: 30,
-      attendees: [1, 2, 3, 4, 5],
-      tags: ["wellness", "mental-health", "support"],
-      organizer: { name: "Student Wellness Center" }
-    },
-    {
-      id: 6,
-      title: "Cultural Festival Opening Ceremony",
-      description: "Celebrate diversity with performances from various cultural groups. Food stalls, games, and traditional dances from around the world.",
-      location: "Main Campus Ground",
-      start_date: "2024-02-28T16:00:00Z",
-      end_date: "2024-02-28T20:00:00Z",
-      max_attendees: 500,
-      attendees: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-      tags: ["cultural", "festival", "celebration"],
-      organizer: { name: "Cultural Committee" }
-    }
-  ]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -90,37 +17,33 @@ const Events = () => {
   const [submitting, setSubmitting] = useState(false);
   useEffect(() => {
     fetchEvents();
-  }, [fetchEvents]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const fetchEvents = useCallback(async () => {
     try {
-      // Using mock data instead of API call
-      // const response = await eventsAPI.getEvents(1, 20, true);
-      // setEvents(response.data.events || []);
-      setEvents(events); // Already have mock data in state
+      setLoading(true);
+      const response = await eventsAPI.getEvents(1, 50, true);
+      setEvents(response.data.events || []);
     } catch (error) {
       console.error('Error fetching events:', error);
+      setEvents([]);
     } finally {
       setLoading(false);
     }
-  }, [events]);
+  }, []);
   const handleCreateEvent = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      // Mock event creation
-      const newEvent = {
-        id: events.length + 1,
+      const eventData = {
         title: formData.title,
         description: formData.description,
         location: formData.location,
         start_date: formData.start_date,
         end_date: formData.end_date,
-        max_attendees: formData.max_attendees || null,
-        attendees: [],
-        tags: ['user-created'],
-        organizer: { name: "Piyush" }
+        max_attendees: formData.max_attendees || null
       };
-      setEvents(prev => [...prev, newEvent]);
+      await eventsAPI.createEvent(eventData);
       setShowCreateForm(false);
       setFormData({
         title: '',
@@ -130,7 +53,7 @@ const Events = () => {
         end_date: '',
         max_attendees: ''
       });
-      // fetchEvents(); // Not needed with mock data
+      fetchEvents(); // Refresh the list
     } catch (error) {
       console.error('Error creating event:', error);
     } finally {
@@ -139,19 +62,18 @@ const Events = () => {
   };
   const handleRSVP = async (eventId, status) => {
     try {
-      // Mock RSVP functionality
+      await eventsAPI.rsvpEvent(eventId, status);
       setEvents(prev => prev.map(event =>
         event.id === eventId
           ? {
               ...event,
               attendees: status === 'attending'
-                ? [...event.attendees, { id: 1, name: "Piyush" }] // Mock current user
+                ? [...event.attendees, { id: 1, name: "Current User" }] // Mock current user
                 : event.attendees.filter(attendee => attendee.id !== 1)
             }
           : event
       ));
-      alert(`${status === 'attending' ? 'RSVP confirmed!' : 'RSVP cancelled'} (Mock functionality)`);
-      // fetchEvents(); // Not needed with mock data
+      alert(`${status === 'attending' ? 'RSVP confirmed!' : 'RSVP cancelled'}`);
     } catch (error) {
       console.error('Error RSVPing to event:', error);
     }

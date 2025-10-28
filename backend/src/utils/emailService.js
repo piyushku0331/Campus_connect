@@ -1,168 +1,176 @@
 const nodemailer = require('nodemailer');
-const {
-  otpVerificationTemplate,
-  welcomeEmailTemplate,
-  passwordResetTemplate,
-  adminNewUserNotificationTemplate,
-  eventReminderTemplate,
-  achievementUnlockedTemplate,
-  weeklyDigestTemplate
-} = require('../utils/emailTemplates');
+const handlebars = require('handlebars');
+const fs = require('fs');
+const path = require('path');
+const logger = require('./logger');
+
 const createTransporter = () => {
+  logger.info('Creating email transporter with config:', {
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: process.env.EMAIL_SECURE === 'true',
+    user: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
+    pass: process.env.EMAIL_PASS ? 'SET' : 'NOT SET'
+  });
+
+  if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    logger.error('Missing required email environment variables');
+    throw new Error('Email configuration incomplete');
+  }
+
   return nodemailer.createTransport({
-    service: 'gmail',
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: process.env.EMAIL_SECURE === 'true',
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_APP_PASSWORD
-    }
+      pass: process.env.EMAIL_PASS,
+    },
+    pool: true,
+    maxConnections: 5,
+    maxMessages: 100
   });
 };
-const sendOTPEmail = async (to, otp, name = 'User') => {
+
+const templateCache = new Map();
+
+const loadTemplate = (templateName) => {
+  if (templateCache.has(templateName)) {
+    return templateCache.get(templateName);
+  }
+
   try {
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: {
-        name: 'Campus Connect',
-        address: process.env.EMAIL_USER
-      },
-      to,
-      subject: 'Your OTP for Campus Connect',
-      html: otpVerificationTemplate(otp, name)
-    };
-    const info = await transporter.sendMail(mailOptions);
-    console.log('OTP email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const templatePath = path.join(__dirname, '../templates', `${templateName}.html`);
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+    const compiledTemplate = handlebars.compile(templateSource);
+    templateCache.set(templateName, compiledTemplate);
+    return compiledTemplate;
   } catch (error) {
-    console.error('Error sending OTP email:', error);
-    throw new Error('Failed to send OTP email');
+    logger.error(`Error loading template ${templateName}:`, error);
+    throw new Error(`Template ${templateName} not found`);
   }
 };
-const sendWelcomeEmail = async (to, name) => {
+
+const loadBaseTemplate = () => {
+  return loadTemplate('base');
+};
+
+const sendTemplatedEmail = async (to, subject, templateName, templateData = {}) => {
   try {
+    logger.info(`Attempting to send ${templateName} email to ${to}`);
+
     const transporter = createTransporter();
-    const mailOptions = {
-      from: {
-        name: 'Campus Connect',
-        address: process.env.EMAIL_USER
-      },
-      to,
-      subject: 'Welcome to Campus Connect!',
-      html: welcomeEmailTemplate(name)
+
+    const baseTemplate = loadBaseTemplate();
+    const bodyTemplate = loadTemplate(templateName);
+
+    const data = {
+      ...templateData,
+      email: to,
+      year: new Date().getFullYear(),
+      subject: subject,
+      unsubscribe_url: templateData.unsubscribe_url || '#',
+      preferences_url: templateData.preferences_url || '#'
     };
+
+    const bodyContent = bodyTemplate(data);
+
+    const html = baseTemplate({
+      ...data,
+      body: bodyContent
+    });
+
+    const text = html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+
+    const mailOptions = {
+      from: `"Campus Connect" <${process.env.EMAIL_FROM || process.env.EMAIL_USER}>`,
+      to: to,
+      subject: subject,
+      html: html,
+      text: text,
+      headers: {
+        'X-Mailer': 'Campus Connect Mailer',
+        'List-Unsubscribe': `<${data.unsubscribe_url}>`,
+        'X-Priority': '3',
+        'X-MSMail-Priority': 'Normal'
+      }
+    };
+
     const info = await transporter.sendMail(mailOptions);
-    console.log('Welcome email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
+
+    logger.info(`Email sent successfully to ${to}`, {
+      messageId: info.messageId,
+      template: templateName,
+      subject: subject
+    });
+
+    return {
+      success: true,
+      messageId: info.messageId,
+      template: templateName
+    };
+
   } catch (error) {
-    console.error('Error sending welcome email:', error);
-    throw new Error('Failed to send welcome email');
+    logger.error(`Error sending templated email to ${to}:`, error);
+    throw error;
   }
 };
-const sendPasswordResetEmail = async (to, resetToken, name) => {
-  try {
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: {
-        name: 'Campus Connect',
-        address: process.env.EMAIL_USER
-      },
-      to,
-      subject: 'Password Reset Request',
-      html: passwordResetTemplate(resetToken, name)
-    };
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Password reset email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error('Error sending password reset email:', error);
-    throw new Error('Failed to send password reset email');
-  }
+const sendOTPEmail = async (email, otp, name) => {
+  return sendTemplatedEmail(
+    email,
+    'Campus Connect - Email Verification',
+    'verification',
+    {
+      name: name || 'User',
+      otp: otp
+    }
+  );
 };
+
+const sendWelcomeEmail = async (email, name) => {
+  return sendTemplatedEmail(
+    email,
+    'Welcome to Campus Connect!',
+    'welcome',
+    {
+      name: name || 'User',
+      dashboard_url: `${process.env.FRONTEND_URL}/home`,
+      docs_url: `${process.env.FRONTEND_URL}/help`,
+      community_url: `${process.env.FRONTEND_URL}/community`
+    }
+  );
+};
+
+const sendPasswordResetEmail = async (email, resetToken, userData) => {
+  return sendTemplatedEmail(
+    email,
+    'Reset Your Password',
+    'password-reset',
+    {
+      name: userData.name || 'User',
+      reset_url: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
+    }
+  );
+};
+
 const sendAdminNewUserNotification = async (adminEmail, userData) => {
-  try {
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: {
-        name: 'Campus Connect System',
-        address: process.env.EMAIL_USER
-      },
-      to: adminEmail,
-      subject: 'New User Registration Notification',
-      html: adminNewUserNotificationTemplate(userData)
-    };
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Admin notification email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error('Error sending admin notification email:', error);
-    throw new Error('Failed to send admin notification email');
-  }
-};
-const sendEventReminderEmail = async (to, eventData, userName) => {
-  try {
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: {
-        name: 'Campus Connect Events',
-        address: process.env.EMAIL_USER
-      },
-      to,
-      subject: `Event Reminder: ${eventData.title}`,
-      html: eventReminderTemplate(eventData, userName)
-    };
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Event reminder email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error('Error sending event reminder email:', error);
-    throw new Error('Failed to send event reminder email');
-  }
-};
-const sendAchievementUnlockedEmail = async (to, achievementData, userName) => {
-  try {
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: {
-        name: 'Campus Connect Achievements',
-        address: process.env.EMAIL_USER
-      },
-      to,
-      subject: `🏆 Achievement Unlocked: ${achievementData.title}`,
-      html: achievementUnlockedTemplate(achievementData, userName)
-    };
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Achievement unlocked email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error('Error sending achievement unlocked email:', error);
-    throw new Error('Failed to send achievement unlocked email');
-  }
-};
-const sendWeeklyDigestEmail = async (to, userName, stats) => {
-  try {
-    const transporter = createTransporter();
-    const mailOptions = {
-      from: {
-        name: 'Campus Connect Weekly Digest',
-        address: process.env.EMAIL_USER
-      },
-      to,
-      subject: 'Your Weekly Campus Connect Digest',
-      html: weeklyDigestTemplate(userName, stats)
-    };
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Weekly digest email sent successfully:', info.messageId);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error('Error sending weekly digest email:', error);
-    throw new Error('Failed to send weekly digest email');
-  }
+  return sendTemplatedEmail(
+    adminEmail,
+    'New User Registration',
+    'announcement',
+    {
+      name: 'Admin',
+      announcement_title: 'New User Registration',
+      announcement_content: `A new user has registered: ${userData.name} (${userData.email}) from ${userData.department} ${userData.semester}`,
+      announcement_date: new Date().toLocaleDateString(),
+      announcement_priority: 'medium'
+    }
+  );
 };
 module.exports = {
   sendOTPEmail,
   sendWelcomeEmail,
   sendPasswordResetEmail,
   sendAdminNewUserNotification,
-  sendEventReminderEmail,
-  sendAchievementUnlockedEmail,
-  sendWeeklyDigestEmail
+  sendTemplatedEmail
 };

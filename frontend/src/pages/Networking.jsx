@@ -1,173 +1,42 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { User, MessageCircle, Check, X, Users as UsersIcon, Star, Search, UserPlus } from 'lucide-react';
-// import { connectionsAPI, usersAPI } from '../services/api'; // Commented out for mock functionality
+import { connectionsAPI, usersAPI } from '../services/api';
 const Networking = () => {
-  const [connections, setConnections] = useState([
-    {
-      id: 1,
-      user: {
-        id: 2,
-        full_name: "Priya Sharma",
-        major: "Computer Science",
-        year: "BE23",
-        avatar_url: null
-      },
-      connected_at: "2024-01-15T10:00:00Z"
-    },
-    {
-      id: 2,
-      user: {
-        id: 3,
-        full_name: "Rahul Verma",
-        major: "Information Technology",
-        year: "BE22",
-        avatar_url: null
-      },
-      connected_at: "2024-01-20T14:30:00Z"
-    },
-    {
-      id: 3,
-      user: {
-        id: 4,
-        full_name: "Ananya Patel",
-        major: "Electronics",
-        year: "BE23",
-        avatar_url: null
-      },
-      connected_at: "2024-01-25T09:15:00Z"
-    },
-    {
-      id: 4,
-      user: {
-        id: 5,
-        full_name: "Vikram Singh",
-        major: "Mechanical Engineering",
-        year: "BE22",
-        avatar_url: null
-      },
-      connected_at: "2024-02-01T16:45:00Z"
-    },
-    {
-      id: 5,
-      user: {
-        id: 6,
-        full_name: "Sneha Gupta",
-        major: "Civil Engineering",
-        year: "BE21",
-        avatar_url: null
-      },
-      connected_at: "2024-02-05T11:20:00Z"
-    },
-    {
-      id: 6,
-      user: {
-        id: 7,
-        full_name: "Arjun Kumar",
-        major: "Business Administration",
-        year: "BE23",
-        avatar_url: null
-      },
-      connected_at: "2024-02-10T13:10:00Z"
-    }
-  ]);
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      sender: {
-        id: 8,
-        full_name: "Kavya Reddy",
-        major: "Data Science",
-        year: "BE22",
-        avatar_url: null
-      },
-      sent_at: "2024-02-12T10:30:00Z"
-    },
-    {
-      id: 2,
-      sender: {
-        id: 9,
-        full_name: "Mohammed Ali",
-        major: "Electrical Engineering",
-        year: "BE21",
-        avatar_url: null
-      },
-      sent_at: "2024-02-13T15:45:00Z"
-    },
-    {
-      id: 3,
-      sender: {
-        id: 10,
-        full_name: "Divya Jain",
-        major: "Biotechnology",
-        year: "BE23",
-        avatar_url: null
-      },
-      sent_at: "2024-02-14T09:20:00Z"
-    }
-  ]);
+  const [connections, setConnections] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([
-    {
-      id: 11,
-      full_name: "Rohan Mehta",
-      major: "Chemical Engineering",
-      year: "BE22",
-      avatar_url: null
-    },
-    {
-      id: 12,
-      full_name: "Ishita Choudhary",
-      major: "Psychology",
-      year: "BE23",
-      avatar_url: null
-    },
-    {
-      id: 13,
-      full_name: "Amitabh Singh",
-      major: "Mathematics",
-      year: "BE21",
-      avatar_url: null
-    },
-    {
-      id: 14,
-      full_name: "Pooja Agarwal",
-      major: "Economics",
-      year: "BE22",
-      avatar_url: null
-    }
-  ]);
+  const [searchResults, setSearchResults] = useState([]);
   useEffect(() => {
     fetchConnections();
     fetchRequests();
-  }, [fetchConnections, fetchRequests]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const fetchConnections = useCallback(async () => {
     try {
-      // Using mock data instead of API call
-      // const response = await connectionsAPI.getConnections();
-      // setConnections(response.data || []);
-      setConnections(connections); // Already have mock data
+      const response = await connectionsAPI.getConnections();
+      setConnections(response.data || []);
     } catch (error) {
       console.error('Error fetching connections:', error);
+      setConnections([]);
     }
-  }, [connections]);
+  }, []);
 
   const fetchRequests = useCallback(async () => {
     try {
-      // Using mock data instead of API call
-      // const response = await connectionsAPI.getConnectionRequests();
-      // setRequests(response.data || []);
-      setRequests(requests); // Already have mock data
+      const response = await connectionsAPI.getConnectionRequests();
+      setRequests(response.data || []);
     } catch (error) {
       console.error('Error fetching connection requests:', error);
+      setRequests([]);
     } finally {
       setLoading(false);
     }
-  }, [requests]);
+  }, []);
   const handleAcceptRequest = async (requestId) => {
     try {
-      // Mock accept functionality
+      await connectionsAPI.acceptConnectionRequest(requestId);
       const requestToAccept = requests.find(r => r.id === requestId);
       if (requestToAccept) {
         const newConnection = {
@@ -178,25 +47,23 @@ const Networking = () => {
         setConnections(prev => [...prev, newConnection]);
         setRequests(prev => prev.filter(r => r.id !== requestId));
       }
-      alert('Connection request accepted! (Mock functionality)');
-      // fetchRequests(); fetchConnections(); // Not needed with mock data
+      alert('Connection request accepted!');
     } catch (error) {
       console.error('Error accepting request:', error);
     }
   };
   const handleRejectRequest = async (requestId) => {
     try {
-      // Mock reject functionality
+      await connectionsAPI.rejectConnectionRequest(requestId);
       setRequests(prev => prev.filter(r => r.id !== requestId));
-      alert('Connection request declined! (Mock functionality)');
-      // fetchRequests(); // Not needed with mock data
+      alert('Connection request declined!');
     } catch (error) {
       console.error('Error rejecting request:', error);
     }
   };
   const handleSendRequest = async (receiverId) => {
     try {
-      // Mock send request functionality
+      await connectionsAPI.sendConnectionRequest(receiverId);
       const userToConnect = searchResults.find(u => u.id === receiverId);
       if (userToConnect) {
         const newRequest = {
@@ -208,8 +75,7 @@ const Networking = () => {
       }
       setSearchResults([]);
       setSearchQuery('');
-      alert('Connection request sent! (Mock functionality)');
-      // API call commented out
+      alert('Connection request sent!');
     } catch (error) {
       console.error('Error sending request:', error);
     }
@@ -220,24 +86,18 @@ const Networking = () => {
       return;
     }
     try {
-      // Mock search functionality - filter existing search results
-      const filteredResults = searchResults.filter(user =>
-        user.full_name.toLowerCase().includes(query.toLowerCase()) ||
-        user.major.toLowerCase().includes(query.toLowerCase())
-      );
-      setSearchResults(filteredResults);
-      // const response = await usersAPI.searchUsers(query);
-      // setSearchResults(response.data || []);
+      const response = await usersAPI.searchUsers(query);
+      setSearchResults(response.data || []);
     } catch (error) {
       console.error('Error searching users:', error);
+      setSearchResults([]);
     }
   };
   const handleRemoveConnection = async (connectionId) => {
     try {
-      // Mock remove connection functionality
+      await connectionsAPI.removeConnection(connectionId);
       setConnections(prev => prev.filter(c => c.id !== connectionId));
-      alert('Connection removed! (Mock functionality)');
-      // fetchConnections(); // Not needed with mock data
+      alert('Connection removed!');
     } catch (error) {
       console.error('Error removing connection:', error);
     }

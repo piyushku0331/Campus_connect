@@ -5,12 +5,12 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
-/*
-// Commented out JWT token handling for hardcoded auth
+// JWT token handling
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = sessionStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -20,9 +20,7 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-*/
-/*
-// Commented out JWT token refresh handling for hardcoded auth
+// JWT token refresh handling
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -32,26 +30,18 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) {
-          localStorage.removeItem('authToken');
-          window.location.href = '/login';
-          return Promise.reject(error);
-        }
-        const refreshResponse = await api.post('/auth/refresh-token', { refresh_token: refreshToken });
+        // Refresh token is handled via httpOnly cookie, no need to send it
+        const refreshResponse = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {}, {
+          withCredentials: true
+        });
         const newToken = refreshResponse.data.data.session?.access_token;
-        const newRefreshToken = refreshResponse.data.data.session?.refresh_token;
         if (newToken) {
-          localStorage.setItem('authToken', newToken);
-          if (newRefreshToken) {
-            localStorage.setItem('refreshToken', newRefreshToken);
-          }
+          sessionStorage.setItem('accessToken', newToken);
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('accessToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -68,7 +58,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-*/
 export const authAPI = {
   signUp: (email, password, formData) => {
     if (formData instanceof FormData) {
@@ -78,12 +67,12 @@ export const authAPI = {
         },
       });
     }
-    return api.post('/auth/signup', { email, password });
+    return api.post('/auth/signup', { email, password, name: formData.name, age: formData.age, department: formData.department, semester: formData.semester });
   },
   signIn: (email, password) => api.post('/auth/signin', { email, password }),
   signOut: () => api.post('/auth/signout'),
   sendOTP: (email, type) => api.post('/auth/send-otp', { email, type }),
-  verifyOTP: (email, token, type) => api.post('/auth/verify-otp', { email, token, type }),
+  verifyOTP: (email, otp) => api.post('/auth/verify-otp', { email, otp }),
   getCurrentUser: () => api.get('/auth/current-user'),
   refreshToken: (refreshToken) => api.post('/auth/refresh-token', { refresh_token: refreshToken }),
 };
@@ -137,6 +126,7 @@ export const resourcesAPI = {
 export const usersAPI = {
   getProfile: () => api.get('/users/profile'),
   updateProfile: (profileData) => api.put('/users/profile', profileData),
+  togglePrivacy: (isPublic) => api.patch('/users/privacy', { isPublic }),
   getUserById: (id) => api.get(`/users/${id}`),
   searchUsers: (query, major, year, age) => {
     const params = new URLSearchParams();

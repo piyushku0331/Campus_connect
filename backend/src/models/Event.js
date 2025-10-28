@@ -40,6 +40,25 @@ const eventSchema = new mongoose.Schema({
     trim: true,
     index: true // Add index for tag filtering
   }],
+  campus: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  category: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  attendees: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  isApproved: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
   created_at: {
     type: Date,
     default: Date.now,

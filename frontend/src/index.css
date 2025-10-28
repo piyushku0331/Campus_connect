@@ -35,7 +35,6 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: url('/image (5).png') center/cover no-repeat fixed;
   font-family: 'Inter', sans-serif;
   color: #E6E6E6;
   overflow-x: hidden;

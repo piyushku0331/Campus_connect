@@ -102,10 +102,10 @@ const Signup = () => {
         const formDataToSend = new FormData();
         formDataToSend.append('email', formData.email);
         formDataToSend.append('password', formData.password);
-        formDataToSend.append('fullName', formData.fullName);
+        formDataToSend.append('name', formData.fullName);
         formDataToSend.append('age', formData.age);
-        formDataToSend.append('branch', formData.branch);
-        formDataToSend.append('year', formData.year);
+        formDataToSend.append('department', formData.branch);
+        formDataToSend.append('semester', formData.year);
         if (formData.photo) {
           formDataToSend.append('photo', formData.photo);
         }
@@ -131,15 +131,21 @@ const Signup = () => {
       return;
     }
 
+    console.log('Signup: Starting OTP verification for email:', formData.email, 'OTP:', otp);
+
     try {
       const { error } = await verifyOtp(formData.email, otp);
+      console.log('Signup: OTP verification result - error:', error);
       if (error) {
-        toast.error(error.message || 'Verification failed');
+        console.error('Signup: OTP verification failed with error:', error);
+        toast.error(error || 'Verification failed');
       } else {
+        console.log('Signup: OTP verification successful');
         toast.success('Account verified successfully! Welcome to Campus Connect!');
         navigate('/dashboard');
       }
-    } catch {
+    } catch (error) {
+      console.error('Signup: Unexpected error during OTP verification:', error);
       toast.error('An unexpected error occurred');
     }
   };

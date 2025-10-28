@@ -183,18 +183,18 @@ const checkAchievements = async (userId) => {
 
       let shouldUnlock = false;
       switch (achievement.name) {
-        case 'Social Butterfly':
-          shouldUnlock = userStats.connections_count >= 10;
-          break;
-        case 'Event Organizer':
-          shouldUnlock = userStats.events_created >= 5;
-          break;
-        case 'Knowledge Sharer':
-          shouldUnlock = userStats.resources_uploaded >= 10;
-          break;
-        case 'Campus Explorer':
-          shouldUnlock = userStats.events_attended >= 20;
-          break;
+      case 'Social Butterfly':
+        shouldUnlock = userStats.connections_count >= 10;
+        break;
+      case 'Event Organizer':
+        shouldUnlock = userStats.events_created >= 5;
+        break;
+      case 'Knowledge Sharer':
+        shouldUnlock = userStats.resources_uploaded >= 10;
+        break;
+      case 'Campus Explorer':
+        shouldUnlock = userStats.events_attended >= 20;
+        break;
       }
 
       if (shouldUnlock) {

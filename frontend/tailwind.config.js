@@ -37,7 +37,6 @@ export default {
         'ambient-overlay': 'radial-gradient(circle at 50% 50%, rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
         'hero-bg': 'url("/image (3).png")',
         'features-bg': 'url("/image (4).png")',
-        'about-bg': 'url("/image (5).png")',
       },
       animation: {
         'glow': 'glow 2s ease-in-out infinite alternate',

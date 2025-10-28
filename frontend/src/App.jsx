@@ -1,11 +1,10 @@
 import React, { useEffect, Suspense, lazy, memo } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import BgImport from './components/background/bgimport';
-import Navbar from './components/common/Navbar';
+import Navbar from './components/navbar/navbarimport';
 
 const ConditionalNavbar = () => {
   const location = useLocation();
-  // Hide navbar only on landing page
   if (location.pathname === '/') {
     return null;
   }
@@ -51,7 +50,7 @@ const LoadingSpinner = memo(function LoadingSpinner() {
 });
 function App() {
   return (
-    <Router>
+    <>
       <ScrollToTop />
       <div className="min-h-screen relative">
         <BgImport />
@@ -142,7 +141,7 @@ function App() {
           </Suspense>
         </div>
       </div>
-    </Router>
+    </>
   );
 }
 

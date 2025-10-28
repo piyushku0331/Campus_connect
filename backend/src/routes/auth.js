@@ -1,12 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { authController } = require('../controllers');
+const {
+  signUp,
+  signIn,
+  signOut,
+  sendOTP,
+  verifyOTP,
+  getCurrentUser,
+  forgotPassword,
+  resetPassword,
+  refreshToken
+} = require('../controllers/authController');
 const { verifyToken } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
-    fileSize: 5 * 1024 * 1024, 
+    fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
@@ -16,11 +26,15 @@ const upload = multer({
     }
   }
 });
-router.post('/signup', upload.single('photo'), authController.signUp);
-router.post('/signin', authController.signIn);
-router.post('/signout', authController.signOut);
-// router.post('/send-otp', authController.sendOTP);
-// router.post('/verify-otp', authController.verifyOTP);
-router.get('/current-user', authController.getCurrentUser);
-// router.post('/refresh-token', authController.refreshToken);
+
+router.post('/signup', upload.single('photo'), signUp);
+router.post('/signin', signIn);
+router.post('/signout', signOut);
+router.post('/send-otp', sendOTP);
+router.post('/verify-otp', verifyOTP);
+router.get('/current-user', verifyToken, getCurrentUser);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
+router.post('/refresh-token', refreshToken);
+
 module.exports = router;

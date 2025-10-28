@@ -1,10 +1,32 @@
 const mongoose = require('mongoose');
 
+const commentSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  text: {
+    type: String,
+    required: true,
+    trim: true
+  }
+}, {
+  timestamps: true
+});
+
 const postSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: true,
+    index: true
+  },
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true
   },
   content: {
     type: String,
@@ -13,7 +35,8 @@ const postSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['text', 'image', 'video', 'link']
+    enum: ['text', 'image', 'video', 'link'],
+    default: 'text'
   },
   title: {
     type: String,
@@ -23,14 +46,24 @@ const postSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed,
     default: {}
   },
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  comments: [commentSchema],
   created_at: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    index: true
   },
   updated_at: {
     type: Date,
     default: Date.now
   }
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
 
 postSchema.pre('save', function(next) {

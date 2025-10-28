@@ -44,6 +44,58 @@ const userSchema = new mongoose.Schema({
     trim: true,
     index: true // Add index for semester filtering
   },
+  campus: {
+    type: String,
+    trim: true
+  },
+  year: {
+    type: String,
+    trim: true
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  bio: {
+    type: String,
+    trim: true
+  },
+  linkedin: {
+    type: String,
+    trim: true
+  },
+  github: {
+    type: String,
+    trim: true
+  },
+  website: {
+    type: String,
+    trim: true
+  },
+  skills: [{
+    type: String,
+    trim: true
+  }],
+  interests: [{
+    type: String,
+    trim: true
+  }],
+  profilePicture: {
+    type: String,
+    default: 'default-dp.png'
+  },
+  isPublic: {
+    type: Boolean,
+    default: true
+  },
+  resetPasswordToken: {
+    type: String,
+    select: false
+  },
+  resetPasswordExpires: {
+    type: Date,
+    index: true
+  },
   avatar_url: {
     type: String,
     default: null

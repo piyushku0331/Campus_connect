@@ -4,6 +4,7 @@ const { verifyToken } = require('../middleware/authMiddleware');
 const { userController } = require('../controllers');
 router.get('/profile', verifyToken, userController.getProfile);
 router.put('/profile', verifyToken, userController.updateProfile);
+router.patch('/privacy', verifyToken, userController.togglePrivacy);
 router.get('/:id', verifyToken, userController.getUserById);
 router.get('/', verifyToken, userController.searchUsers);
 module.exports = router;
