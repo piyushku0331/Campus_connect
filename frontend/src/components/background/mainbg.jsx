@@ -19,7 +19,7 @@ const hexToRgb = hex => {
   return [r, g, b];
 };
 
-const vertex = /* glsl */ `
+const vertex =`
   attribute vec3 position;
   attribute vec4 random;
   attribute vec3 color;
