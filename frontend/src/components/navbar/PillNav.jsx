@@ -226,6 +226,19 @@ const PillNav = ({
     onMobileMenuClick?.();
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleMobileMenu();
+    }
+  };
+
+  const handleMenuKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      toggleMobileMenu();
+    }
+  };
+
   const isExternalLink = href =>
     href.startsWith('http://') ||
     href.startsWith('https://') ||
@@ -251,7 +264,7 @@ const PillNav = ({
     <div className="absolute top-[1em] z-[1000] left-1/2 transform -translate-x-1/2">
       <nav
         className={`w-10 h-10 rounded-full object-cover mr-4 md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0 ${className}`}
-        aria-label="Primary"
+        aria-label="Main navigation"
         style={cssVars}
       >
         {isRouterLink(items?.[0]?.href) ? (
@@ -367,6 +380,7 @@ const PillNav = ({
                       className={basePillClasses}
                       style={pillStyle}
                       aria-label={item.ariaLabel || item.label}
+                      aria-current={isActive ? 'page' : undefined}
                       onMouseEnter={() => handleEnter(i)}
                       onMouseLeave={() => handleLeave(i)}
                       onClick={item.onClick}
@@ -380,6 +394,7 @@ const PillNav = ({
                       className={basePillClasses}
                       style={pillStyle}
                       aria-label={item.ariaLabel || item.label}
+                      aria-current={isActive ? 'page' : undefined}
                       onMouseEnter={() => handleEnter(i)}
                       onMouseLeave={() => handleLeave(i)}
                       onClick={item.onClick}
@@ -395,6 +410,7 @@ const PillNav = ({
         <button
           ref={hamburgerRef}
           onClick={toggleMobileMenu}
+          onKeyDown={handleKeyDown}
           aria-label="Toggle menu"
           aria-expanded={isMobileMenuOpen}
           className="md:hidden rounded-full border-0 flex flex-col items-center justify-center gap-1 cursor-pointer p-0 relative"
@@ -417,6 +433,7 @@ const PillNav = ({
 
       <div
         ref={mobileMenuRef}
+        onKeyDown={handleMenuKeyDown}
         className="md:hidden absolute top-[3em] left-4 right-4 rounded-[27px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-[998] origin-top"
         style={{
           ...cssVars,

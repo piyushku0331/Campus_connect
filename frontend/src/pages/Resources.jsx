@@ -13,6 +13,7 @@ const Resources = () => {
     title: '',
     description: '',
     file_url: '',
+    file: null,
     file_type: 'PDF',
     tags: []
   });
@@ -25,7 +26,7 @@ const Resources = () => {
       period: 'forever',
       features: ['Access to basic resources', '5 downloads per month', 'Community support'],
       popular: false,
-      gradient: 'from-[#6B9FFF] to-[#7F40FF]',
+      gradient: 'from-primary to-secondary',
       description: 'Perfect for getting started with Campus Connect resources.'
     },
     {
@@ -35,7 +36,7 @@ const Resources = () => {
       period: 'month',
       features: ['Unlimited downloads', 'Priority support', 'Exclusive premium resources', 'Upload custom resources'],
       popular: true,
-      gradient: 'from-[#FF7F50] to-[#FF4500]',
+      gradient: 'from-secondary to-accent',
       description: 'Ideal for serious learners who need comprehensive access.'
     },
     {
@@ -45,7 +46,7 @@ const Resources = () => {
       period: 'month',
       features: ['Everything in Pro', 'Team collaboration tools', 'Advanced analytics', 'Custom integrations'],
       popular: false,
-      gradient: 'from-[#00CED1] to-[#6B9FFF]',
+      gradient: 'from-success to-primary',
       description: 'For organizations and study groups requiring advanced features.'
     }
   ];
@@ -79,9 +80,18 @@ const Resources = () => {
       const formData = new FormData();
       formData.append('title', uploadForm.title);
       formData.append('description', uploadForm.description);
-      formData.append('file_url', uploadForm.file_url);
       formData.append('file_type', uploadForm.file_type);
       formData.append('tags', JSON.stringify(uploadForm.tags));
+
+      if (uploadForm.file) {
+        formData.append('file', uploadForm.file);
+      } else if (uploadForm.file_url) {
+        formData.append('file_url', uploadForm.file_url);
+      } else {
+        alert('Please provide either a file or file URL');
+        setUploading(false);
+        return;
+      }
 
       await resourcesAPI.uploadResource(formData);
       setShowUploadForm(false);
@@ -89,9 +99,13 @@ const Resources = () => {
         title: '',
         description: '',
         file_url: '',
+        file: null,
         file_type: 'PDF',
         tags: []
       });
+      // Reset file input
+      const fileInput = document.querySelector('input[type="file"]');
+      if (fileInput) fileInput.value = '';
       fetchResources(); // Refresh the list
     } catch (error) {
       console.error('Error uploading resource:', error);
@@ -130,16 +144,16 @@ const Resources = () => {
   };
   const getGradient = (index) => {
     const gradients = [
-      'from-[#6B9FFF] to-[#7F40FF]',
-      'from-[#FF7F50] to-[#FF4500]',
-      'from-[#00CED1] to-[#6B9FFF]',
-      'from-[#7F40FF] to-[#FF7F50]'
+      'from-primary to-secondary',
+      'from-secondary to-accent',
+      'from-success to-primary',
+      'from-secondary to-accent'
     ];
     return gradients[index % gradients.length];
   };
   return (
     <div className="min-h-screen relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+      <div className="absolute inset-0 bg-dashboard-gradient"></div>
       <div className="relative z-10">
       <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -204,8 +218,8 @@ const Resources = () => {
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative bg-gradient-to-br from-surface to-[#1A1A2A] border rounded-2xl p-8 text-center transition-all duration-300 hover:shadow-glow-primary ${
-                  plan.popular ? 'border-primary/40 shadow-[0_0_30px_#6B9FFF]/20' : 'border-borderSubtle'
+                className={`relative bg-card-gradient border rounded-2xl p-8 text-center transition-all duration-300 hover:shadow-card-hover hover:transform hover:-translate-y-1 animate-fade-in ${
+                  plan.popular ? 'border-primary/40 shadow-glow-primary' : 'border-borderMedium'
                 }`}
               >
                 {plan.popular && (
@@ -282,14 +296,23 @@ const Resources = () => {
                     />
                   </div>
                   <div>
+                    <label className="block text-textPrimary mb-2">Upload File</label>
+                    <input
+                      type="file"
+                      onChange={(e) => setUploadForm({ ...uploadForm, file: e.target.files[0], file_url: '' })}
+                      className="w-full px-4 py-3 bg-surface border border-borderSubtle rounded-lg text-textPrimary focus:border-primary focus:outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary/80"
+                      accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.mp4,.avi,.mov"
+                    />
+                  </div>
+                  <div className="text-center text-textMuted text-sm my-2">OR</div>
+                  <div>
                     <label className="block text-textPrimary mb-2">File URL</label>
                     <input
                       type="url"
                       value={uploadForm.file_url}
-                      onChange={(e) => setUploadForm({ ...uploadForm, file_url: e.target.value })}
+                      onChange={(e) => setUploadForm({ ...uploadForm, file_url: e.target.value, file: null })}
                       className="w-full px-4 py-3 bg-surface border border-borderSubtle rounded-lg text-textPrimary focus:border-primary focus:outline-none transition-colors"
                       placeholder="https://example.com/file.pdf"
-                      required
                     />
                   </div>
                   <div>
@@ -339,7 +362,7 @@ const Resources = () => {
                 return (
                   <div
                     key={resource.id}
-                    className="bg-gradient-to-br from-surface to-[#1A1A2A] border border-borderSubtle rounded-2xl p-6 hover:shadow-glow-primary transition-all duration-300 group"
+                    className="bg-card-gradient border border-borderMedium rounded-2xl p-6 hover:shadow-card-hover hover:transform hover:-translate-y-1 transition-all duration-300 animate-fade-in group"
                   >
                     <div className="flex items-center justify-between mb-4">
                       <div className={`p-3 rounded-xl bg-gradient-to-r ${getGradient(index)} shadow-lg`}>

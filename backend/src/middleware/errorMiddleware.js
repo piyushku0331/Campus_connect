@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
   logger.error('Error occurred:', {
     message: err.message,
     stack: err.stack,
@@ -44,7 +44,7 @@ const notFoundHandler = (req, res, next) => {
 const asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
-const rateLimitHandler = (req, res, next) => {
+const rateLimitHandler = (req, res) => {
   res.status(429).json({
     error: 'Too many requests',
     message: 'Please try again later'

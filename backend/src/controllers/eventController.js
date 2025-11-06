@@ -8,14 +8,18 @@ const getEvents = async (req, res) => {
       .from('events')
       .select(`
         *,
-        organizer:users(id, full_name, avatar_url),
-        attendees:event_attendees(count)
+        organizer:users(id, full_name, avatar_url)
       `)
       .order('start_date', { ascending: true });
+    let countQuery = supabase
+      .from('events')
+      .select('*', { count: 'exact', head: true });
     if (upcoming === 'true') {
       query = query.gte('start_date', new Date().toISOString());
+      countQuery = countQuery.gte('start_date', new Date().toISOString());
     }
-    const { data: events, error, count } = await query
+    const { count } = await countQuery;
+    const { data: events, error } = await query
       .range(offset, offset + limit - 1);
     if (error) {
       return res.status(500).json({ error: 'Failed to fetch events' });

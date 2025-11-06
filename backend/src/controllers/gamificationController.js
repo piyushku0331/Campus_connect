@@ -75,14 +75,14 @@ const getLeaderboard = async (req, res) => {
   try {
     const { limit = 50 } = req.query;
     const leaderboard = await User.find({})
-      .select('name avatar_url points')
+      .select('name avatar_url profilePicture points')
       .sort({ points: -1 })
       .limit(parseInt(limit));
 
     const formattedLeaderboard = leaderboard.map((user, index) => ({
       id: user._id,
       name: user.name,
-      avatar_url: user.avatar_url,
+      avatar_url: user.avatar_url || user.profilePicture,
       points: user.points,
       rank: index + 1
     }));

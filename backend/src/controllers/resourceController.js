@@ -11,13 +11,19 @@ const getResources = async (req, res) => {
         uploader:users(id, full_name, avatar_url)
       `)
       .order('created_at', { ascending: false });
+    let countQuery = supabase
+      .from('resources')
+      .select('*', { count: 'exact', head: true });
     if (search) {
       query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+      countQuery = countQuery.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
     }
     if (tag) {
       query = query.contains('tags', [tag]);
+      countQuery = countQuery.contains('tags', [tag]);
     }
-    const { data: resources, error, count } = await query
+    const { count } = await countQuery;
+    const { data: resources, error } = await query
       .range(offset, offset + limit - 1);
     if (error) {
       return res.status(500).json({ error: 'Failed to fetch resources' });
@@ -63,15 +69,33 @@ const uploadResource = async (req, res) => {
   try {
     const userId = req.user.id;
     const { title, description, file_url, file_type, tags } = req.body;
+    let finalFileUrl = file_url;
+
+    // If a file was uploaded, use the uploaded file URL
+    if (req.file) {
+      finalFileUrl = `/uploads/materials/${req.file.filename}`;
+    }
+
+    // Parse tags if it's a string
+    let parsedTags = tags;
+    if (typeof tags === 'string') {
+      try {
+        parsedTags = JSON.parse(tags);
+      } catch (e) {
+        // If JSON parsing fails, treat as comma-separated string
+        parsedTags = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+      }
+    }
+
     const { data: resource, error } = await supabase
       .from('resources')
       .insert({
         title,
         description,
-        file_url,
+        file_url: finalFileUrl,
         file_type,
         uploader_id: userId,
-        tags
+        tags: parsedTags
       })
       .select()
       .single();

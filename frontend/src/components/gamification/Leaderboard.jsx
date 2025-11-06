@@ -17,8 +17,13 @@ const Leaderboard = () => {
       setLoading(false);
     }
   }, []);
+
+  // Refresh leaderboard when component mounts or when user profile might have changed
   useEffect(() => {
     fetchLeaderboard();
+    // Set up interval to refresh leaderboard every 30 seconds
+    const interval = setInterval(fetchLeaderboard, 30000);
+    return () => clearInterval(interval);
   }, [fetchLeaderboard]);
   const getRankIcon = (rank) => {
     switch (rank) {
@@ -107,6 +112,9 @@ const Leaderboard = () => {
                     src={user.avatar_url || '/default-avatar.png'}
                     alt={user.name}
                     className="w-10 h-10 rounded-full mr-3 border-2 border-white"
+                    onError={(e) => {
+                      e.target.src = '/default-avatar.png';
+                    }}
                   />
                   <div>
                     <h3 className="font-semibold text-gray-800">{user.name}</h3>

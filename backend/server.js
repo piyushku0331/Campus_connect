@@ -108,9 +108,13 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   logger.error('Error occurred:', err);
-  res.status(500).json({ error: 'Something went wrong!' });
+  if (res.status) {
+    res.status(500).json({ error: 'Something went wrong!' });
+  } else {
+    next(err);
+  }
 });
 
 app.use((req, res) => {

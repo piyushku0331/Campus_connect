@@ -13,7 +13,7 @@ const Dashboard = () => {
       description: 'Update your personal information',
       icon: User,
       link: '/profile',
-      gradient: 'from-[#6B9FFF] to-[#7F40FF]',
+      gradient: 'from-primary to-secondary',
       category: 'Personal'
     },
     {
@@ -21,7 +21,7 @@ const Dashboard = () => {
       description: 'Manage your network connections',
       icon: Users,
       link: '/networking',
-      gradient: 'from-[#FF7F50] to-[#FF4500]',
+      gradient: 'from-secondary to-accent',
       category: 'Network'
     },
     {
@@ -29,7 +29,7 @@ const Dashboard = () => {
       description: 'View upcoming events',
       icon: Calendar,
       link: '/events',
-      gradient: 'from-[#6B9FFF] to-[#00CED1]',
+      gradient: 'from-primary to-success',
       category: 'Events'
     },
     {
@@ -37,7 +37,7 @@ const Dashboard = () => {
       description: 'Access shared resources',
       icon: BookOpen,
       link: '/resources',
-      gradient: 'from-[#7F40FF] to-[#FF7F50]',
+      gradient: 'from-secondary to-accent',
       category: 'Learning'
     },
     {
@@ -45,7 +45,7 @@ const Dashboard = () => {
       description: 'Check your latest updates',
       icon: Bell,
       link: '/notifications',
-      gradient: 'from-[#00CED1] to-[#6B9FFF]',
+      gradient: 'from-success to-primary',
       category: 'Updates'
     },
     {
@@ -53,13 +53,13 @@ const Dashboard = () => {
       description: 'Configure your preferences',
       icon: Settings,
       link: '/settings',
-      gradient: 'from-[#FF4500] to-[#7F40FF]',
+      gradient: 'from-accent to-secondary',
       category: 'Config'
     }
   ];
   return (
     <div className="min-h-screen relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+      <div className="absolute inset-0 bg-dashboard-gradient"></div>
       <div className="relative z-10">
       {}
       <section className="py-20 md:py-28">
@@ -112,7 +112,7 @@ const Dashboard = () => {
                 className="group"
               >
                 <Link to={item.link} className="block">
-                  <div className="bg-gradient-to-br from-surface to-[#1A1A2A] border border-borderSubtle rounded-2xl p-6 h-full hover:shadow-glow-primary transition-all duration-300">
+                  <div className="bg-card-gradient border border-borderMedium rounded-2xl p-6 h-full hover:shadow-card-hover hover:transform hover:-translate-y-1 transition-all duration-300 animate-fade-in">
                     <div className="flex items-center justify-between mb-4">
                       <div className={`p-3 rounded-xl bg-gradient-to-r ${item.gradient} shadow-lg`}>
                         <item.icon className="w-6 h-6 text-white" />
@@ -121,7 +121,7 @@ const Dashboard = () => {
                         {item.category}
                       </span>
                     </div>
-                    <h3 className="text-xl font-semibold text-textPrimary mb-2 group-hover:text-primary transition-colors duration-300">
+                    <h3 className="text-xl font-semibold text-textPrimary mb-2 group-hover:text-primary transition-all duration-300 animate-hover-lift">
                       {item.title}
                     </h3>
                     <p className="text-textMuted leading-relaxed">

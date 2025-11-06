@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 const createUploader = (destinationPath, fieldName) => {
-  const fullPath = path.join(__dirname, '..', destinationPath);
+  const fullPath = path.join(__dirname, '..', '..', destinationPath);
   if (!fs.existsSync(fullPath)) {
     fs.mkdirSync(fullPath, { recursive: true });
   }
@@ -28,4 +28,9 @@ const createUploader = (destinationPath, fieldName) => {
   return upload.single(fieldName);
 };
 
-module.exports = createUploader;
+// Specific uploaders for different types
+const upload = {
+  single: (fieldName) => createUploader('uploads/materials', fieldName)
+};
+
+module.exports = { upload, createUploader };

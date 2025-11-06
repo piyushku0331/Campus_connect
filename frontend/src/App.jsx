@@ -27,6 +27,8 @@ const ProtectedRoute = lazy(() => import('./components/auth/ProtectedRoute'));
 const Support = lazy(() => import('./pages/Support'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
+const LostFound = lazy(() => import('./pages/LostFound'));
+const Alumni = lazy(() => import('./pages/Alumni'));
 
 const ScrollToTop = memo(function ScrollToTop() {
   const { pathname } = useLocation();
@@ -52,10 +54,16 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-[#6366F1] text-white px-4 py-2 rounded-md text-sm font-medium"
+      >
+        Skip to main content
+      </a>
       <div className="min-h-screen relative">
         <BgImport />
         <ConditionalNavbar />
-        <div className="relative z-10 pt-20">
+        <main id="main-content" className="relative z-10 pt-20">
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
             <Route path="/" element={<Landing />} />
@@ -137,9 +145,21 @@ function App() {
                 <Footer />
               </Suspense>
             } />
+            <Route path="/lostfound" element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <ProtectedRoute><LostFound /></ProtectedRoute>
+                <Footer />
+              </Suspense>
+            } />
+            <Route path="/alumni" element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <ProtectedRoute><Alumni /></ProtectedRoute>
+                <Footer />
+              </Suspense>
+            } />
           </Routes>
           </Suspense>
-        </div>
+        </main>
       </div>
     </>
   );

@@ -14,6 +14,8 @@ const Navbar = () => {
     { name: 'Events', href: '/events' },
     { name: 'Networking', href: '/networking' },
     { name: 'Resources', href: '/resources' },
+    { name: 'Lost & Found', href: '/lostfound' },
+    { name: 'Alumni', href: '/alumni' },
     { name: 'Support', href: '/support' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
@@ -49,10 +51,10 @@ const Navbar = () => {
         onClick: link.action === 'logout' ? () => handleNavClick(link) : undefined
       }))}
       activeHref={location.pathname}
-      baseColor="#192841"
-      pillColor="white"
-      hoveredPillTextColor="white"
-      pillTextColor="#192841"
+      baseColor="#0A0A0F"
+      pillColor="#0A0A0F"
+      hoveredPillTextColor="#F8FAFC"
+      pillTextColor="#F8FAFC"
       className="custom-navbar"
     />
   );
