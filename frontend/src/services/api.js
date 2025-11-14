@@ -125,7 +125,16 @@ export const resourcesAPI = {
 };
 export const usersAPI = {
   getProfile: () => api.get('/users/profile'),
-  updateProfile: (profileData) => api.put('/users/profile', profileData),
+  updateProfile: (profileData) => {
+    if (profileData instanceof FormData) {
+      return api.put('/users/profile', profileData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    }
+    return api.put('/users/profile', profileData);
+  },
   togglePrivacy: (isPublic) => api.patch('/users/privacy', { isPublic }),
   getUserById: (id) => api.get(`/users/${id}`),
   searchUsers: (query, major, year, age) => {

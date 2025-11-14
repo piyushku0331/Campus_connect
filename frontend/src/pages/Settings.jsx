@@ -71,8 +71,9 @@ const Settings = () => {
   const handleSave = async (section) => {
     setSaving(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // TODO: Implement actual API call to save specific section
       console.log(`Saving ${section} settings:`, settings[section]);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
     } catch (error) {
       console.error('Error saving settings:', error);
     } finally {

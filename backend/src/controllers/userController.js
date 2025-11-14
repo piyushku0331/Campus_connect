@@ -1,4 +1,31 @@
 const User = require('../models/User');
+
+const formatUserResponse = (user) => ({
+  id: user._id,
+  email: user.email,
+  name: user.name,
+  age: user.age,
+  department: user.department,
+  semester: user.semester,
+  campus: user.campus,
+  year: user.year,
+  phone: user.phone,
+  bio: user.bio,
+  linkedin: user.linkedin,
+  github: user.github,
+  website: user.website,
+  skills: user.skills,
+  interests: user.interests,
+  profilePicture: user.profilePicture,
+  avatar_url: user.avatar_url,
+  isPublic: user.isPublic,
+  role: user.role,
+  points: user.points,
+  isVerified: user.isVerified,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt
+});
+
 const getProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -6,31 +33,7 @@ const getProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json({
-      id: user._id,
-      email: user.email,
-      name: user.name,
-      age: user.age,
-      department: user.department,
-      semester: user.semester,
-      campus: user.campus,
-      year: user.year,
-      phone: user.phone,
-      bio: user.bio,
-      linkedin: user.linkedin,
-      github: user.github,
-      website: user.website,
-      skills: user.skills,
-      interests: user.interests,
-      profilePicture: user.profilePicture,
-      avatar_url: user.avatar_url,
-      isPublic: user.isPublic,
-      role: user.role,
-      points: user.points,
-      isVerified: user.isVerified,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
-    });
+    res.json(formatUserResponse(user));
   } catch (error) {
     console.error('Error fetching user profile:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -39,53 +42,26 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { name, bio, department, semester, campus, year, phone, linkedin, github, website, skills, interests, profilePicture, avatar_url, age } = req.body;
+    const allowedFields = ['name', 'bio', 'department', 'semester', 'campus', 'year', 'phone', 'linkedin', 'github', 'website', 'skills', 'interests', 'profilePicture', 'avatar_url', 'age'];
     const updateData = {};
-    if (name) updateData.name = name;
-    if (bio !== undefined) updateData.bio = bio;
-    if (department) updateData.department = department;
-    if (semester) updateData.semester = semester;
-    if (campus !== undefined) updateData.campus = campus;
-    if (year !== undefined) updateData.year = year;
-    if (phone !== undefined) updateData.phone = phone;
-    if (linkedin !== undefined) updateData.linkedin = linkedin;
-    if (github !== undefined) updateData.github = github;
-    if (website !== undefined) updateData.website = website;
-    if (skills) updateData.skills = skills;
-    if (interests) updateData.interests = interests;
-    if (profilePicture) updateData.profilePicture = profilePicture;
-    if (avatar_url) updateData.avatar_url = avatar_url;
-    if (age) updateData.age = parseInt(age);
+
+    // Build update data from allowed fields
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = field === 'age' ? parseInt(req.body[field]) : req.body[field];
+      }
+    });
+
+    // Handle file upload
+    if (req.file && req.file.cloudinaryUrl) {
+      updateData.profilePicture = req.file.cloudinaryUrl;
+    }
 
     const user = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password -otp -otpExpires -refreshToken -refreshTokenExpires -resetPasswordToken -resetPasswordExpires');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json({
-      id: user._id,
-      email: user.email,
-      name: user.name,
-      age: user.age,
-      department: user.department,
-      semester: user.semester,
-      campus: user.campus,
-      year: user.year,
-      phone: user.phone,
-      bio: user.bio,
-      linkedin: user.linkedin,
-      github: user.github,
-      website: user.website,
-      skills: user.skills,
-      interests: user.interests,
-      profilePicture: user.profilePicture,
-      avatar_url: user.avatar_url,
-      isPublic: user.isPublic,
-      role: user.role,
-      points: user.points,
-      isVerified: user.isVerified,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt
-    });
+    res.json(formatUserResponse(user));
   } catch (error) {
     console.error('Error updating user profile:', error);
     res.status(500).json({ error: 'Internal server error' });

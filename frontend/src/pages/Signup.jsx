@@ -131,16 +131,12 @@ const Signup = () => {
       return;
     }
 
-    console.log('Signup: Starting OTP verification for email:', formData.email, 'OTP:', otp);
-
     try {
       const { error } = await verifyOtp(formData.email, otp);
-      console.log('Signup: OTP verification result - error:', error);
       if (error) {
         console.error('Signup: OTP verification failed with error:', error);
         toast.error(error || 'Verification failed');
       } else {
-        console.log('Signup: OTP verification successful');
         toast.success('Account verified successfully! Welcome to Campus Connect!');
         navigate('/dashboard');
       }

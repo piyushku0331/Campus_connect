@@ -20,7 +20,7 @@ This guide provides comprehensive instructions for deploying Campus Connect to p
 
 ### System Requirements
 
-- **Node.js**: v16 or higher
+- **Node.js**: v18 or higher
 - **NPM**: v7 or higher
 - **Git**: Latest version
 - **SSL Certificate**: For HTTPS deployment

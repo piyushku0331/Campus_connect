@@ -1,5 +1,15 @@
 const { supabase } = require('../config');
 const { awardPoints, checkAchievements } = require('./gamificationController');
+
+const checkEventOwnership = async (eventId, userId) => {
+  const { data: event } = await supabase
+    .from('events')
+    .select('organizer_id')
+    .eq('id', eventId)
+    .single();
+  return event && event.organizer_id === userId;
+};
+
 const getEvents = async (req, res) => {
   try {
     const { page = 1, limit = 10, upcoming = false } = req.query;
@@ -99,12 +109,8 @@ const updateEvent = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     const { title, description, location, start_date, end_date, max_attendees, tags } = req.body;
-    const { data: existingEvent } = await supabase
-      .from('events')
-      .select('organizer_id')
-      .eq('id', id)
-      .single();
-    if (!existingEvent || existingEvent.organizer_id !== userId) {
+    const isOwner = await checkEventOwnership(id, userId);
+    if (!isOwner) {
       return res.status(403).json({ error: 'Not authorized to update this event' });
     }
     const { data: event, error } = await supabase
@@ -135,12 +141,8 @@ const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    const { data: existingEvent } = await supabase
-      .from('events')
-      .select('organizer_id')
-      .eq('id', id)
-      .single();
-    if (!existingEvent || existingEvent.organizer_id !== userId) {
+    const isOwner = await checkEventOwnership(id, userId);
+    if (!isOwner) {
       return res.status(403).json({ error: 'Not authorized to delete this event' });
     }
     const { error } = await supabase
@@ -160,7 +162,8 @@ const rsvpEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    const { status } = req.body; 
+    const { status } = req.body;
+
     const { data: rsvp, error } = await supabase
       .from('event_attendees')
       .upsert({
@@ -170,23 +173,27 @@ const rsvpEvent = async (req, res) => {
       })
       .select()
       .single();
+
     if (error) {
       return res.status(500).json({ error: 'Failed to RSVP to event' });
     }
+
     if (status === 'attending') {
       await awardPoints(userId, 10, 'rsvp_event', id);
-    }
-    if (status === 'attending') {
+
+      // Check if event has ended and award attendance points
       const { data: eventData } = await supabase
         .from('events')
         .select('end_date')
         .eq('id', id)
         .single();
+
       if (eventData && new Date(eventData.end_date) < new Date()) {
         await awardPoints(userId, 25, 'attended_event', id);
         await checkAchievements(userId);
       }
     }
+
     res.json(rsvp);
   } catch (error) {
     console.error('Error RSVPing to event:', error);

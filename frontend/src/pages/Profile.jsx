@@ -22,7 +22,7 @@ const Profile = () => {
     website: '',
     skills: [],
     interests: [],
-    profilePicture: '',
+    profilePicture: null,
     avatar_url: '',
     isPublic: true
   });
@@ -48,7 +48,7 @@ const Profile = () => {
         website: response.data.website || '',
         skills: response.data.skills || [],
         interests: response.data.interests || [],
-        profilePicture: response.data.profilePicture || '',
+        profilePicture: null,
         avatar_url: response.data.avatar_url || '',
         isPublic: response.data.isPublic ?? true
       });
@@ -78,7 +78,21 @@ const Profile = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const response = await usersAPI.updateProfile(formData);
+      let dataToSend = formData;
+      if (formData.profilePicture instanceof File) {
+        const formDataToSend = new FormData();
+        Object.keys(formData).forEach(key => {
+          if (key === 'profilePicture' && formData[key]) {
+            formDataToSend.append('profilePicture', formData[key]);
+          } else if (key === 'skills' || key === 'interests') {
+            formDataToSend.append(key, JSON.stringify(formData[key]));
+          } else {
+            formDataToSend.append(key, formData[key]);
+          }
+        });
+        dataToSend = formDataToSend;
+      }
+      const response = await usersAPI.updateProfile(dataToSend);
       setUser(response.data);
       setIsEditing(false);
       toast.success('Profile updated successfully!');
@@ -107,15 +121,10 @@ const Profile = () => {
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // For now, just set a placeholder. In production, upload to cloud storage
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setFormData(prev => ({
-          ...prev,
-          profilePicture: e.target.result
-        }));
-      };
-      reader.readAsDataURL(file);
+      setFormData(prev => ({
+        ...prev,
+        profilePicture: file
+      }));
     }
   };
 
