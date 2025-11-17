@@ -335,6 +335,11 @@ ALLOWED_ORIGINS=https://your-frontend-domain.com,https://www.your-frontend-domai
 SESSION_SECRET=your-session-secret-here
 ENCRYPTION_KEY=your-32-character-encryption-key
 
+# File Upload (Cloudinary)
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+
 # Monitoring
 SENTRY_DSN=your-sentry-dsn
 LOG_LEVEL=info

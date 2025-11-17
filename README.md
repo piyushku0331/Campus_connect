@@ -27,6 +27,7 @@
 - [🎯 Project Overview](#-project-overview)
 - [🌟 Features](#-features)
 - [🏗️ Architecture](#️-architecture)
+- [🔍 Notable Patterns and Improvements](#-notable-patterns-and-improvements)
 - [📦 Installation](#-installation)
 - [⚙️ Setup](#️-setup)
 - [🚀 Usage](#-usage)
@@ -79,11 +80,26 @@
 
 ### Technology Stack
 
-- **Frontend**: React 19, Vite 7.1.7, Tailwind CSS 4.1.14, Framer Motion
-- **Backend**: Node.js 18+, Express.js, MongoDB 6+, Socket.io
-- **Authentication**: JWT, OTP verification
-- **Real-time**: WebSocket communication
-- **File Storage**: GridFS (MongoDB)
+#### Backend
+- **Runtime**: Node.js (CommonJS)
+- **Framework**: Express.js with middleware for security (Helmet, CORS, compression), rate limiting, and input sanitization
+- **Database**: MongoDB with Mongoose ODM for schema validation and relationships
+- **Authentication**: JWT with refresh tokens stored in httpOnly cookies, bcrypt for password hashing
+- **Real-time Communication**: Socket.io for messaging features
+- **File Handling**: Cloudinary for image/video uploads with Multer
+- **Logging**: Winston for structured logging
+- **Email**: Nodemailer for notifications and verification
+- **Testing**: Jest with MongoDB memory server
+
+#### Frontend
+- **Framework**: React 19 with Vite for fast development and building
+- **Styling**: Tailwind CSS with custom utilities and dark mode support
+- **Routing**: React Router DOM with lazy loading for code splitting and performance
+- **State Management**: React hooks with AuthContext for authentication state
+- **API Communication**: Axios with request/response interceptors for JWT handling and automatic token refresh
+- **Animations**: Framer Motion for smooth transitions and GSAP for advanced effects
+- **Icons**: Lucide React
+- **Testing**: Vitest for unit tests, Playwright for E2E testing with mobile performance specs
 
 ---
 
@@ -138,23 +154,19 @@
 
 ### Frontend Architecture
 
-- **React 18** with modern hooks and concurrent features
-- **Vite** for fast development and optimized builds
-- **Tailwind CSS** for utility-first styling
-- **Framer Motion** for smooth animations
-- **React Router** for client-side routing
-- **Axios** for API communication
-- **Context API** for state management
+**Core Structure:**
+- **Pages:** Route-based components with data fetching and UI rendering (e.g., `News.jsx` displays educational news with category filtering and responsive grid layout; `Blog.jsx` provides full CRUD interface with modal forms and search functionality)
+- **Components:** Reusable UI elements organized by feature (e.g., auth components for routing, gamification widgets, background effects)
+- **Services:** Centralized API layer with feature-specific modules (e.g., `api.js` exports `blogAPI`, `newsAPI`, `authAPI` with consistent error handling)
+- **Utilities:** Helpers for parallax effects, constants, and shared functions
 
 ### Backend Architecture
 
-- **Express.js** for RESTful API development
-- **MongoDB/Mongoose** for data modeling and queries
-- **JWT** for authentication and authorization
-- **Socket.io** for real-time communication
-- **Winston** for logging
-- **Nodemailer** for email services
-- **Multer** for file uploads
+**Core Structure:**
+- **Controllers:** Handle business logic with consistent error handling and response formatting (e.g., `userController.js` manages profile operations with field validation and selective data exposure; `blogController.js` implements CRUD with authorization checks)
+- **Models:** Mongoose schemas with validation, indexes, and virtuals (e.g., `User.js` includes password hashing middleware and email validation; `Blog.js` features text search indexes and virtuals for like/comment counts)
+- **Routes:** Organized under `/api` prefix with modular routing (e.g., `routes/index.js` mounts feature-specific routes like auth, users, blogs)
+- **Middleware:** Comprehensive stack including authentication (`authMiddleware.js`), file uploads (`cloudinaryUpload.js`), error handling (`errorMiddleware.js`), and validation
 
 ### Database Design
 
@@ -168,6 +180,25 @@
 - `lost_items` - Lost and found items
 - `alumni` - Alumni profiles and success stories
 - `achievements` - Gamification badges and points
+
+---
+
+## 🔍 Notable Patterns and Improvements
+
+### Positive Patterns
+- **Consistent MVC-like separation** in backend with clear controller-model-route organization
+- **Comprehensive security middleware stack** (CORS, Helmet, rate limiting, input validation)
+- **Efficient database design** with indexes, virtuals, and aggregation pipelines
+- **Frontend performance optimizations** (lazy loading, code splitting, responsive images)
+- **Centralized API service layer** with automatic token management
+- **Thorough error handling and logging** throughout the application
+
+### Areas for Improvement
+- **Backend:** Some controllers exhibit repetitive validation logic that could be abstracted into shared utilities; consider implementing more granular role-based permissions beyond basic user/admin
+- **Frontend:** PropTypes are used inconsistently across components; some components could benefit from memoization for complex renders
+- **Security:** While comprehensive, ensure all file uploads validate content types and sizes strictly; consider implementing CSRF protection for state-changing operations
+- **Performance:** Database queries could be optimized further with selective field population; implement caching for frequently accessed data like news articles
+- **Maintainability:** The large number of routes and models suggests potential for further modularization; consider adding API documentation generation (e.g., Swagger)
 
 ---
 
@@ -246,8 +277,8 @@ VITE_API_URL=http://localhost:5000/api
 
 ### File Upload Setup
 
-1. **Create uploads folder** in backend directory: `mkdir uploads`
-2. **GridFS will handle file storage** automatically with MongoDB
+1. **Configure Cloudinary** credentials in backend `.env` file
+2. **Cloudinary will handle image/video uploads** automatically with Multer middleware
 
 ---
 

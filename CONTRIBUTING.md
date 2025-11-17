@@ -8,6 +8,7 @@ Thank you for your interest in contributing to Campus Connect! We welcome contri
 - [Getting Started](#getting-started)
 - [Development Workflow](#development-workflow)
 - [Contribution Guidelines](#contribution-guidelines)
+- [Architecture Patterns](#architecture-patterns)
 - [Reporting Issues](#reporting-issues)
 - [Pull Request Process](#pull-request-process)
 - [Development Setup](#development-setup)
@@ -238,6 +239,55 @@ export const signIn = async (email, password) => {
   // API implementation
 };
 ```
+
+## 🏗️ Architecture Patterns
+
+### Established Patterns
+
+#### Backend Architecture
+- **MVC-like Separation**: Maintain clear separation between controllers, models, and routes
+- **Comprehensive Middleware Stack**: Use security middleware (Helmet, CORS, rate limiting, input validation)
+- **Efficient Database Design**: Leverage indexes, virtuals, and aggregation pipelines
+- **Structured Logging**: Implement Winston for consistent logging across the application
+
+#### Frontend Architecture
+- **Component Organization**: Group components by feature with reusable UI elements
+- **Centralized API Layer**: Use feature-specific API modules with consistent error handling
+- **Performance Optimizations**: Implement lazy loading, code splitting, and responsive images
+- **State Management**: Utilize React hooks and AuthContext for authentication state
+
+### Best Practices
+
+#### Security
+- **File Upload Validation**: Always validate content types and sizes for uploads
+- **Input Sanitization**: Use middleware for input validation and sanitization
+- **Authentication**: Store JWT refresh tokens securely in httpOnly cookies
+- **CSRF Protection**: Consider implementing CSRF protection for state-changing operations
+
+#### Performance
+- **Database Optimization**: Use selective field population and implement caching for frequently accessed data
+- **Frontend Memoization**: Apply memoization for complex component renders
+- **Lazy Loading**: Implement code splitting and lazy loading for better performance
+
+#### Maintainability
+- **Validation Abstraction**: Abstract repetitive validation logic into shared utilities
+- **Role-Based Permissions**: Implement granular role-based permissions beyond basic user/admin
+- **API Documentation**: Consider adding Swagger for API documentation generation
+- **Modularization**: Further modularize large numbers of routes and models
+
+### Code Quality Guidelines
+
+#### Backend
+- Use consistent error handling and response formatting in controllers
+- Implement authorization checks in controllers
+- Leverage Mongoose virtuals for computed fields
+- Follow text search index patterns for searchable content
+
+#### Frontend
+- Use PropTypes consistently across components
+- Implement lazy loading for route-based components
+- Utilize Axios interceptors for JWT handling
+- Apply responsive design principles with mobile-first approach
 
 ## 🐛 Reporting Issues
 
