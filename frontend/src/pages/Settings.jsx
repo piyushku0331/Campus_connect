@@ -68,23 +68,17 @@ const Settings = () => {
       }
     }));
   };
-  const handleSave = async (section) => {
-    setSaving(true);
-    try {
-<<<<<<< HEAD
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      // Settings saved (mock); do not log sensitive settings
-=======
-      // TODO: Implement actual API call to save specific section
-      console.log(`Saving ${section} settings:`, settings[section]);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
->>>>>>> d751ccca9135d403512bcd584d44e93ea06ad828
-    } catch (error) {
-      console.error('Error saving settings:', error);
-    } finally {
-      setSaving(false);
-    }
-  };
+  const handleSave = async () => {
+      setSaving(true);
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Settings saved (mock); do not log sensitive settings
+      } catch (error) {
+        console.error('Error saving settings:', error);
+      } finally {
+        setSaving(false);
+      }
+    };
   const togglePasswordVisibility = (field) => {
     setShowPasswords(prev => ({
       ...prev,
@@ -148,7 +142,7 @@ const Settings = () => {
                 ))}
               </div>
               <button
-                onClick={() => handleSave('notifications')}
+                onClick={() => handleSave()}
                 disabled={saving}
                 className="mt-6 bg-accent-gradient text-white font-medium px-6 py-3 rounded-lg hover:shadow-[0_0_20px_#6B9FFF]/30 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
@@ -207,7 +201,7 @@ const Settings = () => {
                 ))}
               </div>
               <button
-                onClick={() => handleSave('privacy')}
+                onClick={() => handleSave()}
                 disabled={saving}
                 className="mt-6 bg-accent-gradient text-white font-medium px-6 py-3 rounded-lg hover:shadow-[0_0_20px_#6B9FFF]/30 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
@@ -256,7 +250,7 @@ const Settings = () => {
                 </div>
               </div>
               <button
-                onClick={() => handleSave('appearance')}
+                onClick={() => handleSave()}
                 disabled={saving}
                 className="mt-6 bg-accent-gradient text-white font-medium px-6 py-3 rounded-lg hover:shadow-[0_0_20px_#6B9FFF]/30 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
@@ -334,7 +328,7 @@ const Settings = () => {
                 </div>
               </div>
               <button
-                onClick={() => handleSave('account')}
+                onClick={() => handleSave()}
                 disabled={saving}
                 className="mt-6 bg-accent-gradient text-white font-medium px-6 py-3 rounded-lg hover:shadow-[0_0_20px_#6B9FFF]/30 hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
