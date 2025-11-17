@@ -281,24 +281,12 @@ const sendOTP = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-<<<<<<< HEAD
     const { otp, otpExpires } = generateOTP();
     user.otp = otp;
     user.otpExpires = otpExpires;
     await user.save();
 
     logger.info('Generated OTP for', normalizedEmail, ':', otp);
-
-=======
-
-    const { otp, otpExpires } = generateOTP();
-    user.otp = otp;
-    user.otpExpires = otpExpires;
-    await user.save();
-
-    logger.info('Generated OTP for', normalizedEmail, ':', otp);
-
->>>>>>> d751ccca9135d403512bcd584d44e93ea06ad828
     try {
       await sendOTPEmail(normalizedEmail, otp, user.name);
       res.status(200).json({ message: 'OTP sent successfully' });
@@ -334,9 +322,6 @@ const verifyOTP = async (req, res) => {
     const storedOtp = String(user.otp).trim();
     const enteredOtp = String(trimmedOtp).trim();
 
-<<<<<<< HEAD
-=======
->>>>>>> d751ccca9135d403512bcd584d44e93ea06ad828
     if (storedOtp !== enteredOtp || user.otpExpires < new Date()) {
       return res.status(400).json({ error: 'Invalid or expired OTP' });
     }

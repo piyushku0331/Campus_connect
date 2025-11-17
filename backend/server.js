@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-// Core server dependencies for Campus Connect backend
-const express = require('express'); // Web framework for Node.js
-const http = require('http'); // HTTP server for Express and Socket.io
-const { Server } = require('socket.io'); // Real-time bidirectional communication
-const helmet = require('helmet'); // Security middleware for HTTP headers
-const compression = require('compression'); // Response compression middleware
-const cors = require('cors'); // Cross-Origin Resource Sharing middleware
-const cookieParser = require('cookie-parser'); // Parse cookies from HTTP requests
-const mongoose = require('mongoose'); // MongoDB object modeling for Node.js
-=======
 // Core server dependencies for Campus Connect backend
 const express = require('express'); // Web framework for Node.js
 const http = require('http'); // HTTP server for Express and Socket.io
@@ -20,7 +9,6 @@ const cookieParser = require('cookie-parser'); // Parse cookies from HTTP reques
 const mongoose = require('mongoose'); // MongoDB object modeling for Node.js
 
 // Database connection function with error handling
->>>>>>> d751ccca9135d403512bcd584d44e93ea06ad828
 const connectDB = async () => {
   try {
     const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/campus-connect';
@@ -41,13 +29,8 @@ require('dotenv').config();
 // Initialize Express application
 const app = express();
 
-<<<<<<< HEAD
 // Define CORS configuration to avoid duplication
 const corsOptions = {
-=======
-// Define CORS configuration to avoid duplication
-const corsOptions = {
->>>>>>> d751ccca9135d403512bcd584d44e93ea06ad828
   origin: function (origin, callback) {
     // Define allowed origins for security (development and production URLs)
     const allowedOrigins = [
@@ -116,21 +99,7 @@ app.use(express.json({ limit: '10mb' }));
 // Parse URL-encoded request bodies with size limit (for form submissions)
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-<<<<<<< HEAD
 // Serve static files from uploads directory with caching headers
-app.use('/uploads', express.static('uploads', {
-  maxAge: '30d', // Cache files for 30 days
-  etag: true, // Enable ETag for caching
-  lastModified: true, // Send Last-Modified header
-  setHeaders: (res) => {
-    // Set Cache-Control header for long-term caching
-    res.set('Cache-Control', 'public, max-age=2592000'); // 30 days in seconds
-  }
-}));
-
-=======
-// Serve static files from uploads directory with caching headers
->>>>>>> d751ccca9135d403512bcd584d44e93ea06ad828
 app.use('/uploads', express.static('uploads', {
   maxAge: '30d', // Cache files for 30 days
   etag: true, // Enable ETag for caching
