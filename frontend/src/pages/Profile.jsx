@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import { User, Edit3, Save, X, Eye, EyeOff, Camera, Github, Linkedin, Globe, MapPin, Calendar, Award, Users } from 'lucide-react';
 import { usersAPI } from '../services/api';
 import toast, { Toaster } from 'react-hot-toast';
@@ -9,6 +9,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     bio: '',
@@ -32,8 +33,13 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Profile component rendered, isPublic:', formData.isPublic);
-  }, [formData.isPublic]);
+    // Cleanup preview URL
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
 
   const fetchProfile = async () => {
     try {
@@ -50,12 +56,13 @@ const Profile = () => {
         linkedin: response.data.linkedin || '',
         github: response.data.github || '',
         website: response.data.website || '',
-        skills: response.data.skills || [],
-        interests: response.data.interests || [],
+        skills: (Array.isArray(response.data.skills) ? response.data.skills.filter(skill => skill && skill.trim() && skill !== '[]') : (typeof response.data.skills === 'string' ? JSON.parse(response.data.skills) : [])),
+        interests: (Array.isArray(response.data.interests) ? response.data.interests.filter(interest => interest && interest.trim() && interest !== '[]') : (typeof response.data.interests === 'string' ? JSON.parse(response.data.interests) : [])),
         profilePicture: null,
-        avatar_url: response.data.avatar_url || '',
+        profilePhoto: response.data.profilePhoto || '',
         isPublic: response.data.isPublic ?? true
       });
+      setPreviewUrl(null);
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast.error('Failed to load profile');
@@ -110,13 +117,10 @@ const Profile = () => {
 
   const handleTogglePrivacy = async () => {
     const newIsPublic = !formData.isPublic;
-    console.log('Toggle button clicked, handleTogglePrivacy called, current isPublic:', formData.isPublic, 'new:', newIsPublic);
     // Optimistic update
     setFormData(prev => ({ ...prev, isPublic: newIsPublic }));
     try {
-      console.log('Calling API with isPublic:', newIsPublic);
-      const response = await usersAPI.togglePrivacy(newIsPublic);
-      console.log('API response:', response.data);
+      await usersAPI.togglePrivacy(newIsPublic);
       toast.success(`Profile is now ${newIsPublic ? 'public' : 'private'}`);
     } catch (error) {
       console.error('Error toggling privacy:', error);
@@ -133,6 +137,9 @@ const Profile = () => {
         ...prev,
         profilePicture: file
       }));
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     }
   };
 
@@ -159,7 +166,7 @@ const Profile = () => {
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white card-3d tilt-3d parallax-group">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <motion.div
@@ -167,7 +174,7 @@ const Profile = () => {
                   className="relative"
                 >
                   <img
-                    src={formData.profilePicture || formData.avatar_url || '/default-avatar.png'}
+                    src={previewUrl || formData.profilePhoto || '/default-avatar.png'}
                     alt="Profile"
                     loading="lazy"
                     data-depth="0.4"
@@ -201,9 +208,7 @@ const Profile = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   onClick={handleTogglePrivacy}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                     formData.isPublic
@@ -213,7 +218,7 @@ const Profile = () => {
                 >
                   {formData.isPublic ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                   <span>{formData.isPublic ? 'Public' : 'Private'}</span>
-                </motion.button>
+                </button>
                 <AnimatePresence mode="wait">
                   {isEditing ? (
                     <motion.div
@@ -223,40 +228,30 @@ const Profile = () => {
                       exit={{ opacity: 0, scale: 0.8 }}
                       className="flex space-x-2"
                     >
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                      <button
                         onClick={handleSave}
                         disabled={saving}
                         className="flex items-center space-x-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50"
                       >
                         <Save className="w-4 h-4" />
                         <span>{saving ? 'Saving...' : 'Save'}</span>
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                      </button>
+                      <button
                         onClick={() => setIsEditing(false)}
                         className="flex items-center space-x-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
                       >
                         <X className="w-4 h-4" />
                         <span>Cancel</span>
-                      </motion.button>
+                      </button>
                     </motion.div>
                   ) : (
-                    <motion.button
-                      key="edit-button"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                    <button
                       onClick={() => setIsEditing(true)}
                       className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
                     >
                       <Edit3 className="w-4 h-4" />
                       <span>Edit Profile</span>
-                    </motion.button>
+                    </button>
                   )}
                 </AnimatePresence>
               </div>
@@ -496,11 +491,11 @@ const Profile = () => {
 
                   {/* Skills & Interests */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {formData.skills.length > 0 && (
+                    {formData.skills.filter(skill => skill && skill.trim() && skill !== '[]').length > 0 && (
                       <div>
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">Skills</h3>
                         <div className="flex flex-wrap gap-2">
-                          {formData.skills.map((skill, index) => (
+                          {formData.skills.filter(skill => skill && skill.trim() && skill !== '[]').map((skill, index) => (
                             <motion.span
                               key={index}
                               whileHover={{ scale: 1.05 }}
@@ -513,11 +508,11 @@ const Profile = () => {
                       </div>
                     )}
 
-                    {formData.interests.length > 0 && (
+                    {formData.interests.filter(interest => interest && interest.trim() && interest !== '[]').length > 0 && (
                       <div>
                         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3">Interests</h3>
                         <div className="flex flex-wrap gap-2">
-                          {formData.interests.map((interest, index) => (
+                          {formData.interests.filter(interest => interest && interest.trim() && interest !== '[]').map((interest, index) => (
                             <motion.span
                               key={index}
                               whileHover={{ scale: 1.05 }}

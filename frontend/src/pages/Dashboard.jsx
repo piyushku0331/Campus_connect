@@ -6,9 +6,7 @@ import GamificationWidget from '../components/gamification/GamificationWidget';
 import UserProgress from '../components/gamification/UserProgress';
 import AchievementBadges from '../components/gamification/AchievementBadges';
 import Leaderboard from '../components/gamification/Leaderboard';
-import { AuroraBackground } from '../components/lightswind/aurora-background';
 import { GlowingCards, GlowingCard } from '../components/lightswind/glowing-cards';
-import ParticleOrbitEffect from '../components/lightswind/particle-orbit-effect';
 import GlowCard from '../components/ui/GlowCard';
 import { PORTFOLIO_ITEMS } from '../utils/constants';
 const Dashboard = () => {
@@ -28,8 +26,7 @@ const Dashboard = () => {
     icon: iconMap[item.icon]
   }));
   return (
-    <AuroraBackground>
-      <div className="min-h-screen relative">
+    <div className="relative">
         <div className="absolute inset-0 bg-dashboard-gradient"></div>
         <div className="relative z-10">
       {}
@@ -192,8 +189,6 @@ const Dashboard = () => {
       </section>
         </div>
       </div>
-      <ParticleOrbitEffect />
-    </AuroraBackground>
   );
 };
 export default Dashboard;

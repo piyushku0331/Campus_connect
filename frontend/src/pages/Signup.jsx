@@ -139,7 +139,7 @@ const Signup = () => {
         toast.success('Account verified successfully! Welcome to Campus Connect!');
         navigate('/dashboard', { replace: true });
       }
-    } catch (err) {
+    } catch {
       console.error('Signup: Unexpected error during OTP verification');
       toast.error('An unexpected error occurred');
     }

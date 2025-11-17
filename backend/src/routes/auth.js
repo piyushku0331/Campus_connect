@@ -12,22 +12,9 @@ const {
   refreshToken
 } = require('../controllers/authController');
 const { verifyToken } = require('../middleware/authMiddleware');
-const multer = require('multer');
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 5 * 1024 * 1024,
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed'), false);
-    }
-  }
-});
+const { uploadUserProfile } = require('../middleware/cloudinaryUpload');
 
-router.post('/signup', upload.single('photo'), signUp);
+router.post('/signup', uploadUserProfile, signUp);
 router.post('/signin', signIn);
 router.post('/signout', signOut);
 router.post('/send-otp', sendOTP);

@@ -9,6 +9,9 @@ const Navbar = () => {
 
   const servicesDropdown = [
     { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Feed', href: '/feed' },
+    { label: 'News', href: '/news' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Profile', href: '/profile' },
     { label: 'Lost & Found', href: '/lostfound' },
     { label: 'Resources', href: '/resources' },

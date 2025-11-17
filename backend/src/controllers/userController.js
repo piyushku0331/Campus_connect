@@ -1,30 +1,31 @@
 const User = require('../models/User');
 
-const formatUserResponse = (user) => ({
-  id: user._id,
-  email: user.email,
-  name: user.name,
-  age: user.age,
-  department: user.department,
-  semester: user.semester,
-  campus: user.campus,
-  year: user.year,
-  phone: user.phone,
-  bio: user.bio,
-  linkedin: user.linkedin,
-  github: user.github,
-  website: user.website,
-  skills: user.skills,
-  interests: user.interests,
-  profilePicture: user.profilePicture,
-  avatar_url: user.avatar_url,
-  isPublic: user.isPublic,
-  role: user.role,
-  points: user.points,
-  isVerified: user.isVerified,
-  createdAt: user.createdAt,
-  updatedAt: user.updatedAt
-});
+const formatUserResponse = (user) => {
+  return {
+    id: user._id,
+    email: user.email,
+    name: user.name,
+    age: user.age,
+    department: user.department,
+    semester: user.semester,
+    campus: user.campus,
+    year: user.year,
+    phone: user.phone,
+    bio: user.bio,
+    linkedin: user.linkedin,
+    github: user.github,
+    website: user.website,
+    skills: user.skills,
+    interests: user.interests,
+    profilePhoto: user.profilePhoto,
+    isPublic: user.isPublic,
+    role: user.role,
+    points: user.points,
+    isVerified: user.isVerified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  };
+};
 
 const getProfile = async (req, res) => {
   try {
@@ -42,19 +43,33 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
-    const allowedFields = ['name', 'bio', 'department', 'semester', 'campus', 'year', 'phone', 'linkedin', 'github', 'website', 'skills', 'interests', 'profilePicture', 'avatar_url', 'age'];
+    const allowedFields = ['name', 'bio', 'department', 'semester', 'campus', 'year', 'phone', 'linkedin', 'github', 'website', 'skills', 'interests', 'age'];
     const updateData = {};
 
     // Build update data from allowed fields
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {
-        updateData[field] = field === 'age' ? parseInt(req.body[field]) : req.body[field];
+        if (field === 'age') {
+          updateData[field] = parseInt(req.body[field]);
+        } else if (field === 'skills' || field === 'interests') {
+          // Parse JSON strings back to arrays
+          try {
+            updateData[field] = JSON.parse(req.body[field]);
+          } catch (e) {
+            updateData[field] = [];
+          }
+        } else {
+          updateData[field] = req.body[field];
+        }
       }
     });
 
     // Handle file upload
-    if (req.file && req.file.cloudinaryUrl) {
-      updateData.profilePicture = req.file.cloudinaryUrl;
+    if (req.file) {
+      console.log('File uploaded successfully:', req.file.path);
+      updateData.profilePhoto = req.file.path; // Cloudinary URL
+    } else {
+      console.log('No file uploaded');
     }
 
     const user = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password -otp -otpExpires -refreshToken -refreshTokenExpires -resetPasswordToken -resetPasswordExpires');
@@ -74,10 +89,11 @@ const getUserById = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
     res.json({
       id: user._id,
       name: user.name,
-      avatar_url: user.avatar_url,
+      profilePhoto: user.profilePhoto,
       department: user.department,
       semester: user.semester,
       age: user.age,
@@ -108,12 +124,12 @@ const searchUsers = async (req, res) => {
       mongoQuery.age = parseInt(age);
     }
     const users = await User.find(mongoQuery)
-      .select('name avatar_url department semester age')
+      .select('name profilePhoto department semester age')
       .limit(20);
     const formattedUsers = users.map(user => ({
       id: user._id,
       name: user.name,
-      avatar_url: user.avatar_url,
+      profilePhoto: user.profilePhoto,
       department: user.department,
       semester: user.semester,
       age: user.age

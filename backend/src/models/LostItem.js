@@ -23,7 +23,11 @@ const lostItemSchema = new mongoose.Schema({
     default: 'Other',
     index: true
   },
-  imagePath: {
+  itemPhotoUrl: {
+    type: String,
+    trim: true
+  },
+  itemDocumentUrl: {
     type: String,
     trim: true
   },

@@ -1,5 +1,5 @@
 const logger = require('../utils/logger');
-const errorHandler = (err, req, res) => {
+const errorHandler = (err, req, res, next) => {
   logger.error('Error occurred:', {
     message: err.message,
     stack: err.stack,
@@ -28,6 +28,15 @@ const errorHandler = (err, req, res) => {
   } else if (err.code === '23505') {
     statusCode = 409;
     message = 'Resource already exists';
+  } else if (err.code === 'LIMIT_FILE_SIZE') {
+    statusCode = 400;
+    message = 'File too large';
+  } else if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+    statusCode = 400;
+    message = 'Unexpected file field';
+  } else if (err.name === 'MulterError') {
+    statusCode = 400;
+    message = 'File upload error';
   }
   const isDevelopment = process.env.NODE_ENV === 'development';
   const errorResponse = {

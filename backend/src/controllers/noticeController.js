@@ -16,7 +16,7 @@ const uploadNotice = async (req, res) => {
     const newNotice = new Notice({
       title: title.trim(),
       category,
-      filePath: req.file.path
+      filePath: req.file.id // GridFS file id
     });
 
     const notice = await newNotice.save();

@@ -11,6 +11,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem('accessToken');
+    console.log('API Request:', config.method?.toUpperCase(), config.url, 'Token present:', !!token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -46,6 +47,7 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+    console.error('API Error Response:', error.response?.status, error.response?.data);
     if (error.response?.status >= 500) {
       console.error('Server error:', error.response.data);
     } else if (error.response?.status === 400) {
@@ -145,5 +147,39 @@ export const usersAPI = {
     if (age) params.append('age', age);
     return api.get(`/users/search?${params}`);
   },
+};
+export const newsAPI = {
+  getEducationalNews: () => api.get('/news/educational'),
+};
+export const blogAPI = {
+  getBlogs: (params = '') => api.get(`/blogs${params}`),
+  getBlogById: (id) => api.get(`/blogs/${id}`),
+  createBlog: (blogData) => api.post('/blogs', blogData),
+  updateBlog: (id, blogData) => api.put(`/blogs/${id}`, blogData),
+  deleteBlog: (id) => api.delete(`/blogs/${id}`),
+  getUserBlogs: (params = '') => api.get(`/blogs/user/my-posts${params}`),
+  toggleLike: (id) => api.post(`/blogs/${id}/like`),
+  addComment: (id) => api.post(`/blogs/${id}/comment`),
+  getTags: () => api.get('/blogs/tags'),
+};
+export const postsAPI = {
+  getFeed: () => api.get('/posts/feed'),
+  getCreatorPosts: (creatorId) => api.get(`/posts/creator/${creatorId}`),
+  getPost: (postId) => api.get(`/posts/${postId}`),
+  createPost: (formData) => api.post('/posts', formData),
+  updatePost: (postId, postData) => api.put(`/posts/${postId}`, postData),
+  deletePost: (postId) => api.delete(`/posts/${postId}`),
+  toggleLike: (postId) => api.post(`/posts/${postId}/like`),
+  addComment: (postId) => api.post(`/posts/${postId}/comment`),
+  getTrendingPosts: () => api.get('/posts/trending'),
+  searchPosts: (params) => api.get(`/posts/search?${params}`),
+};
+export const creatorsAPI = {
+  applyForCreator: (applicationData) => api.post('/creators/apply', applicationData),
+  getCreatorProfile: () => api.get('/creators/profile/me'),
+  updateCreatorProfile: (profileData) => api.put('/creators/profile/me', profileData),
+  getPublicCreatorProfile: (creatorId) => api.get(`/creators/${creatorId}`),
+  toggleFollow: (creatorId) => api.post(`/creators/${creatorId}/follow`),
+  getSuggestedCreators: () => api.get('/creators/suggested'),
 };
 export default api;

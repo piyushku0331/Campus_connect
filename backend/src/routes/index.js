@@ -14,5 +14,10 @@ router.use('/lost-items', require('./lostItem'));
 router.use('/notices', require('./notice'));
 router.use('/placements', require('./placement'));
 router.use('/materials', require('./studyMaterial'));
+router.use('/files', require('./files'));
+router.use('/news', require('./news'));
+router.use('/blogs', require('./blog'));
+router.use('/posts', require('./posts'));
+router.use('/creators', require('./creators'));
 
 module.exports = router;

@@ -25,7 +25,7 @@ const studyMaterialSchema = new mongoose.Schema({
     trim: true,
     index: true
   },
-  filePath: {
+  resourceFileUrl: {
     type: String,
     required: true,
     trim: true

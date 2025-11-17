@@ -106,7 +106,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     index: true
   },
-  avatar_url: {
+  profilePhoto: {
     type: String,
     default: null
   },

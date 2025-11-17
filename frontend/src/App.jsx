@@ -35,6 +35,13 @@ const AboutUs = lazy(() => import('./pages/AboutUs')); // About page
 const ContactUs = lazy(() => import('./pages/ContactUs')); // Contact information
 const LostFound = lazy(() => import('./pages/LostFound')); // Lost and found items
 const Alumni = lazy(() => import('./pages/Alumni')); // Alumni network and stories
+const Feed = lazy(() => import('./pages/Feed')); // Campus feed with news and posts
+const Blog = lazy(() => import('./pages/Blog')); // Community blog for articles and research
+const News = lazy(() => import('./pages/News')); // Educational news page
+const CreatorApply = lazy(() => import('./pages/CreatorApply')); // Creator application page
+const Faq = lazy(() => import('./pages/Faq')); // FAQ page
+const Docs = lazy(() => import('./pages/Docs')); // Docs page
+const Forum = lazy(() => import('./pages/Forum')); // Forum page
 
 // Utility component to scroll to top on route changes
 const ScrollToTop = memo(function ScrollToTop() {
@@ -49,10 +56,14 @@ const ScrollToTop = memo(function ScrollToTop() {
 });
 // Route wrapper component for pages with footer
 const PageWithFooter = ({ children, protected: isProtected = false }) => (
-  <Suspense fallback={<LoadingSpinner />}>
-    {isProtected ? <ProtectedRoute>{children}</ProtectedRoute> : children}
+  <div className="flex flex-col min-h-screen">
+    <div className="flex-grow">
+      <Suspense fallback={<LoadingSpinner />}>
+        {isProtected ? <ProtectedRoute>{children}</ProtectedRoute> : children}
+      </Suspense>
+    </div>
     <Footer />
-  </Suspense>
+  </div>
 );
 
 PageWithFooter.propTypes = {
@@ -93,6 +104,10 @@ function App() {
               <Route path="/login" element={<PageWithFooter><Login /></PageWithFooter>} />
               <Route path="/signup" element={<PageWithFooter><Signup /></PageWithFooter>} />
               <Route path="/dashboard" element={<PageWithFooter protected><Dashboard /></PageWithFooter>} />
+              <Route path="/feed" element={<PageWithFooter protected><Feed /></PageWithFooter>} />
+              <Route path="/news" element={<PageWithFooter protected><News /></PageWithFooter>} />
+              <Route path="/blog" element={<PageWithFooter protected><Blog /></PageWithFooter>} />
+              <Route path="/creator/apply" element={<PageWithFooter protected><CreatorApply /></PageWithFooter>} />
               <Route path="/profile" element={<PageWithFooter protected><Profile /></PageWithFooter>} />
               <Route path="/events" element={<PageWithFooter protected><Events /></PageWithFooter>} />
               <Route path="/networking" element={<PageWithFooter protected><Networking /></PageWithFooter>} />
@@ -102,8 +117,11 @@ function App() {
               <Route path="/support" element={<PageWithFooter><Support /></PageWithFooter>} />
               <Route path="/about" element={<PageWithFooter><AboutUs /></PageWithFooter>} />
               <Route path="/contact" element={<PageWithFooter><ContactUs /></PageWithFooter>} />
+              <Route path="/faq" element={<PageWithFooter><Faq /></PageWithFooter>} />
               <Route path="/lostfound" element={<PageWithFooter protected><LostFound /></PageWithFooter>} />
               <Route path="/alumni" element={<PageWithFooter protected><Alumni /></PageWithFooter>} />
+              <Route path="/docs" element={<PageWithFooter><Docs /></PageWithFooter>} />
+              <Route path="/forum" element={<PageWithFooter><Forum /></PageWithFooter>} />
             </Routes>
           </Suspense>
         </main>

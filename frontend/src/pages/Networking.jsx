@@ -164,7 +164,7 @@ const Networking = () => {
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-accent-gradient rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                          {user.avatar_url || user.full_name?.charAt(0) || 'U'}
+                          {user.profilePhoto ? '✓' : (user.full_name?.charAt(0) || 'U')}
                         </div>
                         <div>
                           <p className="text-textPrimary font-medium">{user.full_name}</p>
@@ -212,7 +212,7 @@ const Networking = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-accent-gradient rounded-full flex items-center justify-center text-white font-semibold">
-                          {request.sender?.avatar_url || request.sender?.full_name?.charAt(0) || 'U'}
+                          {request.sender?.profilePhoto ? '✓' : (request.sender?.full_name?.charAt(0) || 'U')}
                         </div>
                         <div>
                           <h3 className="text-lg font-semibold text-textPrimary">{request.sender?.full_name}</h3>
@@ -268,7 +268,7 @@ const Networking = () => {
                   >
                     <div className="text-center mb-6">
                       <div className="w-16 h-16 bg-accent-gradient rounded-full flex items-center justify-center text-white font-semibold text-lg mx-auto mb-4">
-                        {connection.user?.avatar_url || connection.user?.full_name?.charAt(0) || 'U'}
+                        {connection.user?.profilePhoto ? '✓' : (connection.user?.full_name?.charAt(0) || 'U')}
                       </div>
                       <h3 className="text-xl font-semibold text-textPrimary mb-1">{connection.user?.full_name}</h3>
                       <p className="text-textMuted text-sm mb-2">{connection.user?.major} - {connection.user?.year}</p>

@@ -3,9 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Leaderboard from '../components/gamification/Leaderboard';
 import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
-import { AuroraBackground } from '../components/lightswind/aurora-background';
 import { GlowingCards, GlowingCard } from '../components/lightswind/glowing-cards';
-import ParticleOrbitEffect from '../components/lightswind/particle-orbit-effect';
 import { useParallax } from '../hooks/use-parallax';
 import { TESTIMONIALS, HOME_CONTENT, TEAM_MEMBERS } from '../utils/constants';
 const Home = React.memo(() => {
@@ -34,8 +32,7 @@ const Home = React.memo(() => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-radial from-accent/6 via-transparent to-transparent rounded-full blur-2xl animate-pulse-slow animation-delay-4000"></div>
       </div>
       {}
-      <AuroraBackground>
-        <section className="min-h-screen flex items-center justify-center relative overflow-hidden depth-layer-2">
+      <section className="min-h-screen flex items-center justify-center relative overflow-hidden depth-layer-2">
           <div ref={heroRef} className="absolute inset-0 bg-hero-bg bg-cover bg-center parallax-element"></div>
           <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-black/75 to-black/85"></div>
           <div className="absolute inset-0 bg-ambient-overlay animate-breathe"></div>
@@ -79,7 +76,6 @@ const Home = React.memo(() => {
             </motion.div>
           </div>
         </section>
-      </AuroraBackground>
       {}
       <section className="py-20 md:py-28 relative">
         <div className="absolute inset-0 bg-features-bg bg-cover bg-center parallax-bg"></div>
@@ -394,7 +390,6 @@ const Home = React.memo(() => {
           </div>
         </div>
       </section>
-      <ParticleOrbitEffect />
     </div>
   );
 });

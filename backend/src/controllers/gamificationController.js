@@ -45,6 +45,7 @@ const getPointsHistory = async (req, res) => {
 };
 const awardPoints = async (userId, points, reason, referenceId = null) => {
   try {
+    console.log(`Awarding ${points} points to user ${userId} for reason: ${reason}`);
 
     const transaction = new PointTransaction({
       user_id: userId,
@@ -54,7 +55,7 @@ const awardPoints = async (userId, points, reason, referenceId = null) => {
       reference_id: referenceId
     });
     await transaction.save();
-
+    console.log('PointTransaction saved successfully');
 
     const user = await User.findById(userId);
     if (!user) {
@@ -62,8 +63,10 @@ const awardPoints = async (userId, points, reason, referenceId = null) => {
       return false;
     }
 
-    user.points = (user.points || 0) + points;
+    const oldPoints = user.points || 0;
+    user.points = oldPoints + points;
     await user.save();
+    console.log(`User points updated from ${oldPoints} to ${user.points}`);
 
     return true;
   } catch (error) {

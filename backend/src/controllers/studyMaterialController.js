@@ -18,7 +18,7 @@ const uploadMaterial = async (req, res) => {
       subject: subject.trim(),
       semester: semester.trim(),
       university: university.trim(),
-      filePath: req.file.path,
+      resourceFileUrl: req.file.path, // Cloudinary URL
       uploader: req.user.id
     });
 

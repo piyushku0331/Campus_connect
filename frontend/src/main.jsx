@@ -48,7 +48,6 @@ if (typeof window !== 'undefined') {
     initParallax();
   } catch (e) {
     // non-fatal: parallax is an enhancement
-    // eslint-disable-next-line no-console
     console.debug('Parallax init skipped or failed:', e?.message || e);
   }
 }

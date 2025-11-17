@@ -109,7 +109,7 @@ const Leaderboard = () => {
               <div className="flex-1">
                 <div className="flex items-center">
                   <img
-                    src={user.avatar_url || '/default-avatar.png'}
+                    src={user.profilePhoto || '/default-avatar.png'}
                     alt={user.name}
                     className="w-10 h-10 rounded-full mr-3 border-2 border-white"
                     onError={(e) => {

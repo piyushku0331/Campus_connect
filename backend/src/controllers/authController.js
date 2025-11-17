@@ -71,7 +71,6 @@ const generateRefreshToken = (userId) => {
 const signUp = async (req, res) => {
   // Extract user data from request body and uploaded file
   const { email, password, name, age, department, semester, campus, year, phone, bio, linkedin, github, website, skills, interests } = req.body;
-  const photoFile = req.file; // Profile picture uploaded via multer
 
   // Basic input validation
   if (!email || !password) {
@@ -107,8 +106,8 @@ const signUp = async (req, res) => {
 
     // Handle profile picture upload if provided
     let photoUrl = null;
-    if (photoFile) {
-      photoUrl = `uploads/${Date.now()}-${photoFile.originalname}`;
+    if (req.file) {
+      photoUrl = req.file.id; // GridFS file id
     }
 
     // Create new user instance with all provided data

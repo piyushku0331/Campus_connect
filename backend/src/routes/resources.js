@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { verifyToken } = require('../middleware/authMiddleware');
-const { upload } = require('../middleware/uploadMiddleware');
+const { uploadResourcePDF } = require('../middleware/cloudinaryUpload');
 const { resourceController } = require('../controllers');
 router.get('/', verifyToken, resourceController.getResources);
 router.get('/:id', verifyToken, resourceController.getResourceById);
-router.post('/', verifyToken, upload.single('file'), resourceController.uploadResource);
+router.post('/', verifyToken, uploadResourcePDF, resourceController.uploadResource);
 router.put('/:id', verifyToken, resourceController.updateResource);
 router.delete('/:id', verifyToken, resourceController.deleteResource);
 router.get('/search', verifyToken, resourceController.searchResources);

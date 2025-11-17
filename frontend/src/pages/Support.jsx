@@ -123,9 +123,29 @@ const Support = () => {
               <p className="text-textMuted mb-4 leading-relaxed relative z-10">
                 {option.description}
               </p>
-              <button className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-4 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-300 relative z-10">
-                {option.action}
-              </button>
+              {option.title === 'FAQ' ? (
+                <Link to="/faq">
+                  <button className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-4 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-300 relative z-10">
+                    {option.action}
+                  </button>
+                </Link>
+              ) : option.title === 'Documentation' ? (
+                <Link to="/docs">
+                  <button className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-4 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-300 relative z-10">
+                    {option.action}
+                  </button>
+                </Link>
+              ) : option.title === 'Community Forum' ? (
+                <Link to="/forum">
+                  <button className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-4 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-300 relative z-10">
+                    {option.action}
+                  </button>
+                </Link>
+              ) : (
+                <button className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-4 py-2 rounded-full font-medium hover:bg-primary/10 transition-all duration-300 relative z-10">
+                  {option.action}
+                </button>
+              )}
             </motion.div>
           ))}
         </motion.div>

@@ -53,9 +53,9 @@ const uploadResource = async (req, res) => {
     const { title, description, file_url, file_type, tags } = req.body;
     let finalFileUrl = file_url;
 
-    // If a file was uploaded, use the uploaded file URL
+    // If a file was uploaded, use the GridFS file id
     if (req.file) {
-      finalFileUrl = `/uploads/materials/${req.file.filename}`;
+      finalFileUrl = req.file.id;
     }
 
     // Parse tags if it's a string

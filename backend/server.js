@@ -23,6 +23,9 @@ const connectDB = async () => {
 // Logging utility for application events and errors
 const logger = require('./src/utils/logger');
 
+// Error handling middleware
+const { errorHandler } = require('./src/middleware/errorMiddleware');
+
 // Load environment variables from .env file
 require('dotenv').config();
 
@@ -99,16 +102,6 @@ app.use(express.json({ limit: '10mb' }));
 // Parse URL-encoded request bodies with size limit (for form submissions)
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files from uploads directory with caching headers
-app.use('/uploads', express.static('uploads', {
-  maxAge: '30d', // Cache files for 30 days
-  etag: true, // Enable ETag for caching
-  lastModified: true, // Send Last-Modified header
-  setHeaders: (res) => {
-    // Set Cache-Control header for long-term caching
-    res.set('Cache-Control', 'public, max-age=2592000'); // 30 days in seconds
-  }
-}));
 
 // Mount API routes under /api prefix
 app.use('/api', require('./src/routes'));
@@ -119,15 +112,7 @@ app.get('/health', (req, res) => {
 });
 
 // Global error handling middleware - catches and logs all unhandled errors
-app.use((err, req, res, next) => {
-  logger.error('Error occurred:', err);
-  // Only send error response if headers haven't been sent yet
-  if (!res.headersSent) {
-    res.status(500).json({ error: 'Something went wrong!' });
-  } else {
-    next(err);
-  }
-});
+app.use(errorHandler);
 
 // 404 handler - catches requests to non-existent routes
 app.use((req, res) => {

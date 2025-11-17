@@ -13,7 +13,7 @@ The Campus Connect system design must therefore prioritize architectural moderni
 ## Goals / Objectives
 
 ### Overview
-The Campus Connect system aims to establish a comprehensive digital ecosystem that enhances campus life through seamless connectivity, real-time collaboration, and gamified engagement. By leveraging existing infrastructure such as Socket.io for real-time features, Cloudinary for efficient media processing, and a robust gamification framework, the platform will deliver measurable technical excellence and drive meaningful user adoption. The following objectives are designed to ensure scalability, reliability, and user-centric performance, aligning with both technical benchmarks and business outcomes.
+The Campus Connect system aims to establish a comprehensive digital ecosystem that enhances campus life through seamless connectivity, real-time collaboration, and gamified engagement. By leveraging existing infrastructure such as Socket.io for real-time features, GridFS (MongoDB) for efficient media processing, and a robust gamification framework, the platform will deliver measurable technical excellence and drive meaningful user adoption. The following objectives are designed to ensure scalability, reliability, and user-centric performance, aligning with both technical benchmarks and business outcomes.
 
 ### Technical Performance Objectives
 To support a growing user base and diverse feature set, Campus Connect will prioritize high-performance, scalable architecture. Key technical objectives include:
@@ -24,7 +24,7 @@ To support a growing user base and diverse feature set, Campus Connect will prio
 
 - **System Uptime and Resilience**: Maintain 99.9% uptime with failover mechanisms ensuring less than 30 seconds of downtime during regional outages. This involves multi-region deployment strategies, automated health checks (as seen in the `/health` endpoint), and database redundancy to guarantee continuous service availability.
 
-- **Media Processing Efficiency**: Process 5,000+ media uploads daily with less than 2 seconds of processing latency, capitalizing on Cloudinary's cloud-based image handling for profile pictures and study materials. The current upload middleware supports up to 10MB files with memory-based streaming, ensuring quick transformations and storage without compromising user experience.
+- **Media Processing Efficiency**: Process 5,000+ media uploads daily with less than 2 seconds of processing latency, capitalizing on GridFS (MongoDB) for efficient file handling and storage. The current upload middleware supports up to 10MB files with memory-based streaming, ensuring quick transformations and storage without compromising user experience.
 
 - **Achieve 80% Student Adoption Within the First Semester**: The platform aims for rapid adoption by at least 80% of the student body during its initial deployment. This metric gauges user acceptance and platform relevance. High adoption rates indicate strong engagement and early validation of the system's capacity to unify students within a shared digital space—directly combating social and academic isolation.
 
@@ -129,7 +129,7 @@ The Application Layer serves as the core processing tier, orchestrating business
 - **Service Mesh**: Comprises microservice-like modules within the monolithic architecture for modularity:
   - **Authentication Service**: Manages user login, OTP verification, and session handling using JWT tokens with automatic refresh.
   - **Feed Service**: Handles post creation, retrieval, and interactions (likes, comments) with real-time updates via Socket.io.
-  - **Media Service**: Integrates with Cloudinary for image/video uploads, processing, and delivery, supporting multiple resolutions for optimized bandwidth.
+  - **Media Service**: Integrates with GridFS (MongoDB) for image/video uploads, processing, and delivery, supporting multiple resolutions for optimized bandwidth.
   - **Chat Service**: Facilitates real-time messaging using Socket.io, with message persistence in MongoDB and support for group conversations.
   - **Event Service**: Manages event creation, RSVPs, and notifications, with calendar integration and automated reminders.
   - **Resource Service**: Enables upload, categorization, and search of study materials, with download tracking and access controls.
@@ -144,7 +144,7 @@ The Data Layer provides robust, scalable data management with multiple storage s
 
 - **Primary Database - MongoDB**: Serves as the core data store with document-based schema supporting flexible data models. Implements sharding by campus_id to distribute data across clusters, enabling horizontal scaling for multi-campus deployments. Supports ACID transactions for critical operations like financial point transactions in gamification.
 - **Cache - Redis Cluster**: Provides high-performance in-memory caching for frequently accessed data, including user sessions, feed data, and leaderboard rankings. Uses Redis clustering for high availability and automatic failover, with TTL-based eviction to maintain data freshness.
-- **Blob Storage - AWS S3/Cloudinary**: Handles large media files (images, videos, documents) with automatic resizing and optimization. Cloudinary provides CDN-backed delivery with multiple resolution variants, reducing storage costs and improving load times. Integrates seamlessly with the Media Service for upload processing.
+- **Blob Storage - GridFS (MongoDB)**: Handles large media files (images, videos, documents) with automatic resizing and optimization. GridFS provides efficient storage and retrieval with multiple resolution variants, reducing storage costs and improving load times. Integrates seamlessly with the Media Service for upload processing.
 - **Search Index - Elasticsearch**: Enables advanced search capabilities across posts, resources, users, and events. Supports full-text search, faceted filtering, and autocomplete, with real-time indexing via message queue integration for efficient query performance.
 
 Data consistency is managed through eventual consistency for real-time features, with strong consistency for transactional operations. Backup and replication ensure 99.9% availability with RTO of 1 hour.
@@ -332,7 +332,7 @@ The low-level design builds upon the existing codebase, leveraging models such a
 
 - **Connection Service**: Facilitates user networking through the Connection model, featuring sender/receiver relationships with status enumeration (pending/accepted/rejected/declined). Unique indexing on sender-receiver pairs prevents duplicate requests. Includes methods for accepting/declining connections, enabling alumni networking and mentorship matching.
 
-- **Media Service**: Integrates Cloudinary for image/video processing, as configured in cloudinary.js with CLOUDINARY_URL environment variable. Uploads are handled via uploadMiddleware.js, using multer for initial file handling and Cloudinary's upload_stream for secure, optimized storage. Supports profile images and post media with automatic CDN distribution.
+- **Media Service**: Integrates GridFS (MongoDB) for image/video processing. Uploads are handled via uploadMiddleware.js, using multer for initial file handling and GridFS for secure, optimized storage. Supports profile images and post media with automatic distribution.
 
 - **Gamification Service**: Tracks user engagement through the User model's points and achievements fields. Points are incremented based on actions (e.g., posting, commenting), with achievements awarded via referenced Achievement model. Leaderboards query indexed points fields for performance.
 
@@ -540,7 +540,7 @@ Multi-region deployment across AWS regions (e.g., us-east-1 primary, eu-west-1 s
 ### CDN / Cache Layers
 
 #### CDN Integration
-Cloudflare serves as the primary CDN for global static assets, including JavaScript bundles, CSS files, and images uploaded via Cloudinary (configured in cloudinary.js). This achieves <50ms latency for international users, offloading traffic from origin servers and reducing global page load times to under 3 seconds.
+Cloudflare serves as the primary CDN for global static assets, including JavaScript bundles, CSS files, and images uploaded via GridFS (MongoDB). This achieves <50ms latency for international users, offloading traffic from origin servers and reducing global page load times to under 3 seconds.
 
 #### Caching Strategy
 Redis (integrated via clustering) caches sessions, user feeds, and frequently accessed data with TTL-based invalidation (e.g., 5-minute TTL for dynamic feeds). This reduces database queries by 70%, improving API response times to sub-2 seconds. Cache invalidation is triggered on data updates to maintain consistency.
@@ -667,7 +667,7 @@ Feed endpoints utilize cursor-based pagination for efficient data retrieval, sup
           "created_at": "2024-01-10T10:00:00Z",
           "profiles": {
             "name": "John Doe",
-            "avatar_url": "https://cloudinary.com/avatar.jpg",
+            "avatar_url": "/api/files/avatar.jpg",
             "department": "Computer Science"
           }
         }
@@ -706,14 +706,13 @@ Media uploads leverage multipart/form-data with Cloudinary integration for scala
   - **Form Fields**:
     - `file`: Media file (max 10MB)
     - `type`: "image" | "document" | "video"
-    - `folder`: Optional Cloudinary folder
   - **Response (201)**:
     ```json
     {
       "success": true,
       "data": {
-        "url": "https://cloudinary.com/uploaded_file.jpg",
-        "public_id": "folder/filename",
+        "url": "/api/files/uploaded_file.jpg",
+        "filename": "uploaded_file.jpg",
         "format": "jpg",
         "bytes": 2048576
       }

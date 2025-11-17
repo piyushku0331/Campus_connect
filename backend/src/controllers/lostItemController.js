@@ -15,7 +15,8 @@ const reportItem = async (req, res) => {
       location: location?.trim(),
       category: category || 'Other',
       status: status || 'Lost',
-      imagePath: req.file ? req.file.path : null,
+      itemPhotoUrl: req.files?.itemPhoto ? req.files.itemPhoto[0].path : null, // Cloudinary URL
+      itemDocumentUrl: req.files?.itemDocument ? req.files.itemDocument[0].path : null, // Cloudinary URL
       reporter: req.user.id
     });
 

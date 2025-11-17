@@ -4,7 +4,7 @@ import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'luc
 import { motion } from 'framer-motion';
 const Footer = () => {
   return (
-    <footer className="relative perspective-root bg-surface/80 backdrop-blur-md border-t border-borderSubtle py-8 sm:py-12 md:py-16 mt-20 overflow-hidden">
+    <footer className="relative z-20 perspective-root bg-surface/80 backdrop-blur-md border-t border-borderSubtle py-8 sm:py-12 md:py-16 mt-20 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
       <div className="absolute inset-0 bg-ambient-overlay opacity-20 animate-breathe"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 relative z-10 card-3d">

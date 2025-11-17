@@ -83,7 +83,7 @@
 - **Backend**: Node.js 18+, Express.js, MongoDB 6+, Socket.io
 - **Authentication**: JWT, OTP verification
 - **Real-time**: WebSocket communication
-- **File Storage**: Cloudinary integration
+- **File Storage**: GridFS (MongoDB)
 
 ---
 
@@ -225,11 +225,6 @@ EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-password
 
-# Cloudinary Configuration (for file uploads)
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-
 # Admin Configuration
 ADMIN_EMAIL=admin@campusconnect.com
 ```
@@ -240,7 +235,6 @@ Create a `.env` file in the `frontend` directory:
 
 ```env
 VITE_API_URL=http://localhost:5000/api
-VITE_CLOUDINARY_CLOUD_NAME=your-cloud-name
 ```
 
 ### Database Setup
@@ -252,10 +246,8 @@ VITE_CLOUDINARY_CLOUD_NAME=your-cloud-name
 
 ### File Upload Setup
 
-1. **Create Cloudinary account** at [cloudinary.com](https://cloudinary.com)
-2. **Get API credentials** from dashboard
-3. **Update environment variables** with your Cloudinary config
-4. **Create uploads folder** in backend directory: `mkdir uploads`
+1. **Create uploads folder** in backend directory: `mkdir uploads`
+2. **GridFS will handle file storage** automatically with MongoDB
 
 ---
 
@@ -641,7 +633,6 @@ All endpoints may return the following error formats:
    - Install Command: `npm install`
 3. **Add Environment Variables**:
    - `VITE_API_URL`: Your backend API URL
-   - `VITE_CLOUDINARY_CLOUD_NAME`: Cloudinary cloud name
 4. **Deploy**
 
 ### Backend Deployment (Railway)
