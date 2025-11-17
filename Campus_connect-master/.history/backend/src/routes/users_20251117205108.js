@@ -1,0 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const { verifyToken } = require('../middleware/authMiddleware');
+const { uploadProfileImage } = require('../middleware/uploadMiddleware');
+const { userController } = require('../controllers');
+router.get('/profile', verifyToken, userController.getProfile);
+router.put('/profile', verifyToken, uploadProfileImage, userController.updateProfile);
+router.patch('/privacy', verifyToken, userController.togglePrivacy);
+router.get('/search', verifyToken, userController.searchUsers);
+router.get('/:id', verifyToken, userController.getUserById);
+module.exports = router;
