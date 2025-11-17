@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
           setUser(null);
           // Redirect to login if token is invalid
           if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
-            navigate('/login');
+            navigate('/login', { replace: true });
           }
         }
       } else {
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       const response = await authAPI.signIn(email, password);
-      console.log('SignIn response:', response.data); // Debug log
+      // Successful sign in; do not log sensitive tokens or user data
 
       if (response.data && response.data.data && response.data.data.user && response.data.data.session) {
         const userData = response.data.data.user;
@@ -55,15 +55,15 @@ export const AuthProvider = ({ children }) => {
         // Store access token in sessionStorage (in memory)
         sessionStorage.setItem('accessToken', accessToken);
         setUser(userData);
-        console.log('User logged in successfully with JWT auth'); // Debug log
+        // User logged in successfully
 
         return { data: response.data, error: null };
       } else {
-        console.error('Invalid response data for JWT auth'); // Debug log
+        console.error('Invalid response data for JWT auth');
         return { data: null, error: 'Invalid response data' };
       }
     } catch (error) {
-      console.error('SignIn error:', error); // Debug log
+      console.error('SignIn error');
       return { data: null, error: error.response?.data?.error || error.message };
     }
   };
@@ -77,31 +77,26 @@ export const AuthProvider = ({ children }) => {
       sessionStorage.removeItem('accessToken');
       setUser(null);
       // Redirect to login after logout
-      navigate('/login');
+      navigate('/login', { replace: true });
     }
     return { error: null };
   };
   const verifyOtp = async (email, token) => {
     try {
-      console.log('Frontend: Attempting OTP verification for email:', email, 'OTP:', token);
       const response = await authAPI.verifyOTP(email, token);
-      console.log('Frontend: OTP verification response:', response);
       if (response.data && response.data.data && response.data.data.user && response.data.data.session) {
         const userData = response.data.data.user;
         const accessToken = response.data.data.session.access_token;
         sessionStorage.setItem('accessToken', accessToken);
         setUser(userData);
-        console.log('Frontend: OTP verified successfully, user logged in');
+        // OTP verified and user logged in
         return { data: response.data, error: null };
       } else {
         console.error('Frontend: Invalid OTP verification response structure:', response.data);
         return { data: null, error: 'Invalid response data' };
       }
     } catch (error) {
-      console.error('Frontend: OTP verification error:', error);
-      console.error('Frontend: Error response:', error.response);
-      console.error('Frontend: Error status:', error.response?.status);
-      console.error('Frontend: Error data:', error.response?.data);
+      console.error('Frontend: OTP verification error');
       return { data: null, error: error.response?.data?.error || error.message };
     }
   };

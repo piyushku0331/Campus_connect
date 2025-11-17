@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
+import initParallax from './utils/parallax'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -40,3 +41,14 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </StrictMode>,
 )
+
+// Initialize the tiny parallax enhancer (no-op on small screens / reduced-motion)
+if (typeof window !== 'undefined') {
+  try {
+    initParallax();
+  } catch (e) {
+    // non-fatal: parallax is an enhancement
+    // eslint-disable-next-line no-console
+    console.debug('Parallax init skipped or failed:', e?.message || e);
+  }
+}

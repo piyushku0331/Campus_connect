@@ -822,3 +822,133 @@ select:focus-visible {
   clip: auto;
   white-space: normal;
 }
+
+/* ------------------------------------------------------------------
+   3D Visual Utilities (performant and progressive)
+
+   - Use GPU-accelerated properties only (transform, opacity)
+   - Provide hover-based 3D tilt and layered depth cards
+   - Respect `prefers-reduced-motion` and low-power devices
+------------------------------------------------------------------ */
+
+:root {
+  /* depth scale multiplier for 3D layers */
+  --depth-scale: 12px;
+  --depth-shadow-color: rgba(0,0,0,0.45);
+  --depth-accent: rgba(99,102,241,0.12);
+}
+
+/* root container that provides perspective for 3D children */
+.perspective-root {
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+  -moz-perspective: 1000px;
+}
+
+/* A lightweight 3D card with layered pseudo-elements to simulate depth */
+.card-3d {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 300ms cubic-bezier(0.22, 0.9, 0.28, 1), box-shadow 300ms ease;
+}
+
+.card-3d::before,
+.card-3d::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+  transition: transform 300ms cubic-bezier(0.22, 0.9, 0.28, 1), opacity 300ms ease;
+}
+
+.card-3d::before {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  transform: translateZ(calc(var(--depth-scale) * -0.5));
+  filter: blur(8px);
+  opacity: 0.9;
+}
+
+.card-3d::after {
+  background: linear-gradient(180deg, rgba(99,102,241,0.04), transparent);
+  transform: translateZ(calc(var(--depth-scale) * -1));
+  opacity: 0.6;
+}
+
+/* subtle lift + tilt effect on hover (no JS) */
+.tilt-3d {
+  transform-origin: center center;
+}
+
+.tilt-3d:hover,
+.tilt-3d:focus-within {
+  transform: translateY(-6px) rotateX(4deg) rotateY(-6deg) translateZ(6px);
+  box-shadow: 0 20px 40px var(--depth-shadow-color), 0 8px 24px rgba(0,0,0,0.18);
+}
+
+/* small variation for interactive elements (buttons, pills) */
+.interactive-3d {
+  transform-origin: center center;
+  will-change: transform;
+  transition: transform 220ms cubic-bezier(0.22, 0.9, 0.28, 1), box-shadow 220ms ease;
+}
+
+.interactive-3d:active {
+  transform: translateY(1px) scale(0.996) translateZ(2px);
+}
+
+/* Depth shadows helpers */
+.depth-shadow-sm { box-shadow: 0 6px 14px rgba(0,0,0,0.22); }
+.depth-shadow-md { box-shadow: 0 12px 28px rgba(0,0,0,0.28); }
+.depth-shadow-lg { box-shadow: 0 24px 56px rgba(0,0,0,0.32); }
+
+/* Accent rim to emphasize depth without heavy filters */
+.depth-rim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.04) inset;
+  pointer-events: none;
+}
+
+/* 3D parallax group: child elements with data-depth will translate on hover via CSS variables
+   This approach is simple and uses only transforms; if you want finer control, add a tiny JS enhancer. */
+.parallax-group {
+  perspective: 800px;
+}
+.parallax-child {
+  transform-style: preserve-3d;
+  transition: transform 300ms ease-out;
+}
+.parallax-group:hover .parallax-child[data-depth="1"] { transform: translateZ(6px) translateY(-2px); }
+.parallax-group:hover .parallax-child[data-depth="2"] { transform: translateZ(12px) translateY(-4px); }
+.parallax-group:hover .parallax-child[data-depth="3"] { transform: translateZ(18px) translateY(-6px); }
+
+/* Respect reduced motion: disable large transforms and animations */
+@media (prefers-reduced-motion: reduce) {
+  .card-3d,
+  .tilt-3d,
+  .interactive-3d,
+  .parallax-child,
+  .animate-* {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  .glass-card,
+  .glass-effect {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Low-power device fallbacks: reduce blur/backdrop on small screens */
+@media (max-width: 640px) {
+  .glass-card,
+  .glass-effect { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+}
+

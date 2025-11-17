@@ -72,7 +72,7 @@ const Settings = () => {
     setSaving(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log(`Saving ${section} settings:`, settings[section]);
+      // Settings saved (mock); do not log sensitive settings
     } catch (error) {
       console.error('Error saving settings:', error);
     } finally {

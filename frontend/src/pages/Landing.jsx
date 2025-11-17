@@ -31,7 +31,7 @@ const Landing = () => {
     }
   }, [showContent]);
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#0A0A0F] via-[#101020] to-[#0A0A0F] relative overflow-hidden animated-gradient-bg">
+    <div className="min-h-screen perspective-root flex flex-col items-center justify-center bg-gradient-to-br from-[#0A0A0F] via-[#101020] to-[#0A0A0F] relative overflow-hidden animated-gradient-bg">
       <BgImport />
       {}
       <div className="absolute inset-0 bg-ambient-overlay animate-breathe"></div>
@@ -42,10 +42,12 @@ const Landing = () => {
       </div>
       <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
         {}
-        <div ref={logoRef} className="mb-12">
+        <div ref={logoRef} className="mb-12 card-3d tilt-3d parallax-group">
           <img
             src="/image.png"
             alt="Campus Connect Logo"
+            loading="lazy"
+            data-depth="0.6"
             className="w-32 h-32 mx-auto rounded-2xl shadow-2xl"
           />
         </div>

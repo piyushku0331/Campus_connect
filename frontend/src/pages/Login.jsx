@@ -33,7 +33,7 @@ const Login = () => {
         toast.success('Welcome back! Redirecting to dashboard...');
 
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate('/dashboard', { replace: true });
         }, 500);
       }
     } catch {

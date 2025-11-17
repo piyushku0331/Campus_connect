@@ -7,28 +7,32 @@ const Navbar = () => {
   const location = useLocation();
   const { user, signOut } = useContext(AuthContext);
 
+  const servicesDropdown = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Profile', href: '/profile' },
+    { label: 'Lost & Found', href: '/lostfound' },
+    { label: 'Resources', href: '/resources' },
+    { label: 'Events', href: '/events' },
+    { label: 'Networking', href: '/networking' },
+    { label: 'Alumni', href: '/alumni' }
+  ];
+
   const allNavLinks = [
-    { name: 'Home', href: '/home' },
-    { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Profile', href: '/profile' },
-    { name: 'Events', href: '/events' },
-    { name: 'Networking', href: '/networking' },
-    { name: 'Resources', href: '/resources' },
-    { name: 'Lost & Found', href: '/lostfound' },
-    { name: 'Alumni', href: '/alumni' },
-    { name: 'Support', href: '/support' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'Logout', href: '/logout', action: 'logout' }
+    { label: 'Home', href: '/home' },
+    { label: 'Services', href: '#', dropdown: servicesDropdown },
+    { label: 'Support', href: '/support' },
+    { label: 'About', href: '/about' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Logout', href: '/logout', action: 'logout' }
   ];
 
   const publicNavLinks = [
-    { name: 'Home', href: '/home' },
-    { name: 'Support', href: '/support' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'Login', href: '/login' },
-    { name: 'Register', href: '/signup' }
+    { label: 'Home', href: '/home' },
+    { label: 'Support', href: '/support' },
+    { label: 'About', href: '/about' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Login', href: '/login' },
+    { label: 'Register', href: '/signup' }
   ];
 
   const navLinks = user ? allNavLinks : publicNavLinks;
@@ -36,7 +40,6 @@ const Navbar = () => {
   const handleNavClick = async (link) => {
     if (link.action === 'logout') {
       await signOut();
-      window.location.href = '/home';
     }
   };
 
@@ -45,9 +48,10 @@ const Navbar = () => {
       logo="/image.png"
       logoAlt="Campus Connect Logo"
       items={navLinks.map(link => ({
-        label: link.name,
+        label: link.label,
         href: link.href,
         action: link.action,
+        dropdown: link.dropdown,
         onClick: link.action === 'logout' ? () => handleNavClick(link) : undefined
       }))}
       activeHref={location.pathname}

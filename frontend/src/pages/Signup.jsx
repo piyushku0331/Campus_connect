@@ -131,21 +131,16 @@ const Signup = () => {
       return;
     }
 
-    console.log('Signup: Starting OTP verification for email:', formData.email, 'OTP:', otp);
-
     try {
       const { error } = await verifyOtp(formData.email, otp);
-      console.log('Signup: OTP verification result - error:', error);
       if (error) {
-        console.error('Signup: OTP verification failed with error:', error);
         toast.error(error || 'Verification failed');
       } else {
-        console.log('Signup: OTP verification successful');
         toast.success('Account verified successfully! Welcome to Campus Connect!');
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
-    } catch (error) {
-      console.error('Signup: Unexpected error during OTP verification:', error);
+    } catch (err) {
+      console.error('Signup: Unexpected error during OTP verification');
       toast.error('An unexpected error occurred');
     }
   };
@@ -422,6 +417,7 @@ const Signup = () => {
                           <img
                             src={photoPreview}
                             alt="Profile Preview"
+                            loading="lazy"
                             className="w-16 h-16 object-cover rounded-full border-2 border-primary/50 mb-2"
                           />
                           <p className="text-textMuted text-sm">Click to change photo</p>

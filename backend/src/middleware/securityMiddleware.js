@@ -1,5 +1,6 @@
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const { sanitizeInPlace } = require('../utils/sanitizer');
 const hpp = require('hpp');
 
 const securityHeaders = helmet({
@@ -22,9 +23,13 @@ const securityHeaders = helmet({
 });
 
 const dataSanitization = (req, res, next) => {
-  if (req.body) mongoSanitize.sanitize(req.body);
-  if (req.query) mongoSanitize.sanitize(req.query);
-  if (req.params) mongoSanitize.sanitize(req.params);
+  try {
+    if (req.body) sanitizeInPlace(req.body);
+    if (req.query) sanitizeInPlace(req.query);
+    if (req.params) sanitizeInPlace(req.params);
+  } catch (e) {
+    // best-effort; don't block requests
+  }
   next();
 };
 

@@ -193,12 +193,10 @@ const Home = React.memo(() => {
             <p className="text-textMuted max-w-2xl mx-auto animate-fade-in-up">Discover what makes Campus Connect special</p>
           </motion.div>
           <div ref={featuresRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
-            <div className="feature-card glass-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-wave-motion relative overflow-hidden"
+            <div className="feature-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-wave-motion relative overflow-hidden"
               style={{
                 background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
                 backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                 '--glow-x': '50%',
                 '--glow-y': '50%',
                 '--glow-intensity': '0',
@@ -235,13 +233,11 @@ const Home = React.memo(() => {
               <h3 className="text-xl font-semibold text-textPrimary mb-3 relative z-10">{t.earnPoints}</h3>
               <p className="text-textMuted leading-relaxed relative z-10">{t.earnPointsDesc}</p>
             </div>
-            <div className="feature-card glass-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-morphing-blob relative overflow-hidden group"
+            <div className="feature-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-morphing-blob relative overflow-hidden group"
               style={{
                 animationDelay: '2s',
                 background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)',
                 backdropFilter: 'blur(15px)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.15), 0 0 20px rgba(127, 64, 255, 0.1)',
                 '--glow-x': '50%',
                 '--glow-y': '50%',
                 '--glow-intensity': '0',
@@ -278,13 +274,11 @@ const Home = React.memo(() => {
               <h3 className="text-xl font-semibold text-textPrimary mb-3 relative z-10">{t.climbLeaderboard}</h3>
               <p className="text-textMuted leading-relaxed relative z-10">{t.climbLeaderboardDesc}</p>
             </div>
-            <div className="feature-card glass-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-floating-shapes relative overflow-hidden group"
+            <div className="feature-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-floating-shapes relative overflow-hidden group"
               style={{
                 animationDelay: '4s',
                 background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)',
                 backdropFilter: 'blur(15px)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                boxShadow: '0 12px 40px rgba(0,0,0,0.15), 0 0 20px rgba(255, 127, 80, 0.1)',
                 '--glow-x': '50%',
                 '--glow-y': '50%',
                 '--glow-intensity': '0',
@@ -339,16 +333,13 @@ const Home = React.memo(() => {
             <h2 className="text-4xl font-semibold text-textPrimary mb-4 cinematic-heading">Leaderboard</h2>
             <p className="text-textMuted max-w-2xl mx-auto animate-fade-in-up">See how you stack up against other students</p>
           </motion.div>
-          <div className="glass-card rounded-2xl p-8 animate-cinematic-fade">
+          <div className="rounded-2xl p-8 animate-cinematic-fade">
             <Leaderboard />
           </div>
         </div>
       </section>
       {}
       <section className="py-20 md:py-28 relative">
-        <div className="absolute inset-0 bg-features-bg bg-cover bg-center parallax-bg"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/80 to-black/90"></div>
-        <div className="absolute inset-0 bg-ambient-overlay opacity-20"></div>
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -360,12 +351,10 @@ const Home = React.memo(() => {
             <h2 className="text-4xl font-semibold text-textPrimary mb-4 cinematic-heading">Features Showcase</h2>
             <p className="text-textMuted max-w-2xl mx-auto animate-fade-in-up">Explore the powerful features of Campus Connect</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mt-16">
-              <div className="feature-card glass-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-wave-motion relative overflow-hidden group"
+              <div className="feature-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-wave-motion relative overflow-hidden group"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)',
                   backdropFilter: 'blur(15px)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  boxShadow: '0 12px 40px rgba(0,0,0,0.15), 0 0 20px rgba(107, 159, 255, 0.1)',
                   '--glow-x': '50%',
                   '--glow-y': '50%',
                   '--glow-intensity': '0',
@@ -396,12 +385,10 @@ const Home = React.memo(() => {
                 <p className="text-textMuted leading-relaxed relative z-10">Connect with fellow students, alumni, and professionals in your field.</p>
                   {t.getStarted}
               </div>
-              <div className="feature-card glass-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-wave-motion relative overflow-hidden"
+              <div className="feature-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-wave-motion relative overflow-hidden"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                   '--glow-x': '50%',
                   '--glow-y': '50%',
                   '--glow-intensity': '0',
@@ -431,12 +418,10 @@ const Home = React.memo(() => {
                 <h3 className="text-xl font-semibold text-textPrimary mb-3 relative z-10">Events</h3>
                 <p className="text-textMuted leading-relaxed relative z-10">Discover and participate in campus events, workshops, and activities.</p>
               </div>
-              <div className="feature-card glass-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-wave-motion relative overflow-hidden"
+              <div className="feature-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 animate-depth-pulse interactive-element animate-wave-motion relative overflow-hidden"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                   '--glow-x': '50%',
                   '--glow-y': '50%',
                   '--glow-intensity': '0',
@@ -482,7 +467,7 @@ const Home = React.memo(() => {
             {t.teamMembers.map((member) => (
               <div
                 key={member}
-                className="team-member glass-card rounded-2xl p-8 text-center hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 overflow-hidden group cursor-pointer interactive-element"
+                className="team-member rounded-2xl p-8 text-center hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 overflow-hidden group cursor-pointer interactive-element"
                 style={{
                   background: `linear-gradient(135deg, rgba(107, 159, 255, 0.1) 0%, rgba(127, 64, 255, 0.1) 50%, rgba(255, 127, 80, 0.1) 100%)`,
                   '--glow-x': '50%',
@@ -552,7 +537,7 @@ const Home = React.memo(() => {
                     transition={{ duration: 0.5 }}
                     className="max-w-5xl mx-auto"
                   >
-                    <div className="glass-card rounded-2xl p-8 md:p-12 text-center relative max-w-4xl mx-auto">
+                    <div className="rounded-2xl p-8 md:p-12 text-center relative max-w-4xl mx-auto">
                       <Quote className="w-12 h-12 text-primary/30 mx-auto mb-6" />
                       <blockquote className="text-lg md:text-xl text-textPrimary mb-8 leading-relaxed italic">
                         &ldquo;{testimonial.content}&rdquo;

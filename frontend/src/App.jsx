@@ -24,6 +24,7 @@ const Notifications = lazy(() => import('./pages/Notifications'));
 const Settings = lazy(() => import('./pages/Settings'));
 const Footer = lazy(() => import('./components/common/Footer'));
 const ProtectedRoute = lazy(() => import('./components/auth/ProtectedRoute'));
+const PublicRoute = lazy(() => import('./components/auth/PublicRoute'));
 const Support = lazy(() => import('./pages/Support'));
 const AboutUs = lazy(() => import('./pages/AboutUs'));
 const ContactUs = lazy(() => import('./pages/ContactUs'));
@@ -75,13 +76,13 @@ function App() {
             } />
             <Route path="/login" element={
               <Suspense fallback={<LoadingSpinner />}>
-                <Login />
+                <PublicRoute><Login /></PublicRoute>
                 <Footer />
               </Suspense>
             } />
             <Route path="/signup" element={
               <Suspense fallback={<LoadingSpinner />}>
-                <Signup />
+                <PublicRoute><Signup /></PublicRoute>
                 <Footer />
               </Suspense>
             } />

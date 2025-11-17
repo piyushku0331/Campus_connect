@@ -16,7 +16,7 @@ const ContactUs = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    // TODO: submit form to backend; avoid logging form contents
   };
   const contactInfo = [
     {

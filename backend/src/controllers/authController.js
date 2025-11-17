@@ -235,14 +235,10 @@ const sendOTP = async (req, res) => {
     }
     const otp = crypto.randomInt(100000, 999999).toString();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-    console.log('DEBUG: Setting OTP:', otp, 'Expires:', otpExpires);
     user.otp = otp;
     user.otpExpires = otpExpires;
     await user.save();
-    console.log('DEBUG: User saved with OTP');
-    logger.info('Generated OTP for', trimmedEmail, ':', otp);
-    console.log('DEBUG: Generated OTP:', otp, 'for email:', trimmedEmail);
-    console.log('DEBUG: OTP type:', typeof otp, 'OTP value:', otp);
+    logger.info(`Generated OTP for ${trimmedEmail}`);
     try {
       await sendOTPEmail(trimmedEmail, otp, user.name);
       res.status(200).json({ message: 'OTP sent successfully' });
@@ -274,17 +270,12 @@ const verifyOTP = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    console.log('DEBUG: Stored OTP:', user.otp, 'Entered OTP:', trimmedOtp);
-    console.log('DEBUG: OTP Expires:', user.otpExpires, 'Current time:', new Date());
-    console.log('DEBUG: OTP match:', user.otp === trimmedOtp, 'Is expired:', user.otpExpires < new Date());
-    console.log('DEBUG: OTP types - Stored:', typeof user.otp, 'Entered:', typeof trimmedOtp);
 
     // Ensure both are strings for comparison
     const storedOtp = String(user.otp).trim();
     const enteredOtp = String(trimmedOtp).trim();
 
-    console.log('DEBUG: After string conversion - Stored:', storedOtp, 'Entered:', enteredOtp);
-    console.log('DEBUG: Final comparison:', storedOtp === enteredOtp);
+    // Do not log OTP values or sensitive comparison results
 
     if (storedOtp !== enteredOtp || user.otpExpires < new Date()) {
       return res.status(400).json({ error: 'Invalid or expired OTP' });

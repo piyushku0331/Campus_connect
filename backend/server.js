@@ -5,6 +5,10 @@ const helmet = require('helmet');
 const compression = require('compression');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const { sanitizeInPlace } = require('./src/utils/sanitizer');
+const hpp = require('hpp');
 const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
@@ -21,6 +25,20 @@ require('dotenv').config();
 
 const app = express();
 
+// If running behind a proxy (e.g., Heroku, Nginx), enable trust proxy
+app.set('trust proxy', 1);
+
+// Basic rate limiting to slow down brute-force and abusive requests
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+// Apply to all /api routes
+app.use('/api', apiLimiter);
 // CORS middleware for Express routes
 app.use(cors({
   origin: function (origin, callback) {
@@ -91,6 +109,24 @@ app.use(compression({
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Prevent HTTP Parameter Pollution (after parsing)
+app.use(hpp());
+
+// Sanitize request data to prevent NoSQL injection (after parsing)
+// Use an in-place sanitizer to avoid assigning to `req` properties which
+// may be getter-only in some environments.
+app.use((req, res, next) => {
+  try {
+    if (req.body) sanitizeInPlace(req.body);
+    if (req.params) sanitizeInPlace(req.params);
+    if (req.query) sanitizeInPlace(req.query);
+    if (req.cookies) sanitizeInPlace(req.cookies);
+  } catch (err) {
+    logger.warn && logger.warn('Sanitization failed (non-fatal):', err && err.message);
+  }
+  next();
+});
 
 app.use('/uploads', express.static('uploads', {
   maxAge: '30d',

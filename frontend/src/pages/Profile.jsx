@@ -31,6 +31,10 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    console.log('Profile component rendered, isPublic:', formData.isPublic);
+  }, [formData.isPublic]);
+
   const fetchProfile = async () => {
     try {
       const response = await usersAPI.getProfile();
@@ -91,15 +95,19 @@ const Profile = () => {
   };
 
   const handleTogglePrivacy = async () => {
+    const newIsPublic = !formData.isPublic;
+    console.log('Toggle button clicked, handleTogglePrivacy called, current isPublic:', formData.isPublic, 'new:', newIsPublic);
+    // Optimistic update
+    setFormData(prev => ({ ...prev, isPublic: newIsPublic }));
     try {
-      await usersAPI.togglePrivacy(!formData.isPublic);
-      setFormData(prev => ({
-        ...prev,
-        isPublic: !prev.isPublic
-      }));
-      toast.success(`Profile is now ${!formData.isPublic ? 'public' : 'private'}`);
+      console.log('Calling API with isPublic:', newIsPublic);
+      const response = await usersAPI.togglePrivacy(newIsPublic);
+      console.log('API response:', response.data);
+      toast.success(`Profile is now ${newIsPublic ? 'public' : 'private'}`);
     } catch (error) {
       console.error('Error toggling privacy:', error);
+      // Revert optimistic update
+      setFormData(prev => ({ ...prev, isPublic: !newIsPublic }));
       toast.error('Failed to update privacy settings');
     }
   };
@@ -142,7 +150,7 @@ const Profile = () => {
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white card-3d tilt-3d parallax-group">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <motion.div
@@ -152,6 +160,8 @@ const Profile = () => {
                   <img
                     src={formData.profilePicture || formData.avatar_url || '/default-avatar.png'}
                     alt="Profile"
+                    loading="lazy"
+                    data-depth="0.4"
                     className="w-20 h-20 rounded-full border-4 border-white shadow-lg"
                   />
                   {isEditing && (
