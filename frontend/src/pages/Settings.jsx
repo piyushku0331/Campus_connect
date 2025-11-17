@@ -71,8 +71,14 @@ const Settings = () => {
   const handleSave = async (section) => {
     setSaving(true);
     try {
+<<<<<<< HEAD
       await new Promise(resolve => setTimeout(resolve, 1000));
       // Settings saved (mock); do not log sensitive settings
+=======
+      // TODO: Implement actual API call to save specific section
+      console.log(`Saving ${section} settings:`, settings[section]);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+>>>>>>> d751ccca9135d403512bcd584d44e93ea06ad828
     } catch (error) {
       console.error('Error saving settings:', error);
     } finally {

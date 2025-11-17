@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { verifyToken } = require('../middleware/authMiddleware');
+const { uploadProfileImage } = require('../middleware/uploadMiddleware');
 const { userController } = require('../controllers');
 router.get('/profile', verifyToken, userController.getProfile);
-router.put('/profile', verifyToken, userController.updateProfile);
+router.put('/profile', verifyToken, uploadProfileImage, userController.updateProfile);
 router.patch('/privacy', verifyToken, userController.togglePrivacy);
 router.get('/:id', verifyToken, userController.getUserById);
 router.get('/', verifyToken, userController.searchUsers);

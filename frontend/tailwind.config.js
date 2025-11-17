@@ -37,18 +37,25 @@ export default {
         glow: 'rgba(99, 102, 241, 0.15)',
         glowSecondary: 'rgba(139, 92, 246, 0.15)',
         glowAccent: 'rgba(236, 72, 153, 0.15)',
+        // Campus-Connect premium palette
+        campusPrimary: '#1e3a8a', // Deep Blue
+        campusSecondary: '#059669', // Green
+        campusAccent: '#7c3aed', // Purple
+        campusOrange: '#f97316', // Orange accent alternative
+        campusWhite: '#ffffff',
+        campusGray: '#6b7280',
       },
       fontFamily: {
         heading: ['Outfit', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
       },
       backgroundImage: {
-        'accent-gradient': 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+        'accent-gradient': 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%)',
         'hero-gradient': 'linear-gradient(135deg, #0A0A0F 0%, #101020 50%, #0A0A0F 100%)',
         'cinematic-gradient': 'linear-gradient(135deg, #0A0A0F 0%, #101020 25%, #1A1A2A 50%, #101020 75%, #0A0A0F 100%)',
         'glass-gradient': 'linear-gradient(135deg, rgba(18, 18, 27, 0.8) 0%, rgba(26, 26, 42, 0.6) 100%)',
-        'text-gradient': 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%)',
-        'ambient-overlay': 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
+        'text-gradient': 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #f97316 100%)',
+        'ambient-overlay': 'radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.1) 0%, transparent 70%)',
         'hero-bg': 'url("/image (3).png")',
         'features-bg': 'url("/image (4).png")',
         'dashboard-gradient': 'linear-gradient(135deg, #0A0A0F 0%, #1A1A2A 100%)',

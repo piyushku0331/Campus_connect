@@ -16,7 +16,6 @@ const ContactUs = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: submit form to backend; avoid logging form contents
   };
   const contactInfo = [
     {
@@ -164,36 +163,20 @@ const ContactUs = () => {
                       background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
                       backdropFilter: 'blur(10px)',
                       border: '1px solid rgba(255,255,255,0.1)',
-                      boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                      '--glow-x': '50%',
-                      '--glow-y': '50%',
-                      '--glow-intensity': '0',
-                      '--glow-radius': '200px',
-                      '--glow-color': '107, 159, 255'
-                    }}
-                    onMouseMove={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = ((e.clientX - rect.left) / rect.width) * 100;
-                      const y = ((e.clientY - rect.top) / rect.height) * 100;
-                      e.currentTarget.style.setProperty('--glow-x', `${x}%`);
-                      e.currentTarget.style.setProperty('--glow-y', `${y}%`);
-                      e.currentTarget.style.setProperty('--glow-intensity', '0.3');
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.setProperty('--glow-intensity', '0');
+                      boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
                     }}
                   >
                     <div
                       className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       style={{
-                        background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle at 50% 50%, rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
                         borderRadius: 'inherit'
                       }}
                     />
                     <div
                       className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                       style={{
-                        background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
+                        background: 'radial-gradient(circle at 50% 50%, rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
                         borderRadius: 'inherit',
                         animation: 'pulse 2s infinite'
                       }}

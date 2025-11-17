@@ -92,7 +92,6 @@ const updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-
     const updateData = { ...req.body, updated_at: new Date() };
     // Prevent organizer_id from being changed
     delete updateData.organizer_id;

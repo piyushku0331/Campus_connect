@@ -6,61 +6,32 @@ import GamificationWidget from '../components/gamification/GamificationWidget';
 import UserProgress from '../components/gamification/UserProgress';
 import AchievementBadges from '../components/gamification/AchievementBadges';
 import Leaderboard from '../components/gamification/Leaderboard';
+import { AuroraBackground } from '../components/lightswind/aurora-background';
+import { GlowingCards, GlowingCard } from '../components/lightswind/glowing-cards';
+import ParticleOrbitEffect from '../components/lightswind/particle-orbit-effect';
+import GlowCard from '../components/ui/GlowCard';
+import { PORTFOLIO_ITEMS } from '../utils/constants';
 const Dashboard = () => {
-  const portfolioItems = [
-    {
-      title: 'My Profile',
-      description: 'Update your personal information',
-      icon: User,
-      link: '/profile',
-      gradient: 'from-primary to-secondary',
-      category: 'Personal'
-    },
-    {
-      title: 'Connections',
-      description: 'Manage your network connections',
-      icon: Users,
-      link: '/networking',
-      gradient: 'from-secondary to-accent',
-      category: 'Network'
-    },
-    {
-      title: 'Events',
-      description: 'View upcoming events',
-      icon: Calendar,
-      link: '/events',
-      gradient: 'from-primary to-success',
-      category: 'Events'
-    },
-    {
-      title: 'Resources',
-      description: 'Access shared resources',
-      icon: BookOpen,
-      link: '/resources',
-      gradient: 'from-secondary to-accent',
-      category: 'Learning'
-    },
-    {
-      title: 'Notifications',
-      description: 'Check your latest updates',
-      icon: Bell,
-      link: '/notifications',
-      gradient: 'from-success to-primary',
-      category: 'Updates'
-    },
-    {
-      title: 'Settings',
-      description: 'Configure your preferences',
-      icon: Settings,
-      link: '/settings',
-      gradient: 'from-accent to-secondary',
-      category: 'Config'
-    }
-  ];
+  // Create icon map for dynamic icon rendering
+  const iconMap = {
+    User,
+    Users,
+    Calendar,
+    BookOpen,
+    Bell,
+    Settings
+  };
+
+  // Map portfolio items with actual icon components
+  const portfolioItems = PORTFOLIO_ITEMS.map(item => ({
+    ...item,
+    icon: iconMap[item.icon]
+  }));
   return (
-    <div className="min-h-screen relative">
-      <div className="absolute inset-0 bg-dashboard-gradient"></div>
-      <div className="relative z-10">
+    <AuroraBackground>
+      <div className="min-h-screen relative">
+        <div className="absolute inset-0 bg-dashboard-gradient"></div>
+        <div className="relative z-10">
       {}
       <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -166,230 +137,40 @@ const Dashboard = () => {
               <p className="text-textMuted max-w-2xl mx-auto">Explore powerful features at your fingertips</p>
             </div>
             <div className="mb-12">
-              <div className="glass-card rounded-2xl p-8 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 text-center group relative overflow-hidden"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                  '--glow-x': '50%',
-                  '--glow-y': '50%',
-                  '--glow-intensity': '0',
-                  '--glow-radius': '200px',
-                  '--glow-color': '107, 159, 255'
-                }}
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = ((e.clientX - rect.left) / rect.width) * 100;
-                  const y = ((e.clientY - rect.top) / rect.height) * 100;
-                  e.currentTarget.style.setProperty('--glow-x', `${x}%`);
-                  e.currentTarget.style.setProperty('--glow-y', `${y}%`);
-                  e.currentTarget.style.setProperty('--glow-intensity', '0.3');
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.setProperty('--glow-intensity', '0');
-                }}
-              >
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{
-                    background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
-                    borderRadius: 'inherit'
-                  }}
-                />
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{
-                    background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
-                    borderRadius: 'inherit',
-                    animation: 'pulse 2s infinite'
-                  }}
-                />
-                <div className="text-4xl mb-4 text-primary relative z-10">⚡</div>
-                <h3 className="text-xl font-semibold text-textPrimary mb-2 relative z-10">Quick Actions</h3>
-                <p className="text-textMuted relative z-10">Explore powerful features at your fingertips</p>
-              </div>
+              <GlowCard className="text-center">
+                <div className="text-4xl mb-4 text-primary">⚡</div>
+                <h3 className="text-xl font-semibold text-textPrimary mb-2">Quick Actions</h3>
+                <p className="text-textMuted">Explore powerful features at your fingertips</p>
+              </GlowCard>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <Link to="/home" className="block">
-                <div className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 text-center group relative overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                    '--glow-x': '50%',
-                    '--glow-y': '50%',
-                    '--glow-intensity': '0',
-                    '--glow-radius': '200px',
-                    '--glow-color': '107, 159, 255'
-                  }}
-                  onMouseMove={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = ((e.clientX - rect.left) / rect.width) * 100;
-                    const y = ((e.clientY - rect.top) / rect.height) * 100;
-                    e.currentTarget.style.setProperty('--glow-x', `${x}%`);
-                    e.currentTarget.style.setProperty('--glow-y', `${y}%`);
-                    e.currentTarget.style.setProperty('--glow-intensity', '0.3');
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.setProperty('--glow-intensity', '0');
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{
-                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
-                      borderRadius: 'inherit'
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
-                      borderRadius: 'inherit',
-                      animation: 'pulse 2s infinite'
-                    }}
-                  />
-                  <div className="text-3xl mb-4 text-primary relative z-10">🏠</div>
-                  <h3 className="text-lg font-semibold text-textPrimary mb-2 relative z-10">Home</h3>
-                  <p className="text-textMuted text-sm relative z-10">Return to main page</p>
-                </div>
+                <GlowCard className="text-center">
+                  <div className="text-3xl mb-4 text-primary">🏠</div>
+                  <h3 className="text-lg font-semibold text-textPrimary mb-2">Home</h3>
+                  <p className="text-textMuted text-sm">Return to main page</p>
+                </GlowCard>
               </Link>
               <Link to="/events" className="block">
-                <div className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 text-center group relative overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                    '--glow-x': '50%',
-                    '--glow-y': '50%',
-                    '--glow-intensity': '0',
-                    '--glow-radius': '200px',
-                    '--glow-color': '107, 159, 255'
-                  }}
-                  onMouseMove={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = ((e.clientX - rect.left) / rect.width) * 100;
-                    const y = ((e.clientY - rect.top) / rect.height) * 100;
-                    e.currentTarget.style.setProperty('--glow-x', `${x}%`);
-                    e.currentTarget.style.setProperty('--glow-y', `${y}%`);
-                    e.currentTarget.style.setProperty('--glow-intensity', '0.3');
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.setProperty('--glow-intensity', '0');
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{
-                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
-                      borderRadius: 'inherit'
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
-                      borderRadius: 'inherit',
-                      animation: 'pulse 2s infinite'
-                    }}
-                  />
-                  <div className="text-3xl mb-4 text-primary relative z-10">📅</div>
-                  <h3 className="text-lg font-semibold text-textPrimary mb-2 relative z-10">Events</h3>
-                  <p className="text-textMuted text-sm relative z-10">Browse campus events</p>
-                </div>
+                <GlowCard className="text-center">
+                  <div className="text-3xl mb-4 text-primary">📅</div>
+                  <h3 className="text-lg font-semibold text-textPrimary mb-2">Events</h3>
+                  <p className="text-textMuted text-sm">Browse campus events</p>
+                </GlowCard>
               </Link>
               <Link to="/networking" className="block">
-                <div className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 text-center group relative overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                    '--glow-x': '50%',
-                    '--glow-y': '50%',
-                    '--glow-intensity': '0',
-                    '--glow-radius': '200px',
-                    '--glow-color': '107, 159, 255'
-                  }}
-                  onMouseMove={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = ((e.clientX - rect.left) / rect.width) * 100;
-                    const y = ((e.clientY - rect.top) / rect.height) * 100;
-                    e.currentTarget.style.setProperty('--glow-x', `${x}%`);
-                    e.currentTarget.style.setProperty('--glow-y', `${y}%`);
-                    e.currentTarget.style.setProperty('--glow-intensity', '0.3');
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.setProperty('--glow-intensity', '0');
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{
-                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
-                      borderRadius: 'inherit'
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
-                      borderRadius: 'inherit',
-                      animation: 'pulse 2s infinite'
-                    }}
-                  />
-                  <div className="text-3xl mb-4 text-primary relative z-10">🤝</div>
-                  <h3 className="text-lg font-semibold text-textPrimary mb-2 relative z-10">Networking</h3>
-                  <p className="text-textMuted text-sm relative z-10">Connect with peers</p>
-                </div>
+                <GlowCard className="text-center">
+                  <div className="text-3xl mb-4 text-primary">🤝</div>
+                  <h3 className="text-lg font-semibold text-textPrimary mb-2">Networking</h3>
+                  <p className="text-textMuted text-sm">Connect with peers</p>
+                </GlowCard>
               </Link>
               <Link to="/resources" className="block">
-                <div className="glass-card rounded-2xl p-6 hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 text-center group relative overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                    '--glow-x': '50%',
-                    '--glow-y': '50%',
-                    '--glow-intensity': '0',
-                    '--glow-radius': '200px',
-                    '--glow-color': '107, 159, 255'
-                  }}
-                  onMouseMove={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = ((e.clientX - rect.left) / rect.width) * 100;
-                    const y = ((e.clientY - rect.top) / rect.height) * 100;
-                    e.currentTarget.style.setProperty('--glow-x', `${x}%`);
-                    e.currentTarget.style.setProperty('--glow-y', `${y}%`);
-                    e.currentTarget.style.setProperty('--glow-intensity', '0.3');
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.setProperty('--glow-intensity', '0');
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{
-                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(107, 159, 255, 0.1) 0%, transparent 70%)',
-                      borderRadius: 'inherit'
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: 'radial-gradient(circle at var(--glow-x) var(--glow-y), rgba(127, 64, 255, 0.05) 0%, transparent 80%)',
-                      borderRadius: 'inherit',
-                      animation: 'pulse 2s infinite'
-                    }}
-                  />
-                  <div className="text-3xl mb-4 text-primary relative z-10">📚</div>
-                  <h3 className="text-lg font-semibold text-textPrimary mb-2 relative z-10">Resources</h3>
-                  <p className="text-textMuted text-sm relative z-10">Access study materials</p>
-                </div>
+                <GlowCard className="text-center">
+                  <div className="text-3xl mb-4 text-primary">📚</div>
+                  <h3 className="text-lg font-semibold text-textPrimary mb-2">Resources</h3>
+                  <p className="text-textMuted text-sm">Access study materials</p>
+                </GlowCard>
               </Link>
             </div>
           </motion.div>
@@ -409,8 +190,10 @@ const Dashboard = () => {
           </motion.div>
         </div>
       </section>
+        </div>
       </div>
-    </div>
+      <ParticleOrbitEffect />
+    </AuroraBackground>
   );
 };
 export default Dashboard;

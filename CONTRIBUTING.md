@@ -30,31 +30,37 @@ This project adheres to a code of conduct to ensure a welcoming environment for 
 
 Before you begin, ensure you have:
 
-- **Node.js** (v16 or higher)
+- **Node.js** (v18 or higher)
 - **npm** or **yarn**
 - **Git** for version control
-- **Supabase** account for database access
+- **MongoDB** (local installation or MongoDB Atlas)
 - **Code editor** (VS Code recommended)
 
 ### Quick Setup
 
 ```bash
 # Fork and clone the repository
-git clone https://github.com/your-username/campus-connect.git
+git clone https://github.com/piyushku0331/Campus_connect.git
 cd campus-connect
 
-# Install dependencies
-npm run setup:all
+# Install backend dependencies
+cd backend
+npm install
+
+# Install frontend dependencies
+cd ../frontend
+npm install
 
 # Start development servers
-npm run dev
+cd ..
+npm run dev  # If available, or start separately
 ```
 
 ## 🔄 Development Workflow
 
 ### 1. Choose an Issue
 
-- Check our [GitHub Issues](https://github.com/your-username/campus-connect/issues) for open tasks
+- Check our [GitHub Issues](https://github.com/piyushku0331/Campus_connect/issues) for open tasks
 - Look for issues labeled `good first issue` or `help wanted`
 - Comment on the issue to indicate you're working on it
 
@@ -103,16 +109,28 @@ git checkout -b fix/issue-number-description
 
 #### **JavaScript/React Guidelines**
 ```javascript
-// ✅ Good: Clear naming and structure
-const handleUserLogin = async (credentials) => {
-  try {
-    const response = await authAPI.signIn(credentials);
-    setUser(response.data.user);
-    return { success: true };
-  } catch (error) {
-    console.error('Login failed:', error);
-    return { success: false, error: error.message };
-  }
+// ✅ Good: Modern React 19 with hooks, clear naming and structure
+import { useState, useEffect } from 'react';
+
+const useUserLogin = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleUserLogin = async (credentials) => {
+    setLoading(true);
+    try {
+      const response = await authAPI.signIn(credentials);
+      setUser(response.data.user);
+      return { success: true };
+    } catch (error) {
+      console.error('Login failed:', error);
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { user, loading, handleUserLogin };
 };
 
 // ❌ Bad: Unclear naming and poor error handling
@@ -158,16 +176,22 @@ test(auth): add unit tests for login flow
 
 #### **Unit Tests**
 ```javascript
-// Example: Component testing
+// Frontend: Vitest with Testing Library
 import { render, screen, fireEvent } from '@testing-library/react';
+import { expect, test } from 'vitest';
 import LoginForm from '../components/auth/LoginForm';
 
-describe('LoginForm', () => {
-  it('should handle email input', () => {
-    render(<LoginForm />);
-    const emailInput = screen.getByLabelText(/email/i);
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    expect(emailInput.value).toBe('test@example.com');
+test('should handle email input', () => {
+  render(<LoginForm />);
+  const emailInput = screen.getByLabelText(/email/i);
+  fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+  expect(emailInput.value).toBe('test@example.com');
+});
+
+// Backend: Jest
+describe('Auth Controller', () => {
+  it('should authenticate valid user', async () => {
+    // Test implementation
   });
 });
 ```
@@ -288,34 +312,57 @@ Brief description of the changes made
 
 ```bash
 # 1. Clone and setup
-git clone https://github.com/your-username/campus-connect.git
+git clone https://github.com/piyushku0331/Campus_connect.git
 cd campus-connect
 
-# 2. Install dependencies
+# 2. Backend setup
+cd backend
+npm install
+cp .env.example .env
+# Edit .env with your MongoDB and other credentials
+
+# 3. Frontend setup
+cd ../frontend
 npm install
 
-# 3. Environment setup
-cp .env.example .env
-# Edit .env with your credentials
-
 # 4. Database setup
-# Follow database setup guide
+# Set up MongoDB locally or use MongoDB Atlas
+# Update MONGODB_URI in backend/.env
 
 # 5. Start development servers
-npm run dev
+cd ..
+# Start backend
+cd backend && npm run dev
+
+# In another terminal, start frontend
+cd frontend && npm run dev
 ```
 
 ### Development Scripts
 
+Backend scripts (in backend/package.json):
 ```json
 {
   "scripts": {
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && npm run dev",
-    "build": "npm run build:frontend && npm run build:backend",
-    "test": "npm run test:frontend && npm run test:backend",
-    "lint": "npm run lint:frontend && npm run lint:backend"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  }
+}
+```
+
+Frontend scripts (in frontend/package.json):
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   }
 }
 ```
@@ -341,18 +388,26 @@ npm run dev
 
 ### Running Tests
 
+Backend (Jest):
 ```bash
-# Run all tests
+cd backend
 npm test
+```
 
-# Run with coverage
-npm run test:coverage
+Frontend (Vitest):
+```bash
+cd frontend
+npm test
+npm run test:ui  # For UI testing
+```
 
-# Run specific test file
-npm test -- LoginForm.test.js
+Coverage:
+```bash
+# Backend
+cd backend && npm test -- --coverage
 
-# Run tests in watch mode
-npm run test:watch
+# Frontend
+cd frontend && npm test -- --coverage
 ```
 
 ## 📖 Documentation
