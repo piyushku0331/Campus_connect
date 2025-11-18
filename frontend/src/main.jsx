@@ -5,15 +5,17 @@ import { Toaster } from 'react-hot-toast'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
+import { SocketProvider } from './contexts/SocketContext.jsx'
 import initParallax from './utils/parallax'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <div className="dark">
-          <App />
-          <Toaster
+        <SocketProvider>
+          <div className="dark">
+            <App />
+            <Toaster
             position="top-right"
             toastOptions={{
               duration: 4000,
@@ -36,7 +38,8 @@ createRoot(document.getElementById('root')).render(
               },
             }}
           />
-        </div>
+          </div>
+        </SocketProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

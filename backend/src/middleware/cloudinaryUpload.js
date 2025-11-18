@@ -2,7 +2,7 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('../config/cloudinary');
 
-const createCloudinaryStorage = (folder, allowedFormats, maxFileSize) => {
+const createCloudinaryStorage = (folder, allowedFormats) => {
   return new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
@@ -25,7 +25,7 @@ const uploadUserProfile = multer({
   storage: createCloudinaryStorage('user_profiles', ['jpeg', 'png', 'webp'], 2 * 1024 * 1024),
   fileFilter: fileFilter(['image/jpeg', 'image/png', 'image/webp']),
   limits: { fileSize: 2 * 1024 * 1024 },
-}).single('profilePicture');
+}).single('photo');
 
 const uploadPostMedia = multer({
   storage: (req, file, cb) => {

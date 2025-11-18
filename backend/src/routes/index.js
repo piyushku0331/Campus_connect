@@ -20,5 +20,6 @@ router.use('/news', require('./news'));
 router.use('/blogs', require('./blog'));
 router.use('/posts', require('./posts'));
 router.use('/creators', require('./creators'));
+router.use('/conversations', require('./conversations'));
 
 module.exports = router;

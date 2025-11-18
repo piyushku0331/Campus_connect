@@ -6,23 +6,51 @@ import { ChevronLeft, ChevronRight, Star, Quote } from 'lucide-react';
 import { GlowingCards, GlowingCard } from '../components/lightswind/glowing-cards';
 import { useParallax } from '../hooks/use-parallax';
 import { TESTIMONIALS, HOME_CONTENT, TEAM_MEMBERS } from '../utils/constants';
+import { creatorsAPI } from '../services/api';
 const Home = React.memo(() => {
   const heroRef = useParallax(0.3);
   const teamRef = useRef(null);
-  
+
   const parallaxRef1 = useParallax(0.2);
   const parallaxRef2 = useParallax(0.4);
   const parallaxRef3 = useParallax(0.1);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [realTestimonials, setRealTestimonials] = useState([]);
 
+  useEffect(() => {
+    fetchRealTestimonials();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
+      const testimonials = realTestimonials.length > 0 ? realTestimonials : TESTIMONIALS;
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
     }, 5000); // Change testimonial every 5 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [realTestimonials]);
+
+  const fetchRealTestimonials = async () => {
+    try {
+      // Try to fetch real creator testimonials
+      const response = await creatorsAPI.getSuggestedCreators();
+      if (response.data && response.data.length > 0) {
+        // Convert creators to testimonial format
+        const creatorTestimonials = response.data.slice(0, 6).map((creator) => ({
+          name: creator.displayName || creator.user?.name || 'Creator',
+          role: 'Verified Creator',
+          university: 'Campus Connect',
+          content: creator.bio || 'Creating amazing content for the Campus Connect community!',
+          rating: 5,
+          avatar: creator.displayName ? creator.displayName.split(' ').map(n => n[0]).join('') : 'CC'
+        }));
+        setRealTestimonials(creatorTestimonials);
+      }
+    } catch {
+      console.log('Using fallback testimonials');
+      // Keep using static testimonials if API fails
+    }
+  };
   return (
     <div className="min-h-screen flex flex-col floating-particles floating-particles-enhanced dynamic-bg-elements depth-layer-1 relative overflow-hidden">
       {/* Enhanced ambient lighting */}
@@ -34,15 +62,15 @@ const Home = React.memo(() => {
       {}
       <section className="min-h-screen flex items-center justify-center relative overflow-hidden depth-layer-2">
           <div ref={heroRef} className="absolute inset-0 bg-hero-bg bg-cover bg-center parallax-element"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-black/75 to-black/85"></div>
+          <div className="absolute inset-0 bg-linear-to-br from-black/85 via-black/75 to-black/85"></div>
           <div className="absolute inset-0 bg-ambient-overlay animate-breathe"></div>
           {/* Enhanced floating orbs with better positioning and effects */}
-          <div ref={parallaxRef1} className="absolute top-20 left-10 w-40 h-40 bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/20 rounded-full blur-2xl animate-parallax-float opacity-60 shadow-2xl"></div>
-          <div ref={parallaxRef2} className="absolute bottom-32 right-16 w-32 h-32 bg-gradient-to-br from-secondary/35 via-primary/25 to-accent/15 rounded-full blur-xl animate-parallax-float opacity-50 shadow-xl" style={{ animationDelay: '1s' }}></div>
-          <div ref={parallaxRef3} className="absolute top-1/2 left-1/4 w-24 h-24 bg-gradient-to-br from-accent/30 via-primary/20 to-secondary/10 rounded-full blur-lg animate-parallax-float opacity-40 shadow-lg" style={{ animationDelay: '2s' }}></div>
+          <div ref={parallaxRef1} className="absolute top-20 left-10 w-40 h-40 bg-linear-to-br from-primary/40 via-secondary/30 to-accent/20 rounded-full blur-2xl animate-parallax-float opacity-60 shadow-2xl"></div>
+          <div ref={parallaxRef2} className="absolute bottom-32 right-16 w-32 h-32 bg-linear-to-br from-secondary/35 via-primary/25 to-accent/15 rounded-full blur-xl animate-parallax-float opacity-50 shadow-xl" style={{ animationDelay: '1s' }}></div>
+          <div ref={parallaxRef3} className="absolute top-1/2 left-1/4 w-24 h-24 bg-linear-to-br from-accent/30 via-primary/20 to-secondary/10 rounded-full blur-lg animate-parallax-float opacity-40 shadow-lg" style={{ animationDelay: '2s' }}></div>
           {/* Additional ambient orbs for depth */}
-          <div className="absolute top-1/3 right-1/3 w-20 h-20 bg-gradient-to-br from-primary/25 via-transparent to-secondary/15 rounded-full blur-md animate-float opacity-30"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-gradient-to-br from-secondary/20 via-accent/15 to-primary/10 rounded-full blur-lg animate-float opacity-25" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute top-1/3 right-1/3 w-20 h-20 bg-linear-to-br from-primary/25 via-transparent to-secondary/15 rounded-full blur-md animate-float opacity-30"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-linear-to-br from-secondary/20 via-accent/15 to-primary/10 rounded-full blur-lg animate-float opacity-25" style={{ animationDelay: '3s' }}></div>
           <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 text-center depth-layer-3">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -50,7 +78,7 @@ const Home = React.memo(() => {
               transition={{ duration: 0.8 }}
             >
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight mb-4 sm:mb-6 cinematic-heading max-w-4xl mx-auto">
-                <span className="bg-gradient-to-r from-white via-primary/90 to-secondary/90 bg-clip-text text-transparent animate-gradient-x">
+                <span className="bg-linear-to-r from-white via-primary/90 to-secondary/90 bg-clip-text text-transparent animate-gradient-x">
                   {HOME_CONTENT.welcome}
                 </span>
               </h1>
@@ -60,17 +88,17 @@ const Home = React.memo(() => {
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-lg mx-auto">
                 <Link
                   to="/signup"
-                  className="bg-gradient-to-r glass-effect border border-primary/30 from-primary hover:border-primary/60 to-secondary text-white font-medium px-8 py-3 rounded-full hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 interactive-element relative overflow-hidden group"
+                  className="bg-linear-to-r glass-effect border border-primary/30 from-primary hover:border-primary/60 to-secondary text-white font-medium px-8 py-3 rounded-full hover:shadow-cinematic-glow hover:scale-105 transition-all duration-500 interactive-element relative overflow-hidden group"
                 >
                   <span className="relative z-10">{HOME_CONTENT.signUp}</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-linear-to-r from-white/20 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </Link>
                 <Link
                   to="/login"
                   className="glass-effect border border-primary/30 text-primary hover:border-primary/60 px-8 py-3 rounded-full font-medium hover:bg-primary/10 transition-all duration-500 animate-shimmer interactive-element relative overflow-hidden group"
                 >
                   <span className="relative z-10">{HOME_CONTENT.getStarted}</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </Link>
               </div>
             </motion.div>
@@ -79,7 +107,7 @@ const Home = React.memo(() => {
       {}
       <section className="py-20 md:py-28 relative">
         <div className="absolute inset-0 bg-features-bg bg-cover bg-center parallax-bg"></div>
-        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/80 to-black/90"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-black/90 via-black/80 to-black/90"></div>
         <div className="absolute inset-0 bg-ambient-overlay opacity-20"></div>
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
           <motion.div
@@ -289,7 +317,7 @@ const Home = React.memo(() => {
                   }}
                 />
                 <div className="relative overflow-hidden z-10">
-                  <div className="transform transition-transform duration-500 ease-out group-hover:translate-y-[-100%]">
+                  <div className="transform transition-transform duration-500 ease-out group-hover:-translate-y-full">
                     <div className="text-4xl mb-4">{member[0]}</div>
                     <h3 className="text-xl font-semibold text-textPrimary">{member}</h3>
                   </div>
@@ -306,7 +334,7 @@ const Home = React.memo(() => {
       </section>
       {}
       <section className="py-20 md:py-28 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/80 to-black/90"></div>
+        <div className="absolute inset-0 bg-linear-to-br from-black/90 via-black/80 to-black/90"></div>
         <div className="absolute inset-0 bg-ambient-overlay opacity-20"></div>
         <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
           <motion.div
@@ -322,8 +350,8 @@ const Home = React.memo(() => {
 
           <div className="relative overflow-hidden">
             <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${currentTestimonial * 100}%)` }}>
-              {TESTIMONIALS.map((testimonial, index) => (
-                <div key={index} className="w-full flex-shrink-0">
+              {(realTestimonials.length > 0 ? realTestimonials : TESTIMONIALS).map((testimonial, index) => (
+                <div key={index} className="w-full shrink-0">
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -344,7 +372,7 @@ const Home = React.memo(() => {
 
                       <div className="flex items-center justify-center">
                         <div className="text-center">
-                          <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-xl mb-3 mx-auto">
+                          <div className="w-16 h-16 bg-linear-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-xl mb-3 mx-auto">
                             {testimonial.avatar}
                           </div>
                           <h4 className="text-lg font-semibold text-textPrimary">{testimonial.name}</h4>
@@ -360,7 +388,7 @@ const Home = React.memo(() => {
 
             {/* Navigation Dots */}
             <div className="flex justify-center mt-8 space-x-2">
-              {TESTIMONIALS.map((_, index) => (
+              {(realTestimonials.length > 0 ? realTestimonials : TESTIMONIALS).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
@@ -374,14 +402,20 @@ const Home = React.memo(() => {
 
             {/* Navigation Arrows */}
             <button
-              onClick={() => setCurrentTestimonial((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
+              onClick={() => {
+                const testimonials = realTestimonials.length > 0 ? realTestimonials : TESTIMONIALS;
+                setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+              }}
               className="absolute left-0 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110"
               aria-label="Previous testimonial"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
             <button
-              onClick={() => setCurrentTestimonial((prev) => (prev + 1) % TESTIMONIALS.length)}
+              onClick={() => {
+                const testimonials = realTestimonials.length > 0 ? realTestimonials : TESTIMONIALS;
+                setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+              }}
               className="absolute right-0 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all duration-300 hover:scale-110"
               aria-label="Next testimonial"
             >

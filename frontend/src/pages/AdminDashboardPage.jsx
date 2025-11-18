@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AdminLayout from '../components/admin/AdminLayout';
+import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 import EventPostingForm from '../components/admin/EventPostingForm';
 import NoticeUploadForm from '../components/admin/NoticeUploadForm';
 import EventManagement from '../components/admin/EventManagement';
@@ -12,73 +13,49 @@ const AdminDashboardPage = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
+        return <AnalyticsDashboard />;
+      case 'events':
         return (
-          <div className="admin-dashboard">
-            <h1>Admin Dashboard</h1>
-            <div className="dashboard-grid">
-              <div className="dashboard-card">
-                <h3>Quick Actions</h3>
-                <div className="quick-actions">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => setActiveTab('events')}
-                  >
-                    Post Event
-                  </button>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => setActiveTab('notices')}
-                  >
-                    Upload Notice
-                  </button>
-                </div>
-              </div>
-              <div className="dashboard-card">
-                <h3>Management</h3>
-                <div className="management-links">
-                  <button
-                    className="btn btn-outline"
-                    onClick={() => setActiveTab('events')}
-                  >
-                    Manage Events
-                  </button>
-                  <button
-                    className="btn btn-outline"
-                    onClick={() => setActiveTab('posts')}
-                  >
-                    Manage Posts
-                  </button>
-                  <button
-                    className="btn btn-outline"
-                    onClick={() => setActiveTab('users')}
-                  >
-                    Manage Users
-                  </button>
-                </div>
-              </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white font-heading mb-6">Events Management</h2>
+            <div className="space-y-8">
+              <EventPostingForm />
+              <EventManagement />
             </div>
           </div>
         );
-      case 'events':
+      case 'notices':
         return (
-          <div className="admin-section">
-            <EventPostingForm />
-            <EventManagement />
+          <div>
+            <h2 className="text-2xl font-bold text-white font-heading mb-6">Notice Upload</h2>
+            <NoticeUploadForm />
           </div>
         );
-      case 'notices':
-        return <NoticeUploadForm />;
       case 'posts':
-        return <PostManagement />;
+        return (
+          <div>
+            <h2 className="text-2xl font-bold text-white font-heading mb-6">Posts Management</h2>
+            <PostManagement />
+          </div>
+        );
       case 'users':
-        return <UserManagement />;
+        return (
+          <div>
+            <h2 className="text-2xl font-bold text-white font-heading mb-6">Users Management</h2>
+            <UserManagement />
+          </div>
+        );
       default:
-        return <div>Select a section</div>;
+        return (
+          <div>
+            <div className="text-center text-gray-400">Select a section from the sidebar</div>
+          </div>
+        );
     }
   };
 
   return (
-    <AdminLayout>
+    <AdminLayout activeTab={activeTab} setActiveTab={setActiveTab}>
       {renderContent()}
     </AdminLayout>
   );

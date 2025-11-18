@@ -70,6 +70,31 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  // Alumni-specific fields
+  batch: {
+    type: String,
+    trim: true
+  },
+  company: {
+    type: String,
+    trim: true
+  },
+  position: {
+    type: String,
+    trim: true
+  },
+  location: {
+    type: String,
+    trim: true
+  },
+  alumniAchievements: [{
+    type: String,
+    trim: true
+  }],
+  successStory: {
+    type: String,
+    trim: true
+  },
   linkedin: {
     type: String,
     trim: true

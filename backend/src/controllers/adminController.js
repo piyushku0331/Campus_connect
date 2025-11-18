@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Post = require('../models/Post');
+const Resource = require('../models/Resource');
 const Notice = require('../models/Notice');
 const Event = require('../models/Event');
 const LostItem = require('../models/LostItem');
@@ -150,19 +151,38 @@ const getContentForModeration = async (req, res) => {
     let content = [];
 
     if (type === 'posts' || type === 'all') {
-      const posts = await Post.find({ status: { $ne: 'approved' } })
-        .populate('author', 'name email')
-        .sort({ created_at: -1 })
+      const posts = await Post.find({ status: 'pending' })
+        .populate('creator', 'displayName')
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit));
 
       content.push(...posts.map(post => ({ ...post.toObject(), contentType: 'post' })));
     }
 
-    if (type === 'notices' || type === 'all') {
-      const notices = await Notice.find({ status: { $ne: 'approved' } })
-        .populate('author', 'name email')
+    if (type === 'resources' || type === 'all') {
+      const resources = await Resource.find({ status: 'pending' })
+        .populate('uploader_id', 'name')
         .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+
+      content.push(...resources.map(resource => ({ ...resource.toObject(), contentType: 'resource' })));
+    }
+
+    if (type === 'events' || type === 'all') {
+      const events = await Event.find({ status: 'pending' })
+        .populate('organizer_id', 'name')
+        .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+
+      content.push(...events.map(event => ({ ...event.toObject(), contentType: 'event' })));
+    }
+
+    if (type === 'notices' || type === 'all') {
+      const notices = await Notice.find({ status: 'pending' })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit));
 
@@ -190,6 +210,7 @@ const getContentForModeration = async (req, res) => {
 const moderateContent = async (req, res) => {
   try {
     const { id, contentType, action } = req.body;
+    const io = req.app.get('io'); // Get socket.io instance
 
     if (!['approve', 'reject'].includes(action)) {
       return res.status(400).json({ error: 'Invalid action' });
@@ -198,16 +219,37 @@ const moderateContent = async (req, res) => {
     const status = action === 'approve' ? 'approved' : 'rejected';
 
     let content;
+    let userId;
+
     if (contentType === 'post') {
-      content = await Post.findByIdAndUpdate(id, { status }, { new: true });
+      content = await Post.findByIdAndUpdate(id, { status }, { new: true }).populate('creator');
+      userId = content?.creator?.user;
+    } else if (contentType === 'resource') {
+      content = await Resource.findByIdAndUpdate(id, { status }, { new: true });
+      userId = content?.uploader_id;
+    } else if (contentType === 'event') {
+      content = await Event.findByIdAndUpdate(id, { status }, { new: true });
+      userId = content?.organizer_id;
     } else if (contentType === 'notice') {
       content = await Notice.findByIdAndUpdate(id, { status }, { new: true });
+      // Notices don't have uploader_id, assume admin uploaded
+      userId = null;
     } else {
       return res.status(400).json({ error: 'Invalid content type' });
     }
 
     if (!content) {
       return res.status(404).json({ error: 'Content not found' });
+    }
+
+    // Emit real-time notification to the uploader
+    if (io && userId) {
+      io.to(userId.toString()).emit('contentApproval', {
+        contentType,
+        contentId: id,
+        status,
+        title: content.title || content.caption || 'Your content'
+      });
     }
 
     res.json({ message: `Content ${action}d successfully`, content });
@@ -223,13 +265,13 @@ const getPendingEvents = async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
 
-    const events = await Event.find({ isApproved: false })
+    const events = await Event.find({ status: 'pending' })
       .populate('organizer_id', 'name email')
       .sort({ created_at: -1 })
       .skip(skip)
       .limit(parseInt(limit));
 
-    const total = await Event.countDocuments({ isApproved: false });
+    const total = await Event.countDocuments({ status: 'pending' });
 
     res.json({
       events,
@@ -249,7 +291,7 @@ const getPendingEvents = async (req, res) => {
 const approveEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const event = await Event.findByIdAndUpdate(id, { isApproved: true }, { new: true })
+    const event = await Event.findByIdAndUpdate(id, { status: 'approved' }, { new: true })
       .populate('organizer_id', 'name email');
 
     if (!event) {
@@ -266,13 +308,13 @@ const approveEvent = async (req, res) => {
 const rejectEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const event = await Event.findByIdAndDelete(id);
+    const event = await Event.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    res.json({ message: 'Event rejected and deleted successfully' });
+    res.json({ message: 'Event rejected successfully', event });
   } catch (error) {
     console.error('Error rejecting event:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -311,12 +353,35 @@ const getAlumni = async (req, res) => {
 const addAlumni = async (req, res) => {
   try {
     const { userId } = req.body;
+    const io = req.app.get('io'); // Get socket.io instance
 
     const user = await User.findByIdAndUpdate(userId, { role: 'alumni' }, { new: true })
       .select('-password -otp -otpExpires -refreshToken -refreshTokenExpires -resetPasswordToken -resetPasswordExpires');
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Emit real-time update to all connected clients
+    if (io) {
+      io.emit('alumniAdded', {
+        type: 'alumni_added',
+        user: {
+          id: user._id,
+          name: user.name,
+          department: user.department,
+          batch: user.batch,
+          company: user.company,
+          position: user.position,
+          location: user.location,
+          bio: user.bio,
+          linkedin: user.linkedin,
+          email: user.email,
+          profilePhoto: user.profilePhoto,
+          alumniAchievements: user.alumniAchievements,
+          successStory: user.successStory
+        }
+      });
     }
 
     res.json({ message: 'User added to alumni successfully', user });
@@ -326,15 +391,76 @@ const addAlumni = async (req, res) => {
   }
 };
 
+const updateAlumni = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const io = req.app.get('io'); // Get socket.io instance
+
+    // Only allow updating alumni-specific fields
+    const allowedFields = ['batch', 'company', 'position', 'location', 'alumniAchievements', 'successStory'];
+    const filteredUpdateData = {};
+
+    allowedFields.forEach(field => {
+      if (updateData[field] !== undefined) {
+        filteredUpdateData[field] = updateData[field];
+      }
+    });
+
+    const user = await User.findByIdAndUpdate(id, filteredUpdateData, { new: true })
+      .select('-password -otp -otpExpires -refreshToken -refreshTokenExpires -resetPasswordToken -resetPasswordExpires');
+
+    if (!user) {
+      return res.status(404).json({ error: 'Alumni not found' });
+    }
+
+    // Emit real-time update to all connected clients
+    if (io) {
+      io.emit('alumniUpdated', {
+        type: 'alumni_updated',
+        user: {
+          id: user._id,
+          name: user.name,
+          department: user.department,
+          batch: user.batch,
+          company: user.company,
+          position: user.position,
+          location: user.location,
+          bio: user.bio,
+          linkedin: user.linkedin,
+          email: user.email,
+          profilePhoto: user.profilePhoto,
+          alumniAchievements: user.alumniAchievements,
+          successStory: user.successStory
+        }
+      });
+    }
+
+    res.json({ message: 'Alumni updated successfully', user });
+  } catch (error) {
+    console.error('Error updating alumni:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 const removeAlumni = async (req, res) => {
   try {
     const { id } = req.params;
+    const io = req.app.get('io'); // Get socket.io instance
 
     const user = await User.findByIdAndUpdate(id, { role: 'user' }, { new: true })
       .select('-password -otp -otpExpires -refreshToken -refreshTokenExpires -resetPasswordToken -resetPasswordExpires');
 
     if (!user) {
       return res.status(404).json({ error: 'Alumni not found' });
+    }
+
+    // Emit real-time update to all connected clients
+    if (io) {
+      io.emit('alumniRemoved', {
+        type: 'alumni_removed',
+        userId: id
+      });
     }
 
     res.json({ message: 'Alumni removed successfully', user });
@@ -356,5 +482,6 @@ module.exports = {
   rejectEvent,
   getAlumni,
   addAlumni,
+  updateAlumni,
   removeAlumni
 };

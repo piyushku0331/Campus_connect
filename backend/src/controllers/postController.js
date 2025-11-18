@@ -4,6 +4,12 @@ const User = require('../models/User');
 const { handleControllerError } = require('../utils/errorHandler');
 const { getPaginationParams, createPaginationMeta } = require('../utils/pagination');
 
+// Get io instance from app
+let io;
+const setIo = (ioInstance) => {
+  io = ioInstance;
+};
+
 // Get feed posts (for authenticated users)
 const getFeed = async (req, res) => {
   try {
@@ -25,7 +31,7 @@ const getFeed = async (req, res) => {
     if (creatorIds.length > 0) {
       posts = await Post.find({
         creator: { $in: creatorIds },
-        status: 'active'
+        status: 'approved'
       })
         .populate('creator', 'displayName profilePicture isVerified')
         .sort({ createdAt: -1 })
@@ -33,7 +39,7 @@ const getFeed = async (req, res) => {
         .skip(skip);
     } else {
       // For users not following anyone, show popular posts
-      posts = await Post.find({ status: 'active' })
+      posts = await Post.find({ status: 'approved' })
         .populate('creator', 'displayName profilePicture isVerified')
         .sort({ 'engagement.likes': -1, 'engagement.comments': -1, createdAt: -1 })
         .limit(limit)
@@ -56,7 +62,7 @@ const getCreatorPosts = async (req, res) => {
     const { page, limit, skip } = getPaginationParams(req.query, 20);
     const type = req.query.type; // 'post' or 'reel'
 
-    const query = { creator: creatorId, status: 'active' };
+    const query = { creator: creatorId, status: 'approved' };
     if (type) query.type = type;
 
     const posts = await Post.find(query)
@@ -132,7 +138,8 @@ const createPost = async (req, res) => {
       mentions: mentions ? JSON.parse(mentions) : [],
       location,
       category: category || 'education',
-      music: type === 'reel' ? music : undefined
+      music: type === 'reel' ? music : undefined,
+      status: 'pending'
     });
 
     await post.save();
@@ -144,6 +151,14 @@ const createPost = async (req, res) => {
 
     const populatedPost = await Post.findById(post._id)
       .populate('creator', 'displayName profilePicture isVerified');
+
+    // Emit real-time dashboard update for posts count
+    if (io) {
+      io.to(userId).emit('dashboardUpdate', {
+        type: 'posts_update',
+        posts: await Post.countDocuments({ creator: creator._id })
+      });
+    }
 
     res.status(201).json(populatedPost);
   } catch (error) {
@@ -283,7 +298,7 @@ const getTrendingPosts = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
 
-    const posts = await Post.find({ status: 'active' })
+    const posts = await Post.find({ status: 'approved' })
       .populate('creator', 'displayName profilePicture isVerified')
       .sort({ 'engagement.likes': -1, 'engagement.comments': -1, createdAt: -1 })
       .limit(limit);
@@ -301,7 +316,7 @@ const searchPosts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
 
-    let query = { status: 'active' };
+    let query = { status: 'approved' };
 
     if (q) {
       query.$text = { $search: q };
@@ -335,6 +350,7 @@ const searchPosts = async (req, res) => {
 };
 
 module.exports = {
+  setIo,
   getFeed,
   getCreatorPosts,
   getPost,

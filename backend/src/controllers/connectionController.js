@@ -1,5 +1,11 @@
 const Connection = require('../models/Connection');
 const { awardPoints, checkAchievements } = require('./gamificationController');
+
+// Get io instance from app
+let io;
+const setIo = (ioInstance) => {
+  io = ioInstance;
+};
 const getConnections = async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -52,6 +58,24 @@ const sendConnectionRequest = async (req, res) => {
     });
     await connection.save();
     await awardPoints(senderId, 5, 'sent_connection_request', connection._id);
+
+    // Emit real-time event to receiver
+    if (io) {
+      io.to(receiver_id).emit('connectionRequestReceived', {
+        type: 'connection_request',
+        connectionId: connection._id,
+        senderId,
+        receiverId: receiver_id,
+        connection: {
+          _id: connection._id,
+          sender_id: { _id: senderId },
+          receiver_id: { _id: receiver_id },
+          status: 'pending',
+          created_at: connection.created_at
+        }
+      });
+    }
+
     res.status(201).json(connection);
   } catch (error) {
     console.error('Error sending connection request:', error);
@@ -80,6 +104,57 @@ const acceptConnectionRequest = async (req, res) => {
     await awardPoints(connection.sender_id, 15, 'connection_accepted', id);
     await checkAchievements(userId);
     await checkAchievements(connection.sender_id);
+
+    // Emit real-time events to both users
+    if (io) {
+      // Notify the accepter
+      io.to(userId).emit('connectionRequestAccepted', {
+        type: 'connection_accepted',
+        connectionId: id,
+        accepterId: userId,
+        senderId: connection.sender_id,
+        connection: {
+          _id: connection._id,
+          sender_id: connection.sender_id,
+          receiver_id: connection.receiver_id,
+          status: 'accepted',
+          updated_at: connection.updated_at
+        }
+      });
+
+      // Notify the sender
+      io.to(connection.sender_id.toString()).emit('connectionRequestAccepted', {
+        type: 'connection_accepted',
+        connectionId: id,
+        accepterId: userId,
+        senderId: connection.sender_id,
+        connection: {
+          _id: connection._id,
+          sender_id: connection.sender_id,
+          receiver_id: connection.receiver_id,
+          status: 'accepted',
+          updated_at: connection.updated_at
+        }
+      });
+
+      // Emit dashboard updates for both users
+      io.to(userId).emit('dashboardUpdate', {
+        type: 'connections_update',
+        connections: await Connection.countDocuments({
+          $or: [{ sender_id: userId }, { receiver_id: userId }],
+          status: 'accepted'
+        })
+      });
+
+      io.to(connection.sender_id.toString()).emit('dashboardUpdate', {
+        type: 'connections_update',
+        connections: await Connection.countDocuments({
+          $or: [{ sender_id: connection.sender_id }, { receiver_id: connection.sender_id }],
+          status: 'accepted'
+        })
+      });
+    }
+
     res.json(connection);
   } catch (error) {
     console.error('Error accepting connection request:', error);
@@ -104,6 +179,40 @@ const rejectConnectionRequest = async (req, res) => {
     connection.status = 'rejected';
     connection.updated_at = new Date();
     await connection.save();
+
+    // Emit real-time events to both users
+    if (io) {
+      // Notify the rejecter
+      io.to(userId).emit('connectionRequestRejected', {
+        type: 'connection_rejected',
+        connectionId: id,
+        rejecterId: userId,
+        senderId: connection.sender_id,
+        connection: {
+          _id: connection._id,
+          sender_id: connection.sender_id,
+          receiver_id: connection.receiver_id,
+          status: 'rejected',
+          updated_at: connection.updated_at
+        }
+      });
+
+      // Notify the sender
+      io.to(connection.sender_id.toString()).emit('connectionRequestRejected', {
+        type: 'connection_rejected',
+        connectionId: id,
+        rejecterId: userId,
+        senderId: connection.sender_id,
+        connection: {
+          _id: connection._id,
+          sender_id: connection.sender_id,
+          receiver_id: connection.receiver_id,
+          status: 'rejected',
+          updated_at: connection.updated_at
+        }
+      });
+    }
+
     res.json(connection);
   } catch (error) {
     console.error('Error rejecting connection request:', error);
@@ -151,7 +260,9 @@ const getConnectionRequests = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 module.exports = {
+  setIo,
   getConnections,
   sendConnectionRequest,
   acceptConnectionRequest,

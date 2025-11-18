@@ -1,55 +1,70 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { FaTachometerAlt, FaCalendarAlt, FaFileAlt, FaUsers, FaBullhorn, FaSignOutAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useIsMobile } from '../../hooks/use-mobile';
+import EnhancedSidebar from './EnhancedSidebar';
+import Header from './Header';
+const AdminLayout = ({ children, activeTab: propActiveTab, setActiveTab: propSetActiveTab }) => {
+  const [internalActiveTab, setInternalActiveTab] = useState('dashboard');
+  const isMobile = useIsMobile();
+  const [isCollapsed, setIsCollapsed] = useState(isMobile);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-const AdminLayout = ({ children }) => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const navigate = useNavigate();
+  const activeTab = propActiveTab !== undefined ? propActiveTab : internalActiveTab;
+  const setActiveTab = propSetActiveTab || setInternalActiveTab;
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: FaTachometerAlt },
-    { id: 'events', label: 'Events', icon: FaCalendarAlt },
-    { id: 'notices', label: 'Notices', icon: FaFileAlt },
-    { id: 'posts', label: 'Posts', icon: FaBullhorn },
-    { id: 'users', label: 'Users', icon: FaUsers },
-  ];
+  const handleMenuClick = () => {
+    if (isMobile) {
+      setIsDrawerOpen(!isDrawerOpen);
+    } else {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('accessToken');
-    navigate('/login');
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    if (isMobile) {
+      setIsDrawerOpen(false);
+    }
   };
 
   return (
-    <div className="admin-layout">
-      <div className="admin-sidebar">
-        <div className="admin-logo">
-          <h2>Admin Panel</h2>
-        </div>
-        <nav className="admin-nav">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                className={`nav-item ${activeTab === item.id ? 'active' : ''}`}
-                onClick={() => setActiveTab(item.id)}
-              >
-                <Icon className="nav-icon" />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-        <div className="admin-footer">
-          <button className="logout-btn" onClick={handleLogout}>
-            <FaSignOutAlt />
-            Logout
-          </button>
-        </div>
+    <div className="flex flex-col h-screen relative overflow-hidden">
+      <div className="fixed top-0 z-50 w-full">
+        <Header onMenuClick={handleMenuClick} isMobile={isMobile} />
       </div>
-      <div className="admin-content">
-        {React.cloneElement(children, { activeTab, setActiveTab })}
+      {!isMobile && (
+        <div className="fixed left-0 top-16 h-[calc(100vh-8rem)] z-40">
+          <EnhancedSidebar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            isCollapsed={isCollapsed}
+            setIsCollapsed={setIsCollapsed}
+          />
+        </div>
+      )}
+      <div className="flex flex-1 overflow-hidden">
+        {isMobile && isDrawerOpen && (
+          <div className="fixed inset-0 z-50">
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setIsDrawerOpen(false)}
+            />
+            <div className="relative">
+              <EnhancedSidebar
+                activeTab={activeTab}
+                setActiveTab={handleTabChange}
+                isCollapsed={false}
+                setIsCollapsed={() => {}}
+                isDrawer={true}
+              />
+            </div>
+          </div>
+        )}
+        <div className={`flex-1 overflow-auto scrollbar-hide p-4 sm:p-6 lg:p-8 pt-16 transition-all duration-300 ${!isMobile ? (isCollapsed ? 'ml-16' : 'ml-72') : ''}`}>
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -57,6 +72,8 @@ const AdminLayout = ({ children }) => {
 
 AdminLayout.propTypes = {
   children: PropTypes.node.isRequired,
+  activeTab: PropTypes.string,
+  setActiveTab: PropTypes.func,
 };
 
 export default AdminLayout;

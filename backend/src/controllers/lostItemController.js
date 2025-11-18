@@ -1,6 +1,14 @@
 const LostItem = require('../models/LostItem');
 const logger = require('../utils/logger');
 
+// Get io instance from app
+let io;
+const setIo = (ioInstance) => {
+  io = ioInstance;
+};
+
+module.exports.setIo = setIo;
+
 const reportItem = async (req, res) => {
   try {
     const { itemName, description, location, status, category } = req.body;
@@ -22,6 +30,12 @@ const reportItem = async (req, res) => {
 
     const item = await newLostItem.save();
     await item.populate('reporter', 'name email');
+
+    // Emit socket event for new item
+    if (io) {
+      io.to('lost-found').emit('newLostItem', { item });
+    }
+
     res.status(201).json({ item });
   } catch (err) {
     logger.error('Report item error:', err);
@@ -82,12 +96,57 @@ const updateItemStatus = async (req, res) => {
       return res.status(404).json({ error: 'Item not found' });
     }
 
+    // Emit socket event for status change
+    if (io) {
+      io.to('lost-found').emit('itemStatusChanged', { item });
+    }
+
     res.status(200).json({ item });
   } catch (err) {
     logger.error('Update item status error:', err);
     if (err.name === 'ValidationError') {
       return res.status(400).json({ error: 'Validation error', details: err.message });
     }
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid item ID' });
+    }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const claimItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const item = await LostItem.findById(id);
+
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    if (item.status !== 'Found') {
+      return res.status(400).json({ error: 'Only found items can be claimed' });
+    }
+
+    if (item.claimedBy) {
+      return res.status(400).json({ error: 'Item has already been claimed' });
+    }
+
+    item.status = 'Claimed';
+    item.claimedBy = req.user.id;
+    await item.save();
+
+    await item.populate('reporter', 'name email');
+    await item.populate('claimedBy', 'name email');
+
+    // Emit socket event for item claimed
+    if (io) {
+      io.to('lost-found').emit('itemClaimed', { item });
+    }
+
+    res.status(200).json({ item });
+  } catch (err) {
+    logger.error('Claim item error:', err);
     if (err.name === 'CastError') {
       return res.status(400).json({ error: 'Invalid item ID' });
     }
@@ -120,8 +179,10 @@ const deleteItem = async (req, res) => {
 };
 
 module.exports = {
+  setIo,
   reportItem,
   getAllItems,
   updateItemStatus,
+  claimItem,
   deleteItem
 };

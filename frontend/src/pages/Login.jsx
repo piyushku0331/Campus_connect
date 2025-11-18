@@ -25,15 +25,20 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-      const { error } = await signIn(formData.email, formData.password);
+      const { data, error } = await signIn(formData.email, formData.password);
       if (error) {
         setError(error.message);
         toast.error(error.message || 'Login failed');
       } else {
-        toast.success('Welcome back! Redirecting to dashboard...');
+        const userRole = data?.data?.user?.role;
+        toast.success('Welcome back! Redirecting...');
 
         setTimeout(() => {
-          navigate('/dashboard', { replace: true });
+          if (userRole === 'admin') {
+            navigate('/admin/dashboard', { replace: true });
+          } else {
+            navigate('/dashboard', { replace: true });
+          }
         }, 500);
       }
     } catch {
@@ -46,7 +51,7 @@ const Login = () => {
   };
   return (
     <div className="min-h-screen pt-20 pb-12 relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-black/70 via-black/50 to-black/70"></div>
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12">
         <div className="min-h-screen flex flex-col justify-center px-4 py-6 sm:px-6 sm:py-12 pt-32">
           <div className="w-full max-w-[90%] sm:max-w-[70%] md:max-w-md mx-auto relative">
@@ -57,7 +62,7 @@ const Login = () => {
           className="bg-surface/80 backdrop-blur-xl border border-borderSubtle rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 shadow-[0_0_25px_rgba(107,159,255,0.1)] hover:shadow-[0_0_40px_rgba(107,159,255,0.15)] transition-all duration-300 relative"
         >
           <div className="text-center mb-8">
-            <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-[#6B9FFF] to-[#7F40FF] bg-clip-text text-transparent mb-4 block">
+            <Link to="/" className="text-2xl font-bold bg-linear-to-r from-[#6B9FFF] to-[#7F40FF] bg-clip-text text-transparent mb-4 block">
               Campus Connect
             </Link>
             <h2 className="text-xl font-semibold text-gray-100 tracking-wide drop-shadow-[0_0_10px_rgba(107,159,255,0.25)] mb-2">
@@ -123,7 +128,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 font-medium rounded-xl bg-gradient-to-r from-[#6B9FFF] to-[#7F40FF] text-white shadow-[0_0_20px_rgba(107,159,255,0.3)] hover:scale-105 hover:shadow-[0_0_40px_rgba(107,159,255,0.4)] active:scale-95 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col sm:flex-row items-center justify-center gap-2 group"
+              className="w-full py-3 font-medium rounded-xl bg-linear-to-r from-[#6B9FFF] to-[#7F40FF] text-white shadow-[0_0_20px_rgba(107,159,255,0.3)] hover:scale-105 hover:shadow-[0_0_40px_rgba(107,159,255,0.4)] active:scale-95 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col sm:flex-row items-center justify-center gap-2 group"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

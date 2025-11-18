@@ -459,7 +459,7 @@ const PillNav = ({
   }, []);
 
   return (
-    <div className="pill-nav perspective-root absolute top-[1em] z-[1000] left-1/2 transform -translate-x-1/2">
+    <div className="pill-nav perspective-root absolute top-[1em] z-1000 left-1/2 transform -translate-x-1/2">
       <nav
         ref={navRef}
         className={`w-10 h-10 rounded-full object-cover mr-4 md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0 relative overflow-visible ${className}`}
@@ -534,7 +534,7 @@ const PillNav = ({
                 <>
                   {!hasDropdown && (
                     <span
-                      className="hover-circle absolute left-1/2 bottom-0 rounded-full z-[1] block pointer-events-none"
+                      className="hover-circle absolute left-1/2 bottom-0 rounded-full z-1 block pointer-events-none"
                       style={{
                         background: 'var(--base, #000)',
                         willChange: 'transform'
@@ -545,15 +545,15 @@ const PillNav = ({
                       }}
                     />
                   )}
-                  <span className="label-stack relative inline-block leading-[1] z-[2]" style={{ pointerEvents: 'none' }}>
+                  <span className="label-stack relative inline-block leading-none z-2" style={{ pointerEvents: 'none' }}>
                     <span
-                      className="pill-label relative z-[2] inline-block leading-[1]"
+                      className="pill-label relative z-2 inline-block leading-none"
                       style={{ willChange: 'transform', pointerEvents: 'none' }}
                     >
                       {item.label}
                     </span>
                     <span
-                      className="pill-label-hover absolute left-0 top-0 z-[3] inline-block"
+                      className="pill-label-hover absolute left-0 top-0 z-3 inline-block"
                       style={{
                         color: 'var(--hover-text, #fff)',
                         willChange: 'transform, opacity',
@@ -565,13 +565,13 @@ const PillNav = ({
                     </span>
                   </span>
                   {hasDropdown && (
-                    <span className="ml-1 text-xs z-[2] relative" style={{ pointerEvents: 'none' }}>
+                    <span className="ml-1 text-xs z-2 relative" style={{ pointerEvents: 'none' }}>
                       ▼
                     </span>
                   )}
                   {isActive && (
                     <span
-                      className="absolute left-1/2 -bottom-[6px] -translate-x-1/2 w-3 h-3 rounded-full z-[4]"
+                      className="absolute left-1/2 -bottom-1.5 -translate-x-1/2 w-3 h-3 rounded-full z-4"
                       style={{ background: 'var(--base, #000)' }}
                       aria-hidden="true"
                     />
@@ -583,7 +583,7 @@ const PillNav = ({
                 'interactive-3d relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[16px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-0 hover:shadow-lg hover:transform hover:-translate-y-0.5 transition-all duration-300';
 
               return (
-                <li key={item.href || i} role="none" className="flex h-full">
+                <li key={i} role="none" className="flex h-full">
                   {hasDropdown ? (
                       <div className="relative">
                         <button
@@ -643,7 +643,7 @@ const PillNav = ({
                                 const isDropdownItemActive = currentPath === dropdownItem.href;
                                 return (
                                   <Link
-                                    key={dropdownItem.href || dropdownIndex}
+                                    key={dropdownIndex}
                                     to={dropdownItem.href}
                                     className={
                                       `block px-4 py-2 text-sm transition-all duration-200 rounded-lg mx-2 my-1 font-medium ` +
@@ -723,11 +723,11 @@ const PillNav = ({
           }}
         >
           <span
-            className="hamburger-line w-4 h-0.5 rounded origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+            className="hamburger-line w-4 h-0.5 rounded origin-center transition-all duration-10 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
             style={{ background: 'var(--pill-bg, #fff)' }}
           />
           <span
-            className="hamburger-line w-4 h-0.5 rounded origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+            className="hamburger-line w-4 h-0.5 rounded origin-center transition-all duration-10 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
             style={{ background: 'var(--pill-bg, #fff)' }}
           />
         </button>
@@ -737,7 +737,7 @@ const PillNav = ({
       <div
         ref={mobileMenuRef}
         onKeyDown={handleMobileMenuKeyDown}
-        className="md:hidden absolute top-[3em] left-4 right-4 rounded-[27px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-[998] origin-top"
+        className="md:hidden absolute top-[3em] left-4 right-4 rounded-[27px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-998 origin-top"
         style={{
           ...cssVars,
           background: 'var(--base, #f0f0f0)'
@@ -764,7 +764,7 @@ const PillNav = ({
             const hasDropdown = item.dropdown && Array.isArray(item.dropdown) && item.dropdown.length > 0;
 
             return (
-              <li key={item.href || index}>
+              <li key={index}>
                 {hasDropdown ? (
                   <div>
                     <button
@@ -781,7 +781,7 @@ const PillNav = ({
                       <div className="ml-4 mt-1 space-y-1 glass-card card-3d rounded-lg p-2" onClick={(e) => e.stopPropagation()} style={{ border: '1px solid rgba(255,255,255,0.06)', background: cssVars['--base'] ? cssVars['--base'] + 'CC' : 'rgba(255,255,255,0.06)' }}>
                         {item.dropdown.map((dropdownItem, dropdownIndex) => (
                           <Link
-                            key={dropdownItem.href || dropdownIndex}
+                            key={dropdownIndex}
                             to={dropdownItem.href}
                             className="block py-2 px-4 text-sm rounded-[25px] transition-all duration-200"
                             style={{

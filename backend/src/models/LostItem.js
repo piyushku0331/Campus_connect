@@ -33,7 +33,7 @@ const lostItemSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Lost', 'Found'],
+    enum: ['Lost', 'Found', 'Claimed'],
     default: 'Lost',
     index: true
   },
@@ -41,6 +41,11 @@ const lostItemSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+    index: true
+  },
+  claimedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     index: true
   },
   createdAt: {

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Edit3, Save, X, Eye, EyeOff, Camera, Github, Linkedin, Globe, MapPin, Calendar, Award, Users } from 'lucide-react';
 import { usersAPI } from '../services/api';
 import toast, { Toaster } from 'react-hot-toast';
+import { useSocket } from '../hooks/useSocket';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -10,6 +11,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const { onDashboardUpdate } = useSocket();
   const [formData, setFormData] = useState({
     name: '',
     bio: '',
@@ -40,6 +42,16 @@ const Profile = () => {
       }
     };
   }, [previewUrl]);
+
+  // Listen for real-time points updates
+  useEffect(() => {
+    const unsubscribe = onDashboardUpdate((data) => {
+      if (data.type === 'points_update') {
+        setUser(prev => prev ? { ...prev, points: data.points } : null);
+      }
+    });
+    return unsubscribe;
+  }, [onDashboardUpdate]);
 
   const fetchProfile = async () => {
     try {
@@ -145,7 +157,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -156,7 +168,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
       <Toaster position="top-right" />
       <div className="max-w-4xl mx-auto">
         <motion.div
@@ -166,7 +178,7 @@ const Profile = () => {
           className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+          <div className="bg-linear-to-r from-blue-600 to-purple-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <motion.div

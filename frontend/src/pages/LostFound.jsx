@@ -1,80 +1,119 @@
-import React, { useState } from 'react';
-import { Search, MapPin, Calendar, CheckCircle, AlertCircle, Plus, Filter } from 'lucide-react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { Search, MapPin, Calendar, CheckCircle, AlertCircle, Plus, Filter, Loader } from 'lucide-react';
+import { lostItemsAPI } from '../services/api';
+import { SocketContext } from '../contexts/SocketContext';
+
 const LostFound = () => {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [showPostForm, setShowPostForm] = useState(false);
+  const [posting, setPosting] = useState(false);
+  const [claiming, setClaiming] = useState(null);
+  const [formData, setFormData] = useState({
+    itemName: '',
+    description: '',
+    location: '',
+    category: 'Other',
+    status: 'Lost'
+  });
   const categories = ['All', 'Electronics', 'Books', 'Clothing', 'Accessories', 'Documents', 'Keys', 'Other'];
   const statuses = ['All', 'Lost', 'Found', 'Claimed'];
-  const items = [
-    {
-      id: 1,
-      type: 'lost',
-      title: 'Black Leather Wallet',
-      category: 'Accessories',
-      description: 'Black leather wallet containing ID card, debit cards, and some cash. Lost near the library entrance.',
-      location: 'Library Entrance',
-      date: '2024-01-15',
-      status: 'lost',
-      postedBy: 'Rahul Kumar',
-      contact: 'rahul.kumar@chitkara.edu.in',
-      images: ['/api/placeholder/300/200'],
-      reward: '₹500 reward',
-      urgent: true
-    },
-    {
-      id: 2,
-      type: 'found',
-      title: 'iPhone 13 Pro',
-      category: 'Electronics',
-      description: 'Found a silver iPhone 13 Pro in a black case. Screen is locked. Found in the cafeteria.',
-      location: 'Cafeteria',
-      date: '2024-01-14',
-      status: 'found',
-      postedBy: 'Priya Sharma',
-      contact: 'priya.sharma@chitkara.edu.in',
-      images: ['/api/placeholder/300/200'],
-      reward: null,
-      urgent: false
-    },
-    {
-      id: 3,
-      type: 'lost',
-      title: 'Mathematics Textbook',
-      category: 'Books',
-      description: 'Engineering Mathematics book by B.S. Grewal. Lost during the last lecture in Room 201.',
-      location: 'Room 201',
-      date: '2024-01-13',
-      status: 'lost',
-      postedBy: 'Ankit Gupta',
-      contact: 'ankit.gupta@chitkara.edu.in',
-      images: ['/api/placeholder/300/200'],
-      reward: null,
-      urgent: false
-    },
-    {
-      id: 4,
-      type: 'claimed',
-      title: 'Blue Backpack',
-      category: 'Accessories',
-      description: 'Blue Nike backpack with laptop compartment. Successfully returned to owner.',
-      location: 'Hostel Block A',
-      date: '2024-01-10',
-      status: 'claimed',
-      postedBy: 'Sneha Patel',
-      contact: 'sneha.patel@chitkara.edu.in',
-      images: ['/api/placeholder/300/200'],
-      reward: null,
-      urgent: false
+
+  const { isConnected, joinLostFound, onNewLostItem, onItemStatusChanged, onItemClaimed } = useContext(SocketContext);
+
+  // Fetch items from API
+  const fetchItems = useCallback(async () => {
+    try {
+      setLoading(true);
+      const params = {};
+      if (selectedStatus !== 'All') params.status = selectedStatus;
+      if (selectedCategory !== 'All') params.category = selectedCategory;
+      const response = await lostItemsAPI.getLostItems(params);
+      setItems(response.data.items || []);
+    } catch (error) {
+      console.error('Error fetching lost items:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, [selectedStatus, selectedCategory]);
+
+  // Handle real-time updates
+  useEffect(() => {
+    if (isConnected) {
+      joinLostFound();
+    }
+  }, [isConnected, joinLostFound]);
+
+  useEffect(() => {
+    const cleanupNewItem = onNewLostItem((data) => {
+      setItems(prev => [data.item, ...prev]);
+    });
+
+    const cleanupStatusChange = onItemStatusChanged((data) => {
+      setItems(prev => prev.map(item =>
+        item._id === data.item._id ? data.item : item
+      ));
+    });
+
+    const cleanupClaimed = onItemClaimed((data) => {
+      setItems(prev => prev.map(item =>
+        item._id === data.item._id ? data.item : item
+      ));
+    });
+
+    return () => {
+      cleanupNewItem?.();
+      cleanupStatusChange?.();
+      cleanupClaimed?.();
+    };
+  }, [onNewLostItem, onItemStatusChanged, onItemClaimed]);
+
+  // Fetch items on mount and when filters change
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      setPosting(true);
+      const formDataToSend = new FormData();
+      formDataToSend.append('itemName', formData.itemName);
+      formDataToSend.append('description', formData.description);
+      formDataToSend.append('location', formData.location);
+      formDataToSend.append('category', formData.category);
+      formDataToSend.append('status', formData.status);
+
+      await lostItemsAPI.reportItem(formDataToSend);
+
+      // Reset form
+      setFormData({
+        itemName: '',
+        description: '',
+        location: '',
+        category: 'Other',
+        status: 'Lost'
+      });
+      setShowPostForm(false);
+
+      // The real-time update will handle adding the new item to the list
+    } catch (error) {
+      console.error('Error posting item:', error);
+      alert('Failed to post item');
+    } finally {
+      setPosting(false);
+    }
+  };
   const filteredItems = items.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = item.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.location.toLowerCase().includes(searchTerm.toLowerCase());
+                         (item.location && item.location.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
-    const matchesStatus = selectedStatus === 'All' || item.status === selectedStatus;
+    const matchesStatus = selectedStatus === 'All' || item.status.toLowerCase() === selectedStatus.toLowerCase();
     return matchesSearch && matchesCategory && matchesStatus;
   });
   const getStatusColor = (status) => {
@@ -113,18 +152,25 @@ const LostFound = () => {
       {showPostForm && (
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-8 shadow-lg animate-slide-down">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Post Lost/Found Item</h3>
-          <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Item Title</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Item Name</label>
               <input
                 type="text"
+                value={formData.itemName}
+                onChange={(e) => setFormData({...formData, itemName: e.target.value})}
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="e.g., Black Leather Wallet"
+                required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
-              <select className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+              >
                 {categories.slice(1).map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
             </div>
@@ -132,27 +178,38 @@ const LostFound = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
               <textarea
                 rows={3}
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Detailed description of the item..."
+                required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
               <input
                 type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({...formData, location: e.target.value})}
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Where was it lost/found?"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
-              <select className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="lost">Lost</option>
-                <option value="found">Found</option>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="Lost">Lost</option>
+                <option value="Found">Found</option>
               </select>
             </div>
             <div className="md:col-span-2 flex gap-4">
-              <button type="submit" className="btn-primary flex-1">Post Item</button>
+              <button type="submit" disabled={posting} className="btn-primary flex-1 disabled:opacity-50">
+                {posting ? 'Posting...' : 'Post Item'}
+              </button>
               <button
                 type="button"
                 onClick={() => setShowPostForm(false)}
@@ -202,70 +259,91 @@ const LostFound = () => {
         </div>
       </div>
       {}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredItems.map((item, index) => (
-          <div key={item.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 card-hover overflow-hidden animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
-            {}
-            <div className="h-48 bg-gray-200 dark:bg-gray-700 relative">
-              <img
-                src={item.images[0]}
-                alt={item.title}
-                className="w-full h-full object-cover"
-              />
-              <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(item.status)}`}>
-                {getStatusIcon(item.status)}
-                {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-              </div>
-              {item.urgent && (
-                <div className="absolute top-4 left-4 px-3 py-1 bg-red-500 text-white rounded-full text-xs font-medium">
-                  Urgent
-                </div>
-              )}
-            </div>
-            {}
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{item.title}</h3>
-                <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs">
-                  {item.category}
-                </span>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                {item.description}
-              </p>
-              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
-                <div className="flex items-center gap-2">
-                  <MapPin size={16} />
-                  <span>{item.location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar size={16} />
-                  <span>{new Date(item.date).toLocaleDateString()}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">Posted by:</span>
-                  <span>{item.postedBy}</span>
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <Loader className="animate-spin" size={48} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredItems.map((item, index) => (
+            <div key={item._id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 card-hover overflow-hidden animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+              {}
+              <div className="h-48 bg-gray-200 dark:bg-gray-700 relative">
+                <img
+                  src={item.itemPhotoUrl || '/api/placeholder/300/200'}
+                  alt={item.itemName}
+                  className="w-full h-full object-cover"
+                />
+                <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(item.status.toLowerCase())}`}>
+                  {getStatusIcon(item.status.toLowerCase())}
+                  {item.status}
                 </div>
               </div>
-              {item.reward && (
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3 mb-4">
-                  <p className="text-yellow-800 dark:text-yellow-200 text-sm font-medium">{item.reward}</p>
+              {}
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{item.itemName}</h3>
+                  <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs">
+                    {item.category}
+                  </span>
                 </div>
-              )}
-              <div className="flex gap-2">
-                <button className="flex-1 btn-primary">
-                  Contact Owner
-                </button>
-                {item.status === 'found' && (
-                  <button className="flex-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-4 py-2 rounded-xl hover:bg-green-200 dark:hover:bg-green-800 transition-colors">
-                    Claim Item
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 line-clamp-3">
+                  {item.description}
+                </p>
+                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  {item.location && (
+                    <div className="flex items-center gap-2">
+                      <MapPin size={16} />
+                      <span>{item.location}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <Calendar size={16} />
+                    <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Posted by:</span>
+                    <span>{item.reporter?.name || 'Unknown'}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => window.open(`mailto:${item.reporter?.email}`, '_blank')}
+                    className="flex-1 btn-primary"
+                  >
+                    Contact Owner
                   </button>
-                )}
+                  {item.status === 'Found' && !item.claimedBy && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          setClaiming(item._id);
+                          await lostItemsAPI.claimItem(item._id);
+                          // The real-time update will handle the UI update
+                        } catch (error) {
+                          console.error('Error claiming item:', error);
+                          alert('Failed to claim item');
+                        } finally {
+                          setClaiming(null);
+                        }
+                      }}
+                      disabled={claiming === item._id}
+                      className="flex-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-4 py-2 rounded-xl hover:bg-green-200 dark:hover:bg-green-800 transition-colors disabled:opacity-50"
+                    >
+                      {claiming === item._id ? 'Claiming...' : 'Claim Item'}
+                    </button>
+                  )}
+                  {item.status === 'Claimed' && item.claimedBy && (
+                    <div className="flex-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-4 py-2 rounded-xl text-center">
+                      Claimed by {item.claimedBy.name}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       {filteredItems.length === 0 && (
         <div className="text-center py-12">
           <Search size={64} className="mx-auto text-gray-400 mb-4" />

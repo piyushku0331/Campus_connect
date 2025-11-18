@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { FaFileUpload, FaTag, FaFileAlt } from 'react-icons/fa';
+import { Upload, Tag, FileText } from 'lucide-react';
 import { noticesAPI } from '../../services/api';
+import VisionButton from '../ui/VisionButton';
 
 const NoticeUploadForm = () => {
   const [formData, setFormData] = useState({
@@ -56,12 +57,12 @@ const NoticeUploadForm = () => {
   };
 
   return (
-    <div className="admin-panel">
-      <h2>Upload Notice</h2>
-      <form onSubmit={handleSubmit} className="admin-form">
-        <div className="form-group">
-          <label htmlFor="title">
-            <FaFileAlt className="input-icon-small" />
+    <div className="p-8">
+      <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_0_10px_rgba(0,217,255,0.5)]">Upload Notice</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="title" className="text-white font-medium mb-2 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-[#2F4FFF]" />
             Notice Title
           </label>
           <input
@@ -71,13 +72,14 @@ const NoticeUploadForm = () => {
             value={formData.title}
             onChange={handleChange}
             required
+            className="w-full px-4 py-3 bg-[#0A0F2C]/80 border border-[#1A2759] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CEBFF]/40 focus:border-[#0CEBFF]/30 focus:shadow-[0_0_10px_rgba(0,217,255,0.3)] transition-all duration-300"
             placeholder="Enter notice title"
           />
         </div>
 
-        <div className="form-group">
-          <label htmlFor="category">
-            <FaTag className="input-icon-small" />
+        <div>
+          <label htmlFor="category" className="text-white font-medium mb-2 flex items-center gap-2">
+            <Tag className="w-5 h-5 text-[#00F59B]" />
             Category
           </label>
           <select
@@ -86,20 +88,21 @@ const NoticeUploadForm = () => {
             value={formData.category}
             onChange={handleChange}
             required
+            className="w-full px-4 py-3 bg-[#0A0F2C]/80 border border-[#1A2759] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#0CEBFF]/40 focus:border-[#0CEBFF]/30 focus:shadow-[0_0_10px_rgba(0,217,255,0.3)] transition-all duration-300"
           >
-            <option value="">Select Category</option>
-            <option value="Academic">Academic</option>
-            <option value="Administrative">Administrative</option>
-            <option value="Events">Events</option>
-            <option value="Examinations">Examinations</option>
-            <option value="General">General</option>
-            <option value="Scholarships">Scholarships</option>
+            <option value="" className="bg-[#0A0F2C]">Select Category</option>
+            <option value="Academic" className="bg-[#0A0F2C]">Academic</option>
+            <option value="Administrative" className="bg-[#0A0F2C]">Administrative</option>
+            <option value="Events" className="bg-[#0A0F2C]">Events</option>
+            <option value="Examinations" className="bg-[#0A0F2C]">Examinations</option>
+            <option value="General" className="bg-[#0A0F2C]">General</option>
+            <option value="Scholarships" className="bg-[#0A0F2C]">Scholarships</option>
           </select>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="file">
-            <FaFileUpload className="input-icon-small" />
+        <div>
+          <label htmlFor="file" className="text-white font-medium mb-2 flex items-center gap-2">
+            <Upload className="w-5 h-5 text-[#FF3CF0]" />
             Upload File
           </label>
           <input
@@ -109,16 +112,23 @@ const NoticeUploadForm = () => {
             onChange={handleChange}
             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
             required
-            className="file-input"
+            className="w-full px-4 py-3 bg-[#0A0F2C]/80 border border-[#1A2759] rounded-xl text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-linear-to-r file:from-[#8B5CF6] file:to-[#FF3CF0] file:text-white hover:file:shadow-[0_0_10px_rgba(255,60,240,0.5)] transition-all duration-300"
           />
-          <small className="file-hint">
+          <small className="text-gray-300 text-sm mt-1 block">
             Supported formats: PDF, DOC, DOCX, JPG, PNG (Max: 10MB)
           </small>
         </div>
 
-        <button type="submit" className="btn btn-primary" disabled={loading}>
+        <VisionButton
+          type="submit"
+          variant="primary"
+          size="md"
+          className="w-full"
+          loading={loading}
+          disabled={loading}
+        >
           {loading ? 'Uploading...' : 'Upload Notice'}
-        </button>
+        </VisionButton>
       </form>
     </div>
   );

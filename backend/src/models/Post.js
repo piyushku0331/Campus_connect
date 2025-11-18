@@ -123,11 +123,11 @@ const postSchema = new mongoose.Schema({
     shares: { type: Number, default: 0 },
     saves: { type: Number, default: 0 }
   },
-  // Content moderation
+  // Approval status
   status: {
     type: String,
-    enum: ['active', 'hidden', 'reported', 'deleted'],
-    default: 'active'
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending'
   },
   reportedBy: [{
     user: {

@@ -163,7 +163,7 @@ describe('Navbar', () => {
             expect.objectContaining({ label: 'Contact', href: '/contact' }),
             expect.objectContaining({
               label: 'Logout',
-              href: '/logout',
+              href: '#',
               action: 'logout'
             })
           ]),

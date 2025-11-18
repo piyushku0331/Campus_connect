@@ -4,7 +4,7 @@ const getResources = async (req, res) => {
   try {
     const { page = 1, limit = 10, search, tag } = req.query;
     const offset = (page - 1) * limit;
-    let query = {};
+    let query = { status: 'approved' };
     if (search) {
       query.$or = [
         { title: new RegExp(search, 'i') },
@@ -37,7 +37,7 @@ const getResources = async (req, res) => {
 const getResourceById = async (req, res) => {
   try {
     const { id } = req.params;
-    const resource = await Resource.findById(id).populate('uploader_id', 'id full_name avatar_url');
+    const resource = await Resource.findOne({ _id: id, status: 'approved' }).populate('uploader_id', 'id full_name avatar_url');
     if (!resource) {
       return res.status(404).json({ error: 'Resource not found' });
     }
@@ -75,7 +75,8 @@ const uploadResource = async (req, res) => {
       file_url: finalFileUrl,
       file_type,
       uploader_id: userId,
-      tags: parsedTags
+      tags: parsedTags,
+      status: 'pending'
     });
     await resource.save();
     await awardPoints(userId, 30, 'uploaded_resource', resource._id);
@@ -127,7 +128,7 @@ const deleteResource = async (req, res) => {
 const searchResources = async (req, res) => {
   try {
     const { query, tag } = req.query;
-    let searchQuery = {};
+    let searchQuery = { status: 'approved' };
     if (query) {
       searchQuery.$or = [
         { title: new RegExp(query, 'i') },
@@ -160,8 +161,8 @@ const getUserResources = async (req, res) => {
 const incrementDownloadCount = async (req, res) => {
   try {
     const { id } = req.params;
-    const resource = await Resource.findByIdAndUpdate(
-      id,
+    const resource = await Resource.findOneAndUpdate(
+      { _id: id, status: 'approved' },
       { $inc: { download_count: 1 } },
       { new: true }
     );

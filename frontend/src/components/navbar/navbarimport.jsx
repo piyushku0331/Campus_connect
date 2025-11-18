@@ -26,7 +26,7 @@ const Navbar = () => {
     { label: 'Support', href: '/support' },
     { label: 'About', href: '/about' },
     { label: 'Contact', href: '/contact' },
-    { label: 'Logout', href: '/logout', action: 'logout' }
+    { label: 'Logout', href: '#', action: 'logout' }
   ];
 
   const publicNavLinks = [

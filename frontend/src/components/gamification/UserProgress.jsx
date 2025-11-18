@@ -2,18 +2,33 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { TrendingUp, Target, Award, Star } from 'lucide-react';
 import api from '../../services/api';
+import { useSocket } from '../../hooks/useSocket';
 const UserProgress = ({ userId }) => {
   const [userPoints, setUserPoints] = useState(null);
-UserProgress.propTypes = {
-  userId: PropTypes.string.isRequired,
-};
+  UserProgress.propTypes = {
+   userId: PropTypes.string.isRequired,
+  };
   const [pointsHistory, setPointsHistory] = useState([]);
   const [userRank, setUserRank] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { onDashboardUpdate } = useSocket();
   useEffect(() => {
     fetchUserProgress();
   }, [userId]);
+
+  // Listen for real-time points updates
+  useEffect(() => {
+    const unsubscribe = onDashboardUpdate((data) => {
+      if (data.type === 'points_update') {
+        // Update points and refetch rank
+        setUserPoints(prev => prev ? { ...prev, points: data.points } : null);
+        // Refetch rank as it might have changed
+        api.get('/gamification/rank').then(res => setUserRank(res.data)).catch(console.error);
+      }
+    });
+    return unsubscribe;
+  }, [onDashboardUpdate]);
   const fetchUserProgress = async () => {
     try {
       setLoading(true);
@@ -116,7 +131,7 @@ UserProgress.propTypes = {
       </div>
       {}
       {userRank && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+        <div className="mb-6 p-4 bg-linear-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <Award className="w-5 h-5 text-purple-500 mr-2" />

@@ -6,11 +6,11 @@ import BgImport from './components/background/bgimport'; // Background component
 import Navbar from './components/navbar/navbarimport'; // Main navigation component
 import LoadingSpinner from './components/common/LoadingSpinner'; // Loading spinner component
 
-// Conditional navbar that only renders on non-landing pages
+// Conditional navbar that only renders on non-landing pages and non-admin pages
 const ConditionalNavbar = () => {
   const location = useLocation();
-  // Hide navbar on landing page for clean hero section
-  if (location.pathname === '/') {
+  // Hide navbar on landing page for clean hero section and on admin pages
+  if (location.pathname === '/' || location.pathname.startsWith('/admin')) {
     return null;
   }
   return <Navbar />;
@@ -38,6 +38,7 @@ const Alumni = lazy(() => import('./pages/Alumni')); // Alumni network and stori
 const Feed = lazy(() => import('./pages/Feed')); // Campus feed with news and posts
 const Blog = lazy(() => import('./pages/Blog')); // Community blog for articles and research
 const News = lazy(() => import('./pages/News')); // Educational news page
+const Chat = lazy(() => import('./pages/Chat')); // Real-time messaging
 const CreatorApply = lazy(() => import('./pages/CreatorApply')); // Creator application page
 const Faq = lazy(() => import('./pages/Faq')); // FAQ page
 const Docs = lazy(() => import('./pages/Docs')); // Docs page
@@ -110,6 +111,7 @@ function App() {
               <Route path="/feed" element={<PageWithFooter protected><Feed /></PageWithFooter>} />
               <Route path="/news" element={<PageWithFooter protected><News /></PageWithFooter>} />
               <Route path="/blog" element={<PageWithFooter protected><Blog /></PageWithFooter>} />
+              <Route path="/chat" element={<PageWithFooter protected><Chat /></PageWithFooter>} />
               <Route path="/creator/apply" element={<PageWithFooter protected><CreatorApply /></PageWithFooter>} />
               <Route path="/profile" element={<PageWithFooter protected><Profile /></PageWithFooter>} />
               <Route path="/events" element={<PageWithFooter protected><Events /></PageWithFooter>} />

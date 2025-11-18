@@ -16,7 +16,8 @@ const uploadNotice = async (req, res) => {
     const newNotice = new Notice({
       title: title.trim(),
       category,
-      filePath: req.file.id // GridFS file id
+      filePath: req.file.id, // GridFS file id
+      status: 'pending'
     });
 
     const notice = await newNotice.save();
@@ -33,7 +34,7 @@ const uploadNotice = async (req, res) => {
 const getNotices = async (req, res) => {
   try {
     const { category, page = 1, limit = 10 } = req.query;
-    const query = {};
+    const query = { status: 'approved' };
 
     if (category) {
       query.category = category;
@@ -64,7 +65,7 @@ const getNotices = async (req, res) => {
 const getNoticeById = async (req, res) => {
   try {
     const { id } = req.params;
-    const notice = await Notice.findById(id);
+    const notice = await Notice.findOne({ _id: id, status: 'approved' });
 
     if (!notice) {
       return res.status(404).json({ error: 'Notice not found' });

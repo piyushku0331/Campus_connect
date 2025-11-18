@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Trophy, Medal, Award } from 'lucide-react';
 import { gamificationAPI } from '../../services/api';
+import { useSocket } from '../../hooks/useSocket';
 const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { onLeaderboardUpdate } = useSocket();
   const fetchLeaderboard = useCallback(async () => {
     try {
       setLoading(true);
       const response = await gamificationAPI.getLeaderboard();
-      setLeaderboard(response.data);
+      const filteredData = response.data.filter(user => user.role !== 'admin');
+      const rankedData = filteredData.map((user, index) => ({ ...user, rank: index + 1 }));
+      setLeaderboard(rankedData);
     } catch (err) {
       setError('Failed to load leaderboard');
       console.error('Error fetching leaderboard:', err);
@@ -18,13 +22,18 @@ const Leaderboard = () => {
     }
   }, []);
 
-  // Refresh leaderboard when component mounts or when user profile might have changed
+  // Refresh leaderboard when component mounts
   useEffect(() => {
     fetchLeaderboard();
-    // Set up interval to refresh leaderboard every 30 seconds
-    const interval = setInterval(fetchLeaderboard, 30000);
-    return () => clearInterval(interval);
   }, [fetchLeaderboard]);
+
+  // Listen for real-time leaderboard updates
+  useEffect(() => {
+    const unsubscribe = onLeaderboardUpdate(() => {
+      fetchLeaderboard();
+    });
+    return unsubscribe;
+  }, [onLeaderboardUpdate, fetchLeaderboard]);
   const getRankIcon = (rank) => {
     switch (rank) {
       case 1:

@@ -1,5 +1,11 @@
 const User = require('../models/User');
 
+// Get io instance from app
+let io;
+const setIo = (ioInstance) => {
+  io = ioInstance;
+};
+
 const getUserPoints = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -63,6 +69,26 @@ const awardPoints = async (userId, points, reason, referenceId = null) => {
     user.points = oldPoints + points;
     await user.save();
 
+    // Emit real-time event for dashboard update
+    if (io) {
+      io.to(userId).emit('dashboardUpdate', {
+        type: 'points_update',
+        points: user.points,
+        change: points,
+        reason
+      });
+
+      // Emit leaderboard update to all connected clients
+      io.emit('leaderboardUpdate', {
+        type: 'leaderboard_update',
+        updatedUser: {
+          id: user._id,
+          name: user.name,
+          points: user.points
+        }
+      });
+    }
+
     return true;
   } catch (error) {
     console.error('Error awarding points:', error);
@@ -73,7 +99,7 @@ const getLeaderboard = async (req, res) => {
   try {
     const { limit = 50 } = req.query;
     const leaderboard = await User.find({})
-      .select('name avatar_url profilePicture points')
+      .select('name avatar_url profilePicture points role')
       .sort({ points: -1 })
       .limit(parseInt(limit));
 
@@ -82,6 +108,7 @@ const getLeaderboard = async (req, res) => {
       name: user.name,
       avatar_url: user.avatar_url || user.profilePicture,
       points: user.points,
+      role: user.role,
       rank: index + 1
     }));
 
@@ -255,6 +282,7 @@ const getUserChallenges = async (req, res) => {
   }
 };
 module.exports = {
+  setIo,
   getUserPoints,
   getPointsHistory,
   awardPoints,

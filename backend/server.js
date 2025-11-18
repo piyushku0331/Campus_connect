@@ -67,6 +67,16 @@ const io = new Server(server, {
   cors: corsOptions // Reuse CORS configuration for consistency
 });
 
+// Make io accessible in routes
+app.set('io', io);
+
+// Set io in controllers that need it
+require('./src/controllers/lostItemController').setIo(io);
+require('./src/controllers/connectionController').setIo(io);
+require('./src/controllers/gamificationController').setIo(io);
+require('./src/controllers/postController').setIo(io);
+require('./src/controllers/eventController').setIo(io);
+
 // Security middleware - sets various HTTP headers for security
 app.use(helmet({
   contentSecurityPolicy: {
@@ -120,15 +130,113 @@ app.use((req, res) => {
 });
 
 // Socket.io connection handling for real-time messaging
+let connectionCount = 0;
+const MAX_CONNECTIONS = 1000;
+
 io.on('connection', (socket) => {
-  // Handle incoming messages and broadcast to all connected clients
+  connectionCount++;
+  if (connectionCount > MAX_CONNECTIONS) {
+    console.log('Max connections reached, disconnecting:', socket.id);
+    socket.disconnect();
+    connectionCount--;
+    return;
+  }
+  console.log('User connected:', socket.id);
+
+  // Join user to their own room for notifications
+  if (socket.handshake.auth && socket.handshake.auth.token) {
+    try {
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.verify(socket.handshake.auth.token, process.env.JWT_SECRET || 'your-secret-key');
+      if (decoded && decoded.id) {
+        socket.userId = decoded.id;
+        socket.join(decoded.id);
+        console.log(`User ${decoded.id} joined their notification room`);
+      }
+    } catch (error) {
+      console.log('Invalid token for socket auth:', error.message);
+    }
+  }
+
+  // Join a conversation room
+  socket.on('joinConversation', (conversationId) => {
+    socket.join(conversationId);
+    console.log(`User ${socket.id} joined conversation ${conversationId}`);
+  });
+
+  // Leave a conversation room
+  socket.on('leaveConversation', (conversationId) => {
+    socket.leave(conversationId);
+    console.log(`User ${socket.id} left conversation ${conversationId}`);
+  });
+
+  // Handle sending messages in a specific conversation
   socket.on('sendMessage', (data) => {
-    io.emit('receiveMessage', data); // Broadcast to all clients
+    const { conversationId, message } = data;
+    // Emit to all users in the conversation room except sender
+    socket.to(conversationId).emit('receiveMessage', {
+      conversationId,
+      message,
+      from: socket.id
+    });
+  });
+
+  // Handle typing indicators
+  socket.on('typing', (data) => {
+    const { conversationId, isTyping } = data;
+    socket.to(conversationId).emit('userTyping', {
+      conversationId,
+      userId: socket.id,
+      isTyping
+    });
+  });
+
+  // Handle lost and found events
+  socket.on('joinLostFound', () => {
+    socket.join('lost-found');
+    console.log(`User ${socket.id} joined lost-found room`);
+  });
+
+  socket.on('leaveLostFound', () => {
+    socket.leave('lost-found');
+    console.log(`User ${socket.id} left lost-found room`);
+  });
+
+  // Handle connection request events
+  socket.on('sendConnectionRequest', (data) => {
+    const { receiverId } = data;
+    // Emit to receiver's room
+    socket.to(receiverId).emit('connectionRequestReceived', {
+      type: 'connection_request',
+      senderId: socket.userId,
+      receiverId
+    });
+  });
+
+  socket.on('acceptConnectionRequest', (data) => {
+    const { senderId } = data;
+    // Emit to sender's room
+    socket.to(senderId).emit('connectionRequestAccepted', {
+      type: 'connection_accepted',
+      accepterId: socket.userId,
+      senderId
+    });
+  });
+
+  socket.on('rejectConnectionRequest', (data) => {
+    const { senderId } = data;
+    // Emit to sender's room
+    socket.to(senderId).emit('connectionRequestRejected', {
+      type: 'connection_rejected',
+      rejecterId: socket.userId,
+      senderId
+    });
   });
 
   // Handle user disconnection
   socket.on('disconnect', () => {
-    // User disconnected
+    console.log('User disconnected:', socket.id);
+    connectionCount--;
   });
 });
 

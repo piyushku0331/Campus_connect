@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { User, MessageCircle, Check, X, Users as UsersIcon, Star, Search, UserPlus } from 'lucide-react';
-import { connectionsAPI, usersAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { connectionsAPI, usersAPI, conversationsAPI } from '../services/api';
+import { useSocket } from '../hooks/useSocket';
 const Networking = () => {
   const [connections, setConnections] = useState([]);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  useEffect(() => {
-    fetchConnections();
-    fetchRequests();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const navigate = useNavigate();
+  const { onConnectionRequestReceived, onConnectionRequestAccepted, onConnectionRequestRejected } = useSocket();
+
   const fetchConnections = useCallback(async () => {
     try {
       const response = await connectionsAPI.getConnections();
@@ -34,20 +34,44 @@ const Networking = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchConnections();
+    fetchRequests();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Listen for real-time connection events
+  useEffect(() => {
+    const cleanupReceived = onConnectionRequestReceived((data) => {
+      console.log('New connection request received:', data);
+      // Refresh requests list
+      fetchRequests();
+    });
+
+    const cleanupAccepted = onConnectionRequestAccepted((data) => {
+      console.log('Connection request accepted:', data);
+      // Refresh both connections and requests
+      fetchConnections();
+      fetchRequests();
+    });
+
+    const cleanupRejected = onConnectionRequestRejected((data) => {
+      console.log('Connection request rejected:', data);
+      // Refresh requests list
+      fetchRequests();
+    });
+
+    return () => {
+      cleanupReceived?.();
+      cleanupAccepted?.();
+      cleanupRejected?.();
+    };
+  }, [onConnectionRequestReceived, onConnectionRequestAccepted, onConnectionRequestRejected, fetchConnections, fetchRequests]);
   const handleAcceptRequest = async (requestId) => {
     try {
       await connectionsAPI.acceptConnectionRequest(requestId);
-      const requestToAccept = requests.find(r => r.id === requestId);
-      if (requestToAccept) {
-        const newConnection = {
-          id: connections.length + 1,
-          user: requestToAccept.sender,
-          connected_at: new Date().toISOString()
-        };
-        setConnections(prev => [...prev, newConnection]);
-        setRequests(prev => prev.filter(r => r.id !== requestId));
-      }
-      alert('Connection request accepted!');
+      // Real-time updates will handle UI refresh
     } catch (error) {
       console.error('Error accepting request:', error);
     }
@@ -55,8 +79,7 @@ const Networking = () => {
   const handleRejectRequest = async (requestId) => {
     try {
       await connectionsAPI.rejectConnectionRequest(requestId);
-      setRequests(prev => prev.filter(r => r.id !== requestId));
-      alert('Connection request declined!');
+      // Real-time updates will handle UI refresh
     } catch (error) {
       console.error('Error rejecting request:', error);
     }
@@ -64,18 +87,9 @@ const Networking = () => {
   const handleSendRequest = async (receiverId) => {
     try {
       await connectionsAPI.sendConnectionRequest(receiverId);
-      const userToConnect = searchResults.find(u => u.id === receiverId);
-      if (userToConnect) {
-        const newRequest = {
-          id: requests.length + 1,
-          sender: userToConnect,
-          sent_at: new Date().toISOString()
-        };
-        setRequests(prev => [...prev, newRequest]);
-      }
       setSearchResults([]);
       setSearchQuery('');
-      alert('Connection request sent!');
+      // Real-time updates will handle UI refresh for the receiver
     } catch (error) {
       console.error('Error sending request:', error);
     }
@@ -96,15 +110,26 @@ const Networking = () => {
   const handleRemoveConnection = async (connectionId) => {
     try {
       await connectionsAPI.removeConnection(connectionId);
-      setConnections(prev => prev.filter(c => c.id !== connectionId));
-      alert('Connection removed!');
+      // Real-time updates will handle UI refresh if needed
+      fetchConnections(); // Refresh connections list
     } catch (error) {
       console.error('Error removing connection:', error);
     }
   };
+
+  const handleMessage = async (connection) => {
+    try {
+      // Create or get conversation with this user
+      const response = await conversationsAPI.createConversation(connection.user.id);
+      // Navigate to chat page - you might want to pass conversation ID
+      navigate('/chat', { state: { conversationId: response.data._id } });
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+    }
+  };
   return (
     <div className="min-h-screen relative">
-      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-black/70 via-black/50 to-black/70"></div>
       <div className="relative z-10">
       <section className="py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -275,7 +300,10 @@ const Networking = () => {
                       <p className="text-textMuted text-xs">Connected</p>
                     </div>
                     <div className="flex gap-2">
-                      <button className="flex-1 bg-accent-gradient text-white font-medium py-3 px-6 rounded-full hover:shadow-[0_0_20px_#6B9FFF]/30 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleMessage(connection)}
+                        className="flex-1 bg-accent-gradient text-white font-medium py-3 px-6 rounded-full hover:shadow-[0_0_20px_#6B9FFF]/30 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                      >
                         <MessageCircle className="w-4 h-4" />
                         Message
                       </button>

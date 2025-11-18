@@ -13,6 +13,12 @@ const noticeSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+    index: true // Add index for status filtering
+  },
   filePath: {
     type: String,
     required: true,

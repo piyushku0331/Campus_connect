@@ -27,6 +27,24 @@ const formatUserResponse = (user) => {
   };
 };
 
+const formatAlumniResponse = (user) => {
+  return {
+    id: user._id,
+    name: user.name,
+    department: user.department,
+    batch: user.batch,
+    company: user.company,
+    position: user.position,
+    location: user.location,
+    bio: user.bio,
+    linkedin: user.linkedin,
+    email: user.email,
+    profilePhoto: user.profilePhoto,
+    alumniAchievements: user.alumniAchievements,
+    successStory: user.successStory
+  };
+};
+
 const getProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -161,10 +179,66 @@ const togglePrivacy = async (req, res) => {
   }
 };
 
+const getDashboardStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get user points
+    const user = await User.findById(userId).select('points');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get connections count
+    const connectionsCount = await require('../models/Connection').countDocuments({
+      $or: [{ sender_id: userId }, { receiver_id: userId }],
+      status: 'accepted'
+    });
+
+    // Get events attended count
+    const eventsAttendedCount = await require('../models/EventAttendee').countDocuments({
+      user_id: userId,
+      status: 'attending'
+    });
+
+    // Get posts count (posts created by user's creator account)
+    const creator = await require('../models/Creator').findOne({ user: userId });
+    const postsCount = creator ? await require('../models/Post').countDocuments({
+      creator: creator._id
+    }) : 0;
+
+    res.json({
+      points: user.points || 0,
+      connections: connectionsCount,
+      eventsAttended: eventsAttendedCount,
+      posts: postsCount
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const getAlumni = async (req, res) => {
+  try {
+    const alumni = await User.find({ role: 'alumni' })
+      .select('name department batch company position location bio linkedin email profilePhoto alumniAchievements successStory')
+      .sort({ createdAt: -1 });
+
+    const formattedAlumni = alumni.map(formatAlumniResponse);
+    res.json(formattedAlumni);
+  } catch (error) {
+    console.error('Error fetching alumni:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getProfile,
   updateProfile,
   togglePrivacy,
   getUserById,
-  searchUsers
+  searchUsers,
+  getDashboardStats,
+  getAlumni
 };

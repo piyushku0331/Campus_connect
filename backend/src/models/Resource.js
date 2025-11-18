@@ -26,6 +26,12 @@ const resourceSchema = new mongoose.Schema({
     required: true,
     index: true // Add index for uploader queries
   },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+    index: true // Add index for status filtering
+  },
   tags: [{
     type: String,
     trim: true,

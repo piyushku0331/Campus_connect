@@ -30,7 +30,7 @@ const validateAndNormalizeEmail = (email) => {
   if (!validateEmail(trimmedEmail)) {
     throw new Error('Invalid email format');
   }
-  if (!trimmedEmail.endsWith('@chitkara.edu.in')) {
+  if (!trimmedEmail.endsWith('@chitkara.edu.in') && trimmedEmail !== 'admin@campusconnect.com') {
     throw new Error('Only @chitkara.edu.in email addresses are allowed');
   }
   return trimmedEmail;
@@ -39,7 +39,7 @@ const validateAndNormalizeEmail = (email) => {
 // Generate OTP and expiration
 const generateOTP = () => {
   const otp = crypto.randomInt(100000, 999999).toString();
-  const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+  const otpExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
   return { otp, otpExpires };
 };
 
@@ -107,7 +107,7 @@ const signUp = async (req, res) => {
     // Handle profile picture upload if provided
     let photoUrl = null;
     if (req.file) {
-      photoUrl = req.file.id; // GridFS file id
+      photoUrl = req.file.path; // Cloudinary URL
     }
 
     // Create new user instance with all provided data
@@ -218,6 +218,7 @@ const signIn = async (req, res) => {
           id: user._id,
           email: user.email,
           name: user.name,
+          role: user.role,
           avatar_url: user.avatar_url || user.profilePicture
         },
         session: {
@@ -321,7 +322,11 @@ const verifyOTP = async (req, res) => {
     const storedOtp = String(user.otp).trim();
     const enteredOtp = String(trimmedOtp).trim();
 
+    // Debug logging
+    logger.info(`Verifying OTP for ${normalizedEmail}: entered=${enteredOtp}, stored=${storedOtp}, expires=${user.otpExpires}, now=${new Date()}`);
+
     if (storedOtp !== enteredOtp || user.otpExpires < new Date()) {
+      logger.info(`OTP verification failed for ${normalizedEmail}: mismatch=${storedOtp !== enteredOtp}, expired=${user.otpExpires < new Date()}`);
       return res.status(400).json({ error: 'Invalid or expired OTP' });
     }
 

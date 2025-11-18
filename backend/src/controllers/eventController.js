@@ -3,11 +3,17 @@ const EventAttendee = require('../models/EventAttendee');
 const logger = require('../utils/logger');
 const { awardPoints, checkAchievements } = require('./gamificationController');
 
+// Get io instance from app
+let io;
+const setIo = (ioInstance) => {
+  io = ioInstance;
+};
+
 const getEvents = async (req, res) => {
   try {
     const { page = 1, limit = 10, upcoming = false } = req.query;
     const offset = (page - 1) * limit;
-    let query = {};
+    let query = { status: 'approved' };
     if (upcoming === 'true') {
       query.start_date = { $gte: new Date() };
     }
@@ -35,7 +41,7 @@ const getEvents = async (req, res) => {
 const getEventById = async (req, res) => {
   try {
     const { id } = req.params;
-    const event = await Event.findById(id).populate('organizer_id', 'id full_name avatar_url');
+    const event = await Event.findOne({ _id: id, status: 'approved' }).populate('organizer_id', 'id full_name avatar_url');
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
@@ -73,7 +79,8 @@ const createEvent = async (req, res) => {
       max_attendees,
       tags,
       campus,
-      category
+      category,
+      status: 'pending'
     });
     await event.save();
     await awardPoints(userId, 50, 'created_event', event._id);
@@ -139,6 +146,12 @@ const rsvpEvent = async (req, res) => {
       return res.status(400).json({ error: 'Invalid RSVP status.' });
     }
 
+    // Check if event is approved
+    const event = await Event.findOne({ _id: id, status: 'approved' });
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
     const rsvp = await EventAttendee.findOneAndUpdate(
       { event_id: id, user_id: userId },
       { status, rsvp_date: new Date() },
@@ -147,6 +160,17 @@ const rsvpEvent = async (req, res) => {
 
     if (status === 'attending') {
       await awardPoints(userId, 10, 'rsvp_event', id);
+
+      // Emit real-time dashboard update for events attended
+      if (io) {
+        io.to(userId).emit('dashboardUpdate', {
+          type: 'events_attended_update',
+          eventsAttended: await EventAttendee.countDocuments({
+            user_id: userId,
+            status: 'attending'
+          })
+        });
+      }
     }
 
     res.json(rsvp);
@@ -172,6 +196,7 @@ const getUserEvents = async (req, res) => {
 };
 
 module.exports = {
+  setIo,
   getEvents,
   getEventById,
   createEvent,

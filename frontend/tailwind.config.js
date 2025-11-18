@@ -46,8 +46,9 @@ export default {
         campusGray: '#6b7280',
       },
       fontFamily: {
-        heading: ['Outfit', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+        body: ['DM Sans', 'sans-serif'],
+        heading: ['Poppins', 'sans-serif'],
       },
       backgroundImage: {
         'accent-gradient': 'linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%)',

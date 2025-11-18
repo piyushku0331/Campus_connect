@@ -16,8 +16,8 @@ router.put('/users/:id/role', adminController.updateUserRole);
 router.delete('/users/:id', adminController.deleteUser);
 
 // Content Moderation
-router.get('/moderation', adminController.getContentForModeration);
-router.post('/moderation', adminController.moderateContent);
+router.get('/content/moderation', adminController.getContentForModeration);
+router.post('/content/moderate', adminController.moderateContent);
 
 // Event Management
 router.get('/events/pending', adminController.getPendingEvents);
@@ -27,6 +27,7 @@ router.delete('/events/:id/reject', adminController.rejectEvent);
 // Alumni Management
 router.get('/alumni', adminController.getAlumni);
 router.post('/alumni', adminController.addAlumni);
+router.put('/alumni/:id', adminController.updateAlumni);
 router.delete('/alumni/:id', adminController.removeAlumni);
 
 module.exports = router;

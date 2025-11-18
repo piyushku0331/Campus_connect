@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Users, Calendar, BookOpen, Bell, Settings } from 'lucide-react';
@@ -9,7 +9,17 @@ import Leaderboard from '../components/gamification/Leaderboard';
 import { GlowingCards, GlowingCard } from '../components/lightswind/glowing-cards';
 import GlowCard from '../components/ui/GlowCard';
 import { PORTFOLIO_ITEMS } from '../utils/constants';
+import { useSocket } from '../hooks/useSocket';
+import api from '../services/api';
 const Dashboard = () => {
+  const [stats, setStats] = useState({
+    points: 0,
+    connections: 0,
+    eventsAttended: 0,
+    posts: 0
+  });
+  const { onDashboardUpdate } = useSocket();
+
   // Create icon map for dynamic icon rendering
   const iconMap = {
     User,
@@ -25,6 +35,35 @@ const Dashboard = () => {
     ...item,
     icon: iconMap[item.icon]
   }));
+
+  // Fetch initial dashboard stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/users/dashboard/stats');
+        setStats(response.data);
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // Listen for real-time dashboard updates
+  useEffect(() => {
+    const unsubscribe = onDashboardUpdate((update) => {
+      setStats(prevStats => ({
+        ...prevStats,
+        [update.type === 'points_update' ? 'points' :
+         update.type === 'connections_update' ? 'connections' :
+         update.type === 'events_attended_update' ? 'eventsAttended' :
+         update.type === 'posts_update' ? 'posts' : '']: update.points || update.connections || update.eventsAttended || update.posts
+      }));
+    });
+
+    return unsubscribe;
+  }, [onDashboardUpdate]);
   return (
     <div className="relative">
         <div className="absolute inset-0 bg-dashboard-gradient"></div>
@@ -46,15 +85,15 @@ const Dashboard = () => {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <div className="glass-card rounded-2xl p-6">
-                <div className="text-3xl font-bold text-primary mb-2">42</div>
+                <div className="text-3xl font-bold text-primary mb-2">{stats.points}</div>
                 <p className="text-textMuted">Points Earned</p>
               </div>
               <div className="glass-card rounded-2xl p-6">
-                <div className="text-3xl font-bold text-secondary mb-2">8</div>
+                <div className="text-3xl font-bold text-secondary mb-2">{stats.connections}</div>
                 <p className="text-textMuted">Connections Made</p>
               </div>
               <div className="glass-card rounded-2xl p-6">
-                <div className="text-3xl font-bold text-accent mb-2">3</div>
+                <div className="text-3xl font-bold text-accent mb-2">{stats.eventsAttended}</div>
                 <p className="text-textMuted">Events Attended</p>
               </div>
             </div>
@@ -82,7 +121,7 @@ const Dashboard = () => {
                 <Link to={item.link} className="block">
                   <div className="bg-card-gradient border border-borderMedium rounded-2xl p-6 h-full hover:shadow-card-hover hover:transform hover:-translate-y-1 transition-all duration-300 animate-fade-in">
                     <div className="flex items-center justify-between mb-4">
-                      <div className={`p-3 rounded-xl bg-gradient-to-r ${item.gradient} shadow-lg`}>
+                      <div className={`p-3 rounded-xl bg-linear-to-r ${item.gradient} shadow-lg`}>
                         <item.icon className="w-6 h-6 text-white" />
                       </div>
                       <span className="text-xs bg-white/5 text-textMuted px-3 py-1 rounded-full backdrop-blur-md">

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { FaUser, FaEnvelope, FaCalendarAlt, FaUserShield } from 'react-icons/fa';
-import { usersAPI } from '../../services/api';
+ import React, { useState, useEffect } from 'react';
+ import { User, Mail, Calendar, Shield } from 'lucide-react';
+ import { usersAPI } from '../../services/api';
+ import BaseCard from './BaseCard';
+ import VisionButton from '../ui/VisionButton';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -13,7 +15,8 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       const response = await usersAPI.getUsers();
-      setUsers(response.data.data || response.data);
+      const allUsers = response.data.data || response.data;
+      setUsers(allUsers.filter(user => user.role !== 'admin'));
     } catch (err) {
       console.error('Failed to fetch users:', err);
     } finally {
@@ -23,56 +26,57 @@ const UserManagement = () => {
 
   if (loading) {
     return (
-      <div className="admin-panel">
-        <h2>Manage Users</h2>
-        <div className="loading">Loading users...</div>
+      <div className="p-8">
+        <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_0_10px_rgba(0,217,255,0.5)]">Manage Users</h2>
+        <div className="text-[#0CEBFF] animate-pulse">Loading users...</div>
       </div>
     );
   }
 
   return (
-    <div className="admin-panel">
-      <h2>Manage Users</h2>
-      <div className="user-management">
+    <div className="p-8">
+      <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-[0_0_10px_rgba(0,217,255,0.5)]">Manage Users</h2>
+      <div className="space-y-4">
         {users.length === 0 ? (
-          <div className="no-users">
-            <p>No users found</p>
-          </div>
+          <BaseCard className="text-center py-12">
+            <p className="text-gray-300 text-lg">No users found</p>
+            <p className="text-gray-400 text-sm mt-2">User registrations will appear here.</p>
+          </BaseCard>
         ) : (
-          <div className="users-list">
+          <div className="grid gap-4">
             {users.map((user) => (
-              <div key={user._id} className="user-item card">
-                <div className="user-header">
-                  <div className="user-avatar">
-                    <FaUser />
+              <BaseCard key={user._id || user.id} className="transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,217,255,0.4)]">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-linear-to-r from-[#2F4FFF] to-[#8B5CF6] rounded-full flex items-center justify-center shadow-lg shadow-[#2F4FFF]/50">
+                    <User className="w-6 h-6 text-white" />
                   </div>
-                  <div className="user-info">
-                    <h3>{user.name}</h3>
-                    <div className="user-meta">
-                      <span className="meta-item">
-                        <FaEnvelope className="meta-icon" />
-                        {user.email}
-                      </span>
-                      <span className="meta-item">
-                        <FaCalendarAlt className="meta-icon" />
-                        Joined {new Date(user.createdAt).toLocaleDateString()}
-                      </span>
-                      <span className="meta-item">
-                        <FaUserShield className="meta-icon" />
-                        {user.role || 'Student'}
-                      </span>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-white mb-2 drop-shadow-[0_0_8px_rgba(0,217,255,0.3)]">{user.name}</h3>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-gray-200">
+                        <Mail className="w-4 h-4 text-[#06E1FF]" />
+                        <span className="text-sm">{user.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-200">
+                        <Calendar className="w-4 h-4 text-[#00F59B]" />
+                        <span className="text-sm">Joined {new Date(user.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-200">
+                        <Shield className="w-4 h-4 text-[#FF3CF0]" />
+                        <span className="text-sm">{user.role || 'Student'}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="user-actions">
-                  <button className="btn btn-secondary btn-sm">
+                <div className="flex gap-3 mt-4">
+                  <VisionButton variant="primary" size="sm">
                     View Profile
-                  </button>
-                  <button className="btn btn-warning btn-sm">
+                  </VisionButton>
+                  <VisionButton variant="secondary" size="sm">
                     Edit User
-                  </button>
+                  </VisionButton>
                 </div>
-              </div>
+              </BaseCard>
             ))}
           </div>
         )}

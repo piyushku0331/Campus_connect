@@ -54,10 +54,11 @@ const eventSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
-  isApproved: {
-    type: Boolean,
-    default: false,
-    index: true
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+    index: true // Add index for status filtering
   },
   created_at: {
     type: Date,

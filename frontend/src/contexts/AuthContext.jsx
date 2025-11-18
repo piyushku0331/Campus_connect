@@ -7,6 +7,8 @@ import { authAPI } from '../services/api'; // API service functions for auth
 // Create React context for authentication state management
 const AuthContext = createContext();
 
+// Custom hook to use authentication context is now in hooks/useAuth.js
+
 // Authentication provider component - wraps app and provides auth state
 export const AuthProvider = ({ children }) => {
   // Prop validation for children

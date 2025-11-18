@@ -112,7 +112,16 @@ export const resourcesAPI = {
     return api.get(`/resources?${params}`);
   },
   getResourceById: (id) => api.get(`/resources/${id}`),
-  uploadResource: (resourceData) => api.post('/resources', resourceData),
+  uploadResource: (resourceData) => {
+    if (resourceData instanceof FormData) {
+      return api.post('/resources', resourceData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    }
+    return api.post('/resources', resourceData);
+  },
   updateResource: (id, resourceData) => api.put(`/resources/${id}`, resourceData),
   deleteResource: (id) => api.delete(`/resources/${id}`),
   searchResources: (query, tag) => {
@@ -147,6 +156,7 @@ export const usersAPI = {
     if (age) params.append('age', age);
     return api.get(`/users/search?${params}`);
   },
+  getAlumni: () => api.get('/users/alumni'),
 };
 export const newsAPI = {
   getEducationalNews: () => api.get('/news/educational'),
@@ -188,5 +198,44 @@ export const creatorsAPI = {
   getPublicCreatorProfile: (creatorId) => api.get(`/creators/${creatorId}`),
   toggleFollow: (creatorId) => api.post(`/creators/${creatorId}/follow`),
   getSuggestedCreators: () => api.get('/creators/suggested'),
+};
+export const conversationsAPI = {
+  getConversations: () => api.get('/conversations'),
+  getConversation: (conversationId) => api.get(`/conversations/${conversationId}`),
+  createConversation: (participantId) => api.post('/conversations', { participantId }),
+  sendMessage: (conversationId, text) => api.post(`/conversations/${conversationId}/messages`, { text }),
+};
+export const lostItemsAPI = {
+  getLostItems: (params = {}) => {
+    const queryParams = new URLSearchParams();
+    Object.keys(params).forEach(key => {
+      if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+        queryParams.append(key, params[key]);
+      }
+    });
+    return api.get(`/lost-items?${queryParams}`);
+  },
+  reportItem: (itemData) => {
+    if (itemData instanceof FormData) {
+      return api.post('/lost-items', itemData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    }
+    return api.post('/lost-items', itemData);
+  },
+  updateItemStatus: (id, status) => api.put(`/lost-items/${id}/status`, { status }),
+  claimItem: (id) => api.put(`/lost-items/${id}/claim`),
+  deleteItem: (id) => api.delete(`/lost-items/${id}`),
+};
+
+export const adminAPI = {
+  getAnalytics: () => api.get('/admin/analytics'),
+  getContentForModeration: (type = 'all', page = 1, limit = 20) => api.get(`/admin/content/moderation?type=${type}&page=${page}&limit=${limit}`),
+  moderateContent: (id, contentType, action) => api.post('/admin/content/moderate', { id, contentType, action }),
+  getPendingEvents: (page = 1, limit = 10) => api.get(`/admin/events/pending?page=${page}&limit=${limit}`),
+  approveEvent: (id) => api.put(`/admin/events/${id}/approve`),
+  rejectEvent: (id) => api.put(`/admin/events/${id}/reject`),
 };
 export default api;
