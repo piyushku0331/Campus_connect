@@ -11,7 +11,6 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem('accessToken');
-    console.log('API Request:', config.method?.toUpperCase(), config.url, 'Token present:', !!token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -126,6 +125,7 @@ export const resourcesAPI = {
   incrementDownloadCount: (id) => api.post(`/resources/${id}/download`),
 };
 export const usersAPI = {
+  getUsers: (page = 1, limit = 50) => api.get(`/users?page=${page}&limit=${limit}`),
   getProfile: () => api.get('/users/profile'),
   updateProfile: (profileData) => {
     if (profileData instanceof FormData) {
@@ -173,6 +173,13 @@ export const postsAPI = {
   addComment: (postId) => api.post(`/posts/${postId}/comment`),
   getTrendingPosts: () => api.get('/posts/trending'),
   searchPosts: (params) => api.get(`/posts/search?${params}`),
+};
+export const noticesAPI = {
+  getNotices: (page = 1, limit = 10) => api.get(`/notices?page=${page}&limit=${limit}`),
+  getNoticeById: (id) => api.get(`/notices/${id}`),
+  createNotice: (noticeData) => api.post('/notices', noticeData),
+  updateNotice: (id, noticeData) => api.put(`/notices/${id}`, noticeData),
+  deleteNotice: (id) => api.delete(`/notices/${id}`),
 };
 export const creatorsAPI = {
   applyForCreator: (applicationData) => api.post('/creators/apply', applicationData),

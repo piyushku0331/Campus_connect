@@ -1,11 +1,12 @@
 const Blog = require('../models/Blog');
 const User = require('../models/User');
+const { handleControllerError } = require('../utils/errorHandler');
+const { getPaginationParams, createPaginationMeta } = require('../utils/pagination');
 
 // Get all published blog posts with pagination
 const getBlogs = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const { page, limit, skip } = getPaginationParams(req.query, 10);
     const category = req.query.category;
     const tag = req.query.tag;
     const search = req.query.search;
@@ -28,23 +29,17 @@ const getBlogs = async (req, res) => {
       .populate('author', 'name profilePhoto department')
       .sort({ createdAt: -1 })
       .limit(limit)
-      .skip((page - 1) * limit)
+      .skip(skip)
       .select('title excerpt author authorName tags category featuredImage createdAt readingTime likes comments');
 
     const total = await Blog.countDocuments(query);
 
     res.json({
       blogs,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
-      }
+      pagination: createPaginationMeta(page, limit, total, blogs)
     });
   } catch (error) {
-    console.error('Error fetching blogs:', error);
-    res.status(500).json({ error: 'Failed to fetch blogs' });
+    handleControllerError(error, 'fetching blogs', res);
   }
 };
 

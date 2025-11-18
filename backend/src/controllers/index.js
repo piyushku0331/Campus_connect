@@ -1,3 +1,4 @@
+const adminController = require('./adminController');
 const authController = require('./authController');
 const userController = require('./userController');
 const eventController = require('./eventController');
@@ -15,6 +16,7 @@ const lostItemController = require('./lostItemController');
 const studyMaterialController = require('./studyMaterialController');
 
 module.exports = {
+  adminController,
   authController,
   userController,
   eventController,

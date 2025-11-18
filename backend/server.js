@@ -121,17 +121,14 @@ app.use((req, res) => {
 
 // Socket.io connection handling for real-time messaging
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id);
-
   // Handle incoming messages and broadcast to all connected clients
   socket.on('sendMessage', (data) => {
-    console.log('Message received:', data);
     io.emit('receiveMessage', data); // Broadcast to all clients
   });
 
   // Handle user disconnection
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
+    // User disconnected
   });
 });
 

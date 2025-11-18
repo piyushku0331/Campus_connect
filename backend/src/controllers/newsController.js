@@ -3,12 +3,10 @@ const axios = require('axios');
 const getEducationalNews = async (req, res) => {
   try {
     const apiKey = process.env.NEWS_API_KEY;
-    console.log('NewsAPI Key present:', !!apiKey);
 
     // Try to fetch from NewsAPI.org first
     if (apiKey && apiKey !== 'your_newsapi_key_here') {
       try {
-        console.log('Making NewsAPI request for educational news');
         const response = await axios.get('https://newsapi.org/v2/top-headlines', {
           params: {
             category: 'general',
@@ -18,9 +16,6 @@ const getEducationalNews = async (req, res) => {
             apiKey: apiKey
           }
         });
-
-        console.log('NewsAPI response status:', response.status);
-        console.log('Number of articles received:', response.data?.articles?.length || 0);
 
         if (response.data?.articles?.length > 0) {
           const articles = response.data.articles
@@ -42,7 +37,7 @@ const getEducationalNews = async (req, res) => {
           });
         }
       } catch (apiError) {
-        console.log('NewsAPI request failed, using mock data:', apiError.message);
+        // NewsAPI request failed, using mock data
       }
     }
 

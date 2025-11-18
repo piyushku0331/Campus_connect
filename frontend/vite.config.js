@@ -30,7 +30,7 @@ export default defineConfig({
           if (id.includes('react-router')) {
             return 'router';
           }
-          if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('react-hot-toast')) {
+          if (id.includes('lucide-react') || id.includes('react-hot-toast')) {
             return 'ui-vendor';
           }
           if (id.includes('axios')) {
@@ -70,7 +70,6 @@ export default defineConfig({
       'react',
       'react-dom',
       'react-router-dom',
-      'framer-motion',
       'axios',
       'lucide-react',
       'react-hot-toast'

@@ -42,6 +42,9 @@ const CreatorApply = lazy(() => import('./pages/CreatorApply')); // Creator appl
 const Faq = lazy(() => import('./pages/Faq')); // FAQ page
 const Docs = lazy(() => import('./pages/Docs')); // Docs page
 const Forum = lazy(() => import('./pages/Forum')); // Forum page
+const Admin = lazy(() => import('./pages/Admin')); // Admin panel page
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage')); // Admin dashboard page
+const AdminRoute = lazy(() => import('./components/auth/AdminRoute')); // Admin route protection
 
 // Utility component to scroll to top on route changes
 const ScrollToTop = memo(function ScrollToTop() {
@@ -57,7 +60,7 @@ const ScrollToTop = memo(function ScrollToTop() {
 // Route wrapper component for pages with footer
 const PageWithFooter = ({ children, protected: isProtected = false }) => (
   <div className="flex flex-col min-h-screen">
-    <div className="flex-grow">
+    <div className="grow">
       <Suspense fallback={<LoadingSpinner />}>
         {isProtected ? <ProtectedRoute>{children}</ProtectedRoute> : children}
       </Suspense>
@@ -122,6 +125,8 @@ function App() {
               <Route path="/alumni" element={<PageWithFooter protected><Alumni /></PageWithFooter>} />
               <Route path="/docs" element={<PageWithFooter><Docs /></PageWithFooter>} />
               <Route path="/forum" element={<PageWithFooter><Forum /></PageWithFooter>} />
+              <Route path="/admin" element={<PageWithFooter><AdminRoute><Admin /></AdminRoute></PageWithFooter>} />
+              <Route path="/admin/dashboard" element={<PageWithFooter><AdminRoute><AdminDashboardPage /></AdminRoute></PageWithFooter>} />
             </Routes>
           </Suspense>
         </main>

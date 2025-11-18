@@ -24,11 +24,11 @@ function sanitizeInPlace(target, options = {}) {
       const val = obj[key];
       if (regex.test(key)) {
         // delete the offending key
-        try { delete obj[key]; } catch (e) {}
+        try { delete obj[key]; } catch (e) { /* ignore */ }
         if (replaceWith) {
           const newKey = key.replace(/(^\$|\.)/g, replaceWith);
           if (newKey !== '__proto__' && newKey !== 'constructor' && newKey !== 'prototype') {
-            try { obj[newKey] = val; } catch (e) {}
+            try { obj[newKey] = val; } catch (e) { /* ignore */ }
           }
         }
         // if not replacing, skip recursing into this key

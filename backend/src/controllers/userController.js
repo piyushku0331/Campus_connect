@@ -66,10 +66,7 @@ const updateProfile = async (req, res) => {
 
     // Handle file upload
     if (req.file) {
-      console.log('File uploaded successfully:', req.file.path);
       updateData.profilePhoto = req.file.path; // Cloudinary URL
-    } else {
-      console.log('No file uploaded');
     }
 
     const user = await User.findByIdAndUpdate(userId, updateData, { new: true }).select('-password -otp -otpExpires -refreshToken -refreshTokenExpires -resetPasswordToken -resetPasswordExpires');

@@ -1,13 +1,14 @@
 const Post = require('../models/Post');
 const Creator = require('../models/Creator');
 const User = require('../models/User');
+const { handleControllerError } = require('../utils/errorHandler');
+const { getPaginationParams, createPaginationMeta } = require('../utils/pagination');
 
 // Get feed posts (for authenticated users)
 const getFeed = async (req, res) => {
   try {
     const userId = req.user.id;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    const { page, limit, skip } = getPaginationParams(req.query, 20);
 
     // Get creators that the user follows
     const userCreator = await Creator.findOne({ user: userId });
@@ -29,27 +30,22 @@ const getFeed = async (req, res) => {
         .populate('creator', 'displayName profilePicture isVerified')
         .sort({ createdAt: -1 })
         .limit(limit)
-        .skip((page - 1) * limit);
+        .skip(skip);
     } else {
       // For users not following anyone, show popular posts
       posts = await Post.find({ status: 'active' })
         .populate('creator', 'displayName profilePicture isVerified')
         .sort({ 'engagement.likes': -1, 'engagement.comments': -1, createdAt: -1 })
         .limit(limit)
-        .skip((page - 1) * limit);
+        .skip(skip);
     }
 
     res.json({
       posts,
-      pagination: {
-        page,
-        limit,
-        hasMore: posts.length === limit
-      }
+      pagination: createPaginationMeta(page, limit, posts.length, posts) // Note: For simplicity, using posts.length as total, but ideally count total
     });
   } catch (error) {
-    console.error('Error fetching feed:', error);
-    res.status(500).json({ error: 'Failed to fetch feed' });
+    handleControllerError(error, 'fetching feed', res);
   }
 };
 
@@ -57,8 +53,7 @@ const getFeed = async (req, res) => {
 const getCreatorPosts = async (req, res) => {
   try {
     const { creatorId } = req.params;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
+    const { page, limit, skip } = getPaginationParams(req.query, 20);
     const type = req.query.type; // 'post' or 'reel'
 
     const query = { creator: creatorId, status: 'active' };
@@ -68,19 +63,14 @@ const getCreatorPosts = async (req, res) => {
       .populate('creator', 'displayName profilePicture isVerified')
       .sort({ createdAt: -1 })
       .limit(limit)
-      .skip((page - 1) * limit);
+      .skip(skip);
 
     res.json({
       posts,
-      pagination: {
-        page,
-        limit,
-        hasMore: posts.length === limit
-      }
+      pagination: createPaginationMeta(page, limit, posts.length, posts)
     });
   } catch (error) {
-    console.error('Error fetching creator posts:', error);
-    res.status(500).json({ error: 'Failed to fetch creator posts' });
+    handleControllerError(error, 'fetching creator posts', res);
   }
 };
 
@@ -104,8 +94,7 @@ const getPost = async (req, res) => {
 
     res.json(post);
   } catch (error) {
-    console.error('Error fetching post:', error);
-    res.status(500).json({ error: 'Failed to fetch post' });
+    handleControllerError(error, 'fetching post', res);
   }
 };
 
@@ -158,8 +147,7 @@ const createPost = async (req, res) => {
 
     res.status(201).json(populatedPost);
   } catch (error) {
-    console.error('Error creating post:', error);
-    res.status(500).json({ error: 'Failed to create post' });
+    handleControllerError(error, 'creating post', res);
   }
 };
 
@@ -186,8 +174,7 @@ const updatePost = async (req, res) => {
 
     res.json(updatedPost);
   } catch (error) {
-    console.error('Error updating post:', error);
-    res.status(500).json({ error: 'Failed to update post' });
+    handleControllerError(error, 'updating post', res);
   }
 };
 
@@ -217,8 +204,7 @@ const deletePost = async (req, res) => {
 
     res.json({ message: 'Post deleted successfully' });
   } catch (error) {
-    console.error('Error deleting post:', error);
-    res.status(500).json({ error: 'Failed to delete post' });
+    handleControllerError(error, 'deleting post', res);
   }
 };
 
@@ -250,8 +236,7 @@ const toggleLike = async (req, res) => {
       likeCount: post.likes.length
     });
   } catch (error) {
-    console.error('Error toggling like:', error);
-    res.status(500).json({ error: 'Failed to toggle like' });
+    handleControllerError(error, 'toggling like', res);
   }
 };
 
@@ -289,8 +274,7 @@ const addComment = async (req, res) => {
 
     res.status(201).json(newComment);
   } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ error: 'Failed to add comment' });
+    handleControllerError(error, 'adding comment', res);
   }
 };
 
@@ -306,8 +290,7 @@ const getTrendingPosts = async (req, res) => {
 
     res.json(posts);
   } catch (error) {
-    console.error('Error fetching trending posts:', error);
-    res.status(500).json({ error: 'Failed to fetch trending posts' });
+    handleControllerError(error, 'fetching trending posts', res);
   }
 };
 
@@ -347,8 +330,7 @@ const searchPosts = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error searching posts:', error);
-    res.status(500).json({ error: 'Failed to search posts' });
+    handleControllerError(error, 'searching posts', res);
   }
 };
 
