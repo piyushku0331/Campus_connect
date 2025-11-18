@@ -45,7 +45,8 @@ beforeAll(async () => {
   app.use('/api/admin', require('../src/routes/admin'));
 
   // Error handling
-  app.use((err, req, res, next) => {
+  // eslint-disable-next-line no-unused-vars
+  app.use((err, req, res, _next) => {
     res.status(500).json({ error: 'Internal server error' });
   });
 });
