@@ -1,0 +1,14 @@
+const express = require('express');
+const router = express.Router();
+const { verifyToken } = require('../middleware/authMiddleware');
+const { uploadResourcePDF } = require('../middleware/cloudinaryUpload');
+const { resourceController } = require('../controllers');
+router.get('/', verifyToken, resourceController.getResources);
+router.get('/:id', verifyToken, resourceController.getResourceById);
+router.post('/', verifyToken, uploadResourcePDF, resourceController.uploadResource);
+router.put('/:id', verifyToken, resourceController.updateResource);
+router.delete('/:id', verifyToken, resourceController.deleteResource);
+router.get('/search', verifyToken, resourceController.searchResources);
+router.get('/user/my-resources', verifyToken, resourceController.getUserResources);
+router.post('/:id/download', verifyToken, resourceController.incrementDownloadCount);
+module.exports = router;

@@ -1,0 +1,12 @@
+const express = require('express');
+const router = express.Router();
+const { verifyToken } = require('../middleware/authMiddleware');
+const { eventController } = require('../controllers');
+router.get('/', verifyToken, eventController.getEvents);
+router.get('/:id', verifyToken, eventController.getEventById);
+router.post('/', verifyToken, eventController.createEvent);
+router.put('/:id', verifyToken, eventController.updateEvent);
+router.delete('/:id', verifyToken, eventController.deleteEvent);
+router.post('/:id/rsvp', verifyToken, eventController.rsvpEvent);
+router.get('/user/my-events', verifyToken, eventController.getUserEvents);
+module.exports = router;
